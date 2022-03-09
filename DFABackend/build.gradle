@@ -4,8 +4,7 @@ plugins {
     id 'java'
 }
 
-group = 'com.example'
-version = '0.0.1-SNAPSHOT'
+group = 'com.hse.dfa'
 sourceCompatibility = '17'
 
 configurations {
@@ -19,9 +18,11 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.web3j:core:5.0.0'
+    implementation 'org.web3j:core:4.8.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.postgresql:postgresql:42.3.3'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"

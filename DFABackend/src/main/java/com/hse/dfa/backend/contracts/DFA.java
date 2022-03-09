@@ -41,7 +41,7 @@ public class DFA extends Contract {
 
     static {
         _addresses = new HashMap<String, String>();
-        _addresses.put("5777", "0x43B2D8E733188df614f3074990A48349bc569ed1");
+        _addresses.put("5777", "0x8c1B60A0A11f98a10C4e26fCcc1585DEdE36f5B4");
     }
 
     @Deprecated

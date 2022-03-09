@@ -1,5 +1,18 @@
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/"
+    username: "user"
+    password: "password"
 web3j:
   server:
-    url: http://localhost:7545/
-
+    url: "http://localhost:7545/"
+  gas:
+    price: "20000000000"
+    limit: "6721975"
+contracts:
+  dfa:
+    address: "0x8c1B60A0A11f98a10C4e26fCcc1585DEdE36f5B4"
+owner:
+  address: "0xb30e058b0460dF36942e8D0B7FE832176334020F"
+  key: "d14fac738b2f389bcb7f2ed9ccab9bd8e8ef67849a36dbbe4ac2506c8870d36d"
 
