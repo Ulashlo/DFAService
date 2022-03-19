@@ -3,14 +3,15 @@ version: '2'
 services:
   postgres:
     image: postgres
+    container_name: postgres
     restart: always
     environment:
-      POSTGRES_USER: "user"
-      POSTGRES_PASSWORD: "password"
+      POSTGRES_DB: "dfa"
+      POSTGRES_USER: "dfa_user"
+      POSTGRES_PASSWORD: "dfa_password"
       PGDATA: /data/postgres
     volumes:
-        - postgres:/data/postgres
+      - ./db/init/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-volumes:
-  postgres:
