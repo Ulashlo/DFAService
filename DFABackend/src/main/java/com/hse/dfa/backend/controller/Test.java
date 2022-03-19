@@ -1,6 +1,5 @@
 package com.hse.dfa.backend.controller;
 
-import com.hse.dfa.backend.contracts.DFA;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

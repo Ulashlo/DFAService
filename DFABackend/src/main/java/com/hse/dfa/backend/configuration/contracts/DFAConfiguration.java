@@ -1,6 +1,5 @@
 package com.hse.dfa.backend.configuration.contracts;
 
-import com.hse.dfa.backend.contracts.DFA;
 import com.hse.dfa.backend.properties.contracts.DFAProperties;
 import com.hse.dfa.backend.properties.owner.OwnerProperties;
 import lombok.RequiredArgsConstructor;
