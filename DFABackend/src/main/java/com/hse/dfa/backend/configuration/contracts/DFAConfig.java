@@ -1,5 +1,6 @@
 package com.hse.dfa.backend.configuration.contracts;
 
+import com.hse.dfa.backend.contracts.DFA;
 import com.hse.dfa.backend.properties.contracts.DFAProperties;
 import com.hse.dfa.backend.properties.owner.OwnerProperties;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,7 @@ import org.web3j.tx.gas.ContractGasProvider;
 
 @Configuration
 @RequiredArgsConstructor
-public class DFAConfiguration {
+public class DFAConfig {
     private final Web3j web3j;
     private final ContractGasProvider gasProvider;
     private final DFAProperties dfa;

@@ -1,8 +1,10 @@
 spring:
+  jpa:
+    database-platform: "org.hibernate.dialect.PostgreSQLDialect"
   datasource:
-    url: "jdbc:postgresql://localhost:5432/"
-    username: "user"
-    password: "password"
+    url: "jdbc:postgresql://localhost:5432/dfa"
+    username: "dfa_user"
+    password: "dfa_password"
 web3j:
   server:
     url: "http://localhost:7545/"
