@@ -1,0 +1,7 @@
+{
+  "typescriptThreePlus": true,
+  "withInterfaces": true,
+  "snapshot": true,
+  "supportsES6": true,
+  "enumPropertyNaming": "UPPERCASE"
+}

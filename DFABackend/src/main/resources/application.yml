@@ -5,6 +5,9 @@ spring:
     url: 'jdbc:postgresql://localhost:5432/dfa'
     username: 'dfa_user'
     password: 'dfa_password'
+springdoc:
+  api-docs:
+    path: '/unsafe/api-docs'
 jwt:
   secret: 'secret'
   expiration: 1800000
@@ -12,8 +15,8 @@ web3j:
   server:
     url: 'http://localhost:7545/'
   gas:
-    price: 20000000000
-    limit: 6721975
+    price: '20000000000'
+    limit: '6721975'
 contracts:
   dfa:
     address: '0x8c1B60A0A11f98a10C4e26fCcc1585DEdE36f5B4'

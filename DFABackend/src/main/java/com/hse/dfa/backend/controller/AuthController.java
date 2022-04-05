@@ -3,6 +3,7 @@ package com.hse.dfa.backend.controller;
 import com.hse.dfa.backend.controller.dto.authentication.TokenResponseDTO;
 import com.hse.dfa.backend.controller.dto.authentication.user_info.UserInfoForCreateDTO;
 import com.hse.dfa.backend.service.authentication.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
