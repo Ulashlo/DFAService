@@ -1,6 +1,6 @@
-package com.hse.dfa.backend.service.user;
+package com.hse.dfa.backend.service.user_info;
 
-import com.hse.dfa.backend.repository.UserRepository;
+import com.hse.dfa.backend.repository.user_info.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

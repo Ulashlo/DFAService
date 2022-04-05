@@ -21,12 +21,15 @@ public class UserRole {
     private long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "id")
-    @Column(name = "user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "id")
-    @Column(name = "role_id")
+    @JoinColumn(name = "role_id")
     private Role role;
+
+    public UserRole(User user, Role role) {
+        this.user = user;
+        this.role = role;
+    }
 }

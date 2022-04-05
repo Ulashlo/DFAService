@@ -1,6 +1,6 @@
 package com.hse.dfa.backend.model.user_info;
 
-import com.hse.dfa.backend.util.converters.attribute_converters.RoleTypeAttributeConverter;
+import com.hse.dfa.backend.util.converters.attribute.RoleTypeAttributeConverter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,5 +31,20 @@ public class Role implements GrantedAuthority {
     @Override
     public String getAuthority() {
         return roleType.getRoleName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Role role = (Role) o;
+
+        return roleType == role.roleType;
+    }
+
+    @Override
+    public int hashCode() {
+        return roleType.hashCode();
     }
 }

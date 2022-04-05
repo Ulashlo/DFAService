@@ -1,5 +1,6 @@
 package com.hse.dfa.backend.security;
 
+import com.hse.dfa.backend.properties.sequrity.JwtProperties;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,24 +20,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
     private final UserDetailsService userDetailsService;
-    private String secretKey = "secret";
-    private long validityInMilliseconds = 1800000;
-
-    @PostConstruct
-    protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
-    }
+    private final JwtProperties jwtProperties;
 
     public String createToken(String username, List<String> roles) {
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("roles", roles);
         Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
+        Date validity = new Date(now.getTime() + jwtProperties.getExpiration());
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecret())
                 .compact();
     }
 
@@ -46,7 +41,7 @@ public class JwtTokenProvider {
     }
 
     public String getUsername(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parser().setSigningKey(jwtProperties.getSecret()).parseClaimsJws(token).getBody().getSubject();
     }
 
     public String resolveToken(HttpServletRequest req) {
@@ -59,7 +54,7 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            Jws<Claims> claims = Jwts.parser().setSigningKey(jwtProperties.getSecret()).parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
             return false;

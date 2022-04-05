@@ -29,5 +29,9 @@ public enum RoleType {
             ));
     }
 
+    public static RoleType defaultRoleType() {
+        return TRADER;
+    }
+
     private final String roleName;
 }

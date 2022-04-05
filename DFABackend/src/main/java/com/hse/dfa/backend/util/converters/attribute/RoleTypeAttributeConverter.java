@@ -1,4 +1,4 @@
-package com.hse.dfa.backend.util.converters.attribute_converters;
+package com.hse.dfa.backend.util.converters.attribute;
 
 import com.hse.dfa.backend.model.user_info.RoleType;
 

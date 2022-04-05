@@ -38,6 +38,27 @@ public class User implements UserDetails {
     @Fetch(SUBSELECT)
     private Set<UserRole> userRoles = new HashSet<>();
 
+    public User(String username, String password, Set<Role> userRoles) {
+        this.username = username;
+        this.password = password;
+        this.addRoles(userRoles);
+    }
+
+    public void addRoles(Set<Role> roles) {
+        roles.forEach(this::addRole);
+    }
+
+    public void addRole(Role role) {
+        if (
+            userRoles.stream().noneMatch(
+                userRole -> userRole.getRole().equals(role)
+            )
+        ) {
+            final var userRole = new UserRole(this, role);
+            this.userRoles.add(userRole);
+        }
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return userRoles.stream()

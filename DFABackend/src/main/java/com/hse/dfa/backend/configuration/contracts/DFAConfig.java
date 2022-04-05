@@ -2,7 +2,7 @@ package com.hse.dfa.backend.configuration.contracts;
 
 import com.hse.dfa.backend.contracts.DFA;
 import com.hse.dfa.backend.properties.contracts.DFAProperties;
-import com.hse.dfa.backend.properties.owner.OwnerProperties;
+import com.hse.dfa.backend.properties.contracts.OwnerProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
