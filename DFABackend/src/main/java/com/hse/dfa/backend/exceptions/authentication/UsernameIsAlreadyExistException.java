@@ -1,6 +1,6 @@
 package com.hse.dfa.backend.exceptions.authentication;
 
-public class UsernameIsAlreadyExistException extends AuthenticationException{
+public class UsernameIsAlreadyExistException extends CustomAuthenticationException {
     public UsernameIsAlreadyExistException(String message) {
         super(message);
     }

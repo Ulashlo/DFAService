@@ -1,13 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import storeFactory from '@src/redux/storeFactory';
+import storeFactory from './redux/storeFactory';
+import { CustomRouter } from './CustomRouter';
 
 const store = storeFactory();
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store} />
+    <Provider store={store}>
+      <CustomRouter />
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root'),
 );

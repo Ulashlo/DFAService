@@ -1,5 +1,7 @@
 package com.hse.dfa.backend.security;
 
+import com.hse.dfa.backend.exceptions.authentication.TokenExpiredException;
+import com.hse.dfa.backend.exceptions.authentication.TokenParsingException;
 import com.hse.dfa.backend.properties.sequrity.JwtProperties;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +43,13 @@ public class JwtTokenProvider {
     }
 
     public String getUsername(String token) {
-        return Jwts.parser().setSigningKey(jwtProperties.getSecret()).parseClaimsJws(token).getBody().getSubject();
+        try {
+            return Jwts.parser().setSigningKey(jwtProperties.getSecret()).parseClaimsJws(token).getBody().getSubject();
+        } catch (ExpiredJwtException ex) {
+            throw new TokenExpiredException("Token is expired", ex);
+        } catch (JwtException ex) {
+            throw new TokenParsingException("Invalid jwt token", ex);
+        }
     }
 
     public String resolveToken(HttpServletRequest req) {

@@ -1,0 +1,10 @@
+.openapi-generator-ignore
+apis/AuthControllerApi.ts
+apis/TestApi.ts
+apis/index.ts
+index.ts
+models/ApiError.ts
+models/TokenResponseDTO.ts
+models/UserInfoForCreateDTO.ts
+models/index.ts
+runtime.ts
