@@ -2,6 +2,7 @@ import { useRegistrationForm } from '@src/components/auth/hook';
 import { Button, Col, Form, Input, Row } from 'antd';
 import React from 'react';
 import { UserInfoForCreateDTO } from '@src/generated/backend';
+import { PASSWORD_MAX_SIZE, PASSWORD_MIN_SIZE, USERNAME_MAX_SIZE, USERNAME_MIN_SIZE } from '@src/utils/constraints';
 
 export interface RegisterFormProps {
   goToLogin: () => void;
@@ -9,6 +10,14 @@ export interface RegisterFormProps {
 
 function getRequiredRule(message: string): { required: boolean; message: string } {
   return { required: true, message };
+}
+
+function getMinLengthRule(message: string, min: number): { message: string; min: number } {
+  return { message, min };
+}
+
+function getMaxLengthRule(message: string, max: number): { message: string; max: number } {
+  return { message, max };
 }
 
 const formItemLayout = {
@@ -43,10 +52,26 @@ export function RegistrationForm({ goToLogin }: RegisterFormProps) {
       size="large"
       onFinish={(userInfoForCreate: UserInfoForCreateDTO) => registration(userInfoForCreate)}
     >
-      <Form.Item name="username" label="Имя пользователя" rules={[getRequiredRule('Nickname не может быть пустым!')]}>
+      <Form.Item
+        name="username"
+        label="Имя пользователя"
+        rules={[
+          getRequiredRule('Имя пользователя не может быть пустым!'),
+          getMinLengthRule(`Ник должен иметь ${USERNAME_MIN_SIZE} или более символов!`, USERNAME_MIN_SIZE),
+          getMaxLengthRule(`Ник должен иметь ${USERNAME_MAX_SIZE} или менее символов!`, USERNAME_MAX_SIZE),
+        ]}
+      >
         <Input />
       </Form.Item>
-      <Form.Item name="password" label="Пароль" rules={[getRequiredRule('Пароль не может быть пустым!')]}>
+      <Form.Item
+        name="password"
+        label="Пароль"
+        rules={[
+          getRequiredRule('Пароль не может быть пустым!'),
+          getMinLengthRule(`Пароль должен иметь ${PASSWORD_MIN_SIZE} иди более символов!`, PASSWORD_MIN_SIZE),
+          getMaxLengthRule(`Пароль должен иметь ${PASSWORD_MAX_SIZE} или менее символов!`, PASSWORD_MAX_SIZE),
+        ]}
+      >
         <Input.Password />
       </Form.Item>
       <Form.Item
@@ -60,7 +85,7 @@ export function RegistrationForm({ goToLogin }: RegisterFormProps) {
               if (!value || getFieldValue('password') === value) {
                 return Promise.resolve();
               }
-              return Promise.reject(new Error('The two passwords that you entered do not match!'));
+              return Promise.reject(new Error('Пароли не совпадают!'));
             },
           }),
         ]}

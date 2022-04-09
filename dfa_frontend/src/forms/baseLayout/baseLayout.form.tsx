@@ -1,4 +1,4 @@
-import { Col, ConfigProvider, Layout, Menu, Row, Space } from 'antd';
+import { Col, ConfigProvider, Layout, Menu, Row, Space, Spin } from 'antd';
 import React, { PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
@@ -11,6 +11,7 @@ import { useApiErrorInfo } from '@src/redux/hooks/apiError';
 import NotificationService from '@src/services/NotificationService';
 import { clearApiErrorInfo } from '@src/redux/reducers/apiError';
 import 'antd/dist/antd.less';
+import { useSpinner } from '@src/redux/hooks/spinner';
 
 const { Header, Content } = Layout;
 
@@ -22,6 +23,7 @@ export function BaseLayoutForm({ children }: PropsWithChildren<{}>) {
   const apiErrorInfo = useApiErrorInfo();
   const { pathname } = useLocation();
   const dispatch = useAppDispatch();
+  const spinner = useSpinner();
 
   const selectedMenuItem = useMemo((): Omit<PagePanel, 'uri'> => {
     const selectedPagePanel = pagePanels
@@ -69,7 +71,17 @@ export function BaseLayoutForm({ children }: PropsWithChildren<{}>) {
           </Header>
         )}
         <Content>
-          <Row style={{ height: '100%', padding: '15px', width: '100%' }} align="middle">
+          {spinner.shown && (
+            <Row style={{ height: '100%' }} justify="center" align="middle">
+              <Col>
+                <Spin size="large" tip={spinner.message ?? 'Пожалуйста, подождите'} />
+              </Col>
+            </Row>
+          )}
+          <Row
+            style={spinner.shown ? { display: 'none' } : { height: '100%', padding: '15px', width: '100%' }}
+            align="middle"
+          >
             <Col span={24}>{children}</Col>
           </Row>
         </Content>

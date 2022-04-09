@@ -1,12 +1,7 @@
-import { useAppDispatch } from '@src/redux/hooks/useAppDispatch.hook';
-import { hideSpinner, showSpinner } from '@src/redux/reducers/spinner';
+import { RootStateType } from '@src/redux/storeFactory';
+import { useSelector } from 'react-redux';
+import { SpinnerState } from '@src/redux/reducers/spinner';
 
-export async function useSpinner<T>(asyncFunc: () => Promise<T>, info?: string): Promise<T> {
-  const dispatch = useAppDispatch();
-  dispatch(showSpinner(info));
-  try {
-    return await asyncFunc();
-  } finally {
-    dispatch(hideSpinner());
-  }
-}
+const selector = (state: RootStateType) => state.spinner;
+
+export const useSpinner = (): SpinnerState => useSelector(selector);

@@ -4,6 +4,7 @@ import { useCallback } from 'react';
 import { setAuthInfo } from '@src/redux/reducers/auth';
 import { UserInfoForCreateDTO } from '@src/generated/backend';
 import { usePreviousPath } from '@src/components/auth/hook/usePreviousPath.hook';
+import { doWithSpinner } from '@src/redux/reducers/spinner';
 
 export interface UseRegistrationForm {
   registration: (userInfoForCreate: UserInfoForCreateDTO) => void;
@@ -17,7 +18,9 @@ export const useRegistrationForm = (): UseRegistrationForm => {
   const registration = useCallback(
     async (userInfoForCreate: UserInfoForCreateDTO) => {
       try {
-        const authInfo = await authControllerApi.signUp({ userInfoForCreateDTO: userInfoForCreate });
+        const authInfo = await dispatch(
+          doWithSpinner(() => authControllerApi.signUp({ userInfoForCreateDTO: userInfoForCreate })),
+        );
         dispatch(setAuthInfo(authInfo));
         goToPreviousPath();
       } catch (error: any) {

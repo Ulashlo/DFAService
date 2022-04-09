@@ -1,6 +1,7 @@
 import { useLoginForm } from '@src/components/auth/hook';
 import { Button, Col, Form, Input, Row } from 'antd';
 import React from 'react';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
 
 export interface LoginFormProps {
   goToRegister: () => void;
@@ -20,10 +21,10 @@ export function LoginForm({ goToRegister }: LoginFormProps) {
       onFinish={({ nickname, password }: { nickname: string; password: string }) => authenticate(nickname, password)}
     >
       <Form.Item name="nickname" rules={getRequiredRule('Логин не может быть пустым!')}>
-        <Input placeholder="Логин" />
+        <Input placeholder="Логин" prefix={<UserOutlined />} />
       </Form.Item>
       <Form.Item name="password" rules={getRequiredRule('Пароль не может быть пустым!')}>
-        <Input placeholder="Пароль" />
+        <Input.Password placeholder="Пароль" prefix={<LockOutlined />} />
       </Form.Item>
       <Form.Item name="submit">
         <Row>
