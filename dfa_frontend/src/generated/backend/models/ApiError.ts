@@ -21,10 +21,10 @@ import { exists, mapValues } from '../runtime';
 export interface ApiError {
     /**
      * Error time
-     * @type {string}
+     * @type {Date}
      * @memberof ApiError
      */
-    errorDateTime: string;
+    errorDateTime: Date;
     /**
      * 
      * @type {number}
@@ -49,7 +49,7 @@ export function ApiErrorFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     }
     return {
         
-        'errorDateTime': json['errorDateTime'],
+        'errorDateTime': (new Date(json['errorDateTime'])),
         'status': json['status'],
         'message': json['message'],
     };
@@ -64,7 +64,7 @@ export function ApiErrorToJSON(value?: ApiError | null): any {
     }
     return {
         
-        'errorDateTime': value.errorDateTime,
+        'errorDateTime': (value.errorDateTime.toISOString()),
         'status': value.status,
         'message': value.message,
     };

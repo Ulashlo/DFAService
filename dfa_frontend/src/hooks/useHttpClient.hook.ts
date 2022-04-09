@@ -12,6 +12,7 @@ import { Dispatch } from 'redux';
 import { NOT_ACCEPTABLE, UNAUTHORIZED } from '@src/utils/httpCodes';
 import { clearAuthInfo } from '@src/redux/reducers/auth';
 import { useMemo } from 'react';
+import { setApiErrorInfo } from '@src/redux/reducers/apiError';
 
 export interface HttpClient {
   authControllerApi: AuthControllerApi;
@@ -26,7 +27,6 @@ export const useHttpClient = (): Readonly<HttpClient> => {
   );
 };
 
-// TODO Разобраться с ошибками сервера и добавить ui для ошибок
 function createApiConfiguration(dispatch: Dispatch<any>, token?: string): Configuration {
   return new Configuration({
     basePath: window.document.location.origin + process.env.PUBLIC_URL,
@@ -46,11 +46,19 @@ function createApiConfiguration(dispatch: Dispatch<any>, token?: string): Config
           if ([UNAUTHORIZED, NOT_ACCEPTABLE].includes(context.response.status)) {
             dispatch(clearAuthInfo());
           }
-          context.response.json().then<ApiError | undefined>(() => ({
-            errorDateTime: new Date().toLocaleString(),
-            status: 500,
-            message: 'Невозможно распарсить ошибку с бэкенд. Обратитесь к администратору',
-          }));
+          context.response
+            .json()
+            .then<ApiError>((error: ApiError) => {
+              if (error) {
+                return error;
+              }
+              return {
+                errorDateTime: new Date(),
+                status: 500,
+                message: 'Невозможно распарсить ошибку с бэкенд. Обратитесь к администратору',
+              };
+            })
+            .then((error: ApiError) => dispatch(setApiErrorInfo({ info: error, shown: true })));
           return Promise.reject();
         },
       },

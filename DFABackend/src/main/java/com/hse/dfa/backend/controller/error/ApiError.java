@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
 @Schema(title = "ApiError", description = "Description of error, which was happened on server.")
 public class ApiError {
     @NotNull
-    @Schema(implementation = String.class, title = "ErrorTime", description = "Error time")
+    @Schema(title = "ErrorTime", description = "Error time", format = "date")
     private OffsetDateTime errorDateTime;
     @NotNull
     private int status;

@@ -1,9 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Redirect, Route, RouteProps, useHistory, Switch } from 'react-router-dom';
+import { AuthForm } from '@src/forms/auth';
+import { useAuthInfo } from '@src/redux/hooks/auth';
 import { BaseLayoutForm } from './forms/baseLayout';
 import { NotFound } from './forms/notFound/notFound.form';
-import { LoginForm } from './forms/login';
-import { useAuthInfo } from './redux/hooks/auth/useAuthInfo.hook';
 
 export interface PathParam {
   name: string;
@@ -19,15 +19,15 @@ export interface PageInfo {
   description: string;
 }
 
-export type PageName = 'login';
+export type PageName = 'auth';
 
 export const pages: Record<PageName, Readonly<PageInfo>> = {
-  login: {
+  auth: {
     id: 'auth',
     uri: '/auth',
     params: [],
     requiresAuth: false,
-    component: LoginForm,
+    component: AuthForm,
     description: 'Авторизация',
   },
 };
@@ -56,7 +56,7 @@ export function CustomRouter() {
     <BrowserRouter>
       <BaseLayoutForm>
         <Switch>
-          <Route exact path={pages.login.uri} component={LoginForm} />
+          <Route exact path={pages.auth.uri} component={AuthForm} />
           {Object.entries(pages).map(([page, pageInfo]) => {
             if (pageInfo.requiresAuth) {
               return (
@@ -83,7 +83,7 @@ function PrivateRoute<T extends RouteProps>(props: T) {
   const authInfo = useAuthInfo();
   const history = useHistory();
   if (!authInfo) {
-    return <Redirect to={{ pathname: pages.login.uri, state: { from: history.location.pathname } }} />;
+    return <Redirect to={{ pathname: pages.auth.uri, state: { from: history.location.pathname } }} />;
   }
   return <Route {...props} />;
 }
