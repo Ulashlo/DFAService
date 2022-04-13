@@ -1,5 +1,5 @@
-const DFA = artifacts.require("DFA");
+const Exchanger = artifacts.require("Exchanger");
 
 module.exports = function(deployer) {
-    deployer.deploy(DFA);
+    deployer.deploy(Exchanger);
 };
