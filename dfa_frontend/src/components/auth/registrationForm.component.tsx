@@ -68,7 +68,7 @@ export function RegistrationForm({ goToLogin }: RegisterFormProps) {
         label="Пароль"
         rules={[
           getRequiredRule('Пароль не может быть пустым!'),
-          getMinLengthRule(`Пароль должен иметь ${PASSWORD_MIN_SIZE} иди более символов!`, PASSWORD_MIN_SIZE),
+          getMinLengthRule(`Пароль должен иметь ${PASSWORD_MIN_SIZE} или более символов!`, PASSWORD_MIN_SIZE),
           getMaxLengthRule(`Пароль должен иметь ${PASSWORD_MAX_SIZE} или менее символов!`, PASSWORD_MAX_SIZE),
         ]}
       >
