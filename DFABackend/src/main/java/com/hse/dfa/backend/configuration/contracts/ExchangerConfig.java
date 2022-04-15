@@ -1,7 +1,7 @@
 package com.hse.dfa.backend.configuration.contracts;
 
-import com.hse.dfa.backend.contracts.DFA;
-import com.hse.dfa.backend.properties.contracts.DFAProperties;
+import com.hse.dfa.backend.contracts.Exchanger;
+import com.hse.dfa.backend.properties.contracts.ExchangerProperties;
 import com.hse.dfa.backend.properties.contracts.OwnerProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -12,16 +12,16 @@ import org.web3j.tx.gas.ContractGasProvider;
 
 @Configuration
 @RequiredArgsConstructor
-public class DFAConfig {
+public class ExchangerConfig {
     private final Web3j web3j;
     private final ContractGasProvider gasProvider;
-    private final DFAProperties dfa;
+    private final ExchangerProperties exchanger;
     private final OwnerProperties owner;
 
     @Bean
-    public DFA dfa() {
-        return DFA.load(
-            dfa.getAddress(),
+    public Exchanger exchanger() {
+        return Exchanger.load(
+            exchanger.getAddress(),
             web3j,
             Credentials.create(owner.getKey()),
             gasProvider

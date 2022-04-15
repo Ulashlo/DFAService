@@ -1,7 +1,7 @@
 package com.hse.dfa.backend.service.authentication;
 
 import com.hse.dfa.backend.controller.dto.authentication.TokenResponse;
-import com.hse.dfa.backend.controller.dto.authentication.user_info.UserInfoForCreateDTO;
+import com.hse.dfa.backend.controller.dto.user_info.UserInfoForCreateDTO;
 
 /**
  * Service that provide authentication utilities

@@ -1,7 +1,7 @@
 package com.hse.dfa.backend.service.authentication;
 
 import com.hse.dfa.backend.controller.dto.authentication.TokenResponse;
-import com.hse.dfa.backend.controller.dto.authentication.user_info.UserInfoForCreateDTO;
+import com.hse.dfa.backend.controller.dto.user_info.UserInfoForCreateDTO;
 import com.hse.dfa.backend.exceptions.authentication.UsernameIsAlreadyExistException;
 import com.hse.dfa.backend.model.user_info.User;
 import com.hse.dfa.backend.repository.user_info.RoleRepository;
@@ -40,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
                 new UsernamePasswordAuthenticationToken(username, password)
             );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserDetails user = (UserDetails) authentication.getPrincipal();
+        final var user = (UserDetails) authentication.getPrincipal();
         List<String> roles = user.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
             .toList();

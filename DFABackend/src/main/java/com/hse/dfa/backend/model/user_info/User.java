@@ -10,31 +10,39 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.IDENTITY;
 import static org.hibernate.annotations.FetchMode.SUBSELECT;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 @Entity
 @Table(name = "user", schema ="user_info")
 public class User implements UserDetails {
     @Id
+    @Getter
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id")
     private long id;
 
+    @Getter
     @Column(name = "username", unique = true)
     private String username;
 
+    @Getter
     @Column(name = "password")
     private String password;
 
-    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = ALL)
+    @Column(name = "address")
+    private String address;
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = ALL, fetch = EAGER)
     @Fetch(SUBSELECT)
     private Set<UserRole> userRoles = new HashSet<>();
 
@@ -42,6 +50,10 @@ public class User implements UserDetails {
         this.username = username;
         this.password = password;
         this.addRoles(userRoles);
+    }
+
+    public Optional<String> getAddress() {
+        return ofNullable(address);
     }
 
     public void addRoles(Set<Role> roles) {

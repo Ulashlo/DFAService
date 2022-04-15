@@ -18,9 +18,9 @@ web3j:
     price: '20000000000'
     limit: '6721975'
 contracts:
-  dfa:
-    address: '0x8c1B60A0A11f98a10C4e26fCcc1585DEdE36f5B4'
+  exchanger:
+    address: '0x11324f162D63168Be8D07EAc83D2196B28C949e1'
   owner:
-    address: '0xb30e058b0460dF36942e8D0B7FE832176334020F'
-    key: 'd14fac738b2f389bcb7f2ed9ccab9bd8e8ef67849a36dbbe4ac2506c8870d36d'
+    address: '0xc8Fb94541CfeFd65858c6B0124Da2528A1C480C1'
+    key: '29e95eab1e7eaa58a05d54f093753593c2ccdd76e6035943b14aef1834408f31'
 

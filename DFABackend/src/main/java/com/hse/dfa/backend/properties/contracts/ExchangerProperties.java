@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "contracts.dfa")
-public class DFAProperties {
+@ConfigurationProperties(prefix = "contracts.exchanger")
+public class ExchangerProperties {
     private String address;
 }

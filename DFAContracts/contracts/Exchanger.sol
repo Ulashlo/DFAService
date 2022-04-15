@@ -31,9 +31,12 @@ contract Exchanger {
         address dfaToGive,
         uint amountToGive
     ) external {
-        ExchangeRequest[] storage reqsToExchange = requests[dfaToGive][dfaToGet];
+        ExchangeRequest[] storage reqsToExchange = requests[dfaToGet][dfaToGive];
         for (uint i = 0; i < reqsToExchange.length; i++) {
             ExchangeRequest storage request = reqsToExchange[i];
+            if (request.amountToGet == 0 || request.amountToGive == 0) {
+                continue;
+            }
             if (request.amountToGive * amountToGive == request.amountToGet * amountToGet) {
                 if (amountToGive <= request.amountToGet) {
                     exchange(
@@ -50,11 +53,21 @@ contract Exchanger {
                     );
                     amountToGet -= request.amountToGet;
                     amountToGive -= request.amountToGive;
-                    delete requests[dfaToGive][dfaToGet][i];
+                    request.amountToGet = 0;
+                    request.amountToGive = 0;
                 }
             }
         }
-        ExchangeRequest[] storage reqsToSave = requests[dfaToGet][dfaToGive];
+        ExchangeRequest[] storage reqsToSave = requests[dfaToGive][dfaToGet];
+        for (uint i = 0; i < reqsToSave.length; i++) {
+            ExchangeRequest storage request = reqsToSave[i];
+            if (request.user == user &&
+            request.amountToGive == 0 && request.amountToGet == 0) {
+                request.amountToGive += amountToGive;
+                request.amountToGet += amountToGet;
+                return;
+            }
+        }
         for (uint i = 0; i < reqsToSave.length; i++) {
             ExchangeRequest storage request = reqsToSave[i];
             if (request.user == user &&
@@ -77,13 +90,5 @@ contract Exchanger {
         DFA dfaSecond = DFA(second.dfa);
         dfaFirst.transferForExchange(first.user, second.user, first.amount);
         dfaSecond.transferForExchange(second.user, first.user, second.amount);
-    }
-
-    function min(uint a, uint b) internal pure returns(uint) {
-        if (a < b) {
-            return a;
-        } else {
-            return b;
-        }
     }
 }

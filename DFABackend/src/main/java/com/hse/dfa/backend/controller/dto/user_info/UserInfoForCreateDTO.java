@@ -1,4 +1,4 @@
-package com.hse.dfa.backend.controller.dto.authentication.user_info;
+package com.hse.dfa.backend.controller.dto.user_info;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

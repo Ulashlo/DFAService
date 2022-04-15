@@ -3,7 +3,8 @@ create schema if not exists user_info;
 create table if not exists user_info.user (
     id       bigserial primary key,
     username text not null unique,
-    password text not null
+    password text not null,
+    address  text
 );
 
 create table if not exists user_info.role
