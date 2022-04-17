@@ -2,6 +2,10 @@ import React from 'react';
 import { BrowserRouter, Redirect, Route, RouteProps, useHistory, Switch } from 'react-router-dom';
 import { AuthForm } from '@src/forms/auth';
 import { useAuthInfo } from '@src/redux/hooks/auth';
+import { DfaForm } from '@src/forms/dfa';
+import { RequestForm } from '@src/forms/request';
+import { AboutMeForm } from '@src/forms/aboutMe';
+import { BalanceForm } from '@src/forms/balance/balance.form';
 import { BaseLayoutForm } from './forms/baseLayout';
 import { NotFound } from './forms/notFound/notFound.form';
 
@@ -19,7 +23,7 @@ export interface PageInfo {
   description: string;
 }
 
-export type PageName = 'auth';
+export type PageName = 'auth' | 'dfa' | 'request' | 'aboutMe' | 'balance';
 
 export const pages: Record<PageName, Readonly<PageInfo>> = {
   auth: {
@@ -29,6 +33,38 @@ export const pages: Record<PageName, Readonly<PageInfo>> = {
     requiresAuth: false,
     component: AuthForm,
     description: 'Авторизация',
+  },
+  dfa: {
+    id: 'dfa',
+    uri: '/dfa',
+    params: [{ name: 'dfaFormType', optional: true }],
+    requiresAuth: true,
+    component: DfaForm,
+    description: 'ЦФА',
+  },
+  request: {
+    id: 'request',
+    uri: '/request',
+    params: [{ name: 'requestFormType', optional: true }],
+    requiresAuth: true,
+    component: RequestForm,
+    description: 'Запросы на обмен ЦФА',
+  },
+  aboutMe: {
+    id: 'aboutMe',
+    uri: '/aboutMe',
+    params: [],
+    requiresAuth: true,
+    component: AboutMeForm,
+    description: 'Личный кабинет',
+  },
+  balance: {
+    id: 'balance',
+    uri: '/balance',
+    params: [],
+    requiresAuth: true,
+    component: BalanceForm,
+    description: 'Баланс',
   },
 };
 
@@ -46,7 +82,12 @@ export interface ParentPagePanel {
 
 export const isParentPagePanel = (o: PagePanel | ParentPagePanel): o is ParentPagePanel => 'children' in o;
 
-export const pagePanels: ReadonlyArray<PagePanel | ParentPagePanel> = [];
+export const pagePanels: ReadonlyArray<PagePanel | ParentPagePanel> = [
+  pages.dfa,
+  pages.request,
+  pages.balance,
+  pages.aboutMe,
+];
 
 const getPath = (uri: string, params: PathParam[]) =>
   `${uri}${params.map((p) => `/:${p.name}${p.optional ? '?' : ''}`).join('')}`;

@@ -19,8 +19,8 @@ web3j:
     limit: '6721975'
 contracts:
   exchanger:
-    address: '0x11324f162D63168Be8D07EAc83D2196B28C949e1'
+    address: '0xae8F718CC3A233f8025979eB5143A55aDc45Adc0'
   owner:
-    address: '0xc8Fb94541CfeFd65858c6B0124Da2528A1C480C1'
-    key: '29e95eab1e7eaa58a05d54f093753593c2ccdd76e6035943b14aef1834408f31'
+    address: '0xe80f903D98191eC9Aa7Cd6081aE566A19ad450cd'
+    key: 'bb672b7ccf16c770c7286da3b4c49bc7ca735a311538abd8aca2eda1a370c38a'
 

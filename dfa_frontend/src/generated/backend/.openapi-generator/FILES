@@ -1,9 +1,12 @@
 .openapi-generator-ignore
 apis/AuthControllerApi.ts
-apis/TestApi.ts
+apis/DfaControllerApi.ts
+apis/ExchangerControllerApi.ts
 apis/index.ts
 index.ts
 models/ApiError.ts
+models/DFAInfoForCreateDTO.ts
+models/ExchangeRequestDTO.ts
 models/TokenResponseDTO.ts
 models/UserInfoForCreateDTO.ts
 models/index.ts

@@ -1,2 +1,3 @@
 export * from './AuthControllerApi';
-export * from './TestApi';
+export * from './DfaControllerApi';
+export * from './ExchangerControllerApi';

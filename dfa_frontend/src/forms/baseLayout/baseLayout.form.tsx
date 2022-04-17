@@ -10,7 +10,7 @@ import { isParentPagePanel, PagePanel, pagePanels, pages, ParentPagePanel } from
 import { useApiErrorInfo } from '@src/redux/hooks/apiError';
 import NotificationService from '@src/services/NotificationService';
 import { clearApiErrorInfo } from '@src/redux/reducers/apiError';
-import 'antd/dist/antd.less';
+import 'antd/dist/antd.css';
 import { useSpinner } from '@src/redux/hooks/spinner';
 
 const { Header, Content } = Layout;
@@ -78,10 +78,7 @@ export function BaseLayoutForm({ children }: PropsWithChildren<{}>) {
               </Col>
             </Row>
           )}
-          <Row
-            style={spinner.shown ? { display: 'none' } : { height: '100%', padding: '15px', width: '100%' }}
-            align="middle"
-          >
+          <Row style={spinner.shown ? { display: 'none' } : { height: '100%', padding: '15px', width: '100%' }}>
             <Col span={24}>{children}</Col>
           </Row>
         </Content>
