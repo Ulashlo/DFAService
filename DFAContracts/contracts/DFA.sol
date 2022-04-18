@@ -5,16 +5,10 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract DFA is ERC20 {
   address public owner;
-  address exchanger;
 
-  constructor(
-    uint initialSupply,
-    address exchanger_address,
-    string memory name,
-    string memory symbol
-  ) ERC20(name, symbol) {
-    _mint(msg.sender, initialSupply);
-    exchanger = exchanger_address;
+  modifier isAddressValid(address addressToCheck) {
+    require(addressToCheck != address(0), "Invalid token address");
+    _;
   }
 
   modifier isOwner() {
@@ -22,17 +16,17 @@ contract DFA is ERC20 {
     _;
   }
 
-  modifier isExchanger() {
-    require(msg.sender == exchanger, "Caller is not exchanger");
-    _;
-  }
-
-  function transferForExchange(
-    address from,
-    address to,
-    uint amount
-  ) external isExchanger {
-    _transfer(from, to, amount);
+  constructor(
+    uint initialSupply,
+    string memory name,
+    string memory symbol,
+    address dfaOwner
+  )
+  ERC20(name, symbol)
+  isAddressValid(dfaOwner)
+  {
+    _mint(dfaOwner, initialSupply);
+    owner = dfaOwner;
   }
 
   function mint(uint amount) external isOwner {

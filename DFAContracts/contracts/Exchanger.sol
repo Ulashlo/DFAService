@@ -2,93 +2,149 @@
 pragma solidity ^0.8.3;
 
 import "./DFA.sol";
+import "./Factory.sol";
 
 contract Exchanger {
-    struct ExchangeInfo {
-        address user;
-        address dfa;
-        uint amount;
-    }
+  struct ExchangerRequestInfo {
+    address user;
+    uint amountToGet;
+    uint amountToGive;
+  }
 
-    struct ExchangeRequest {
-        address user;
-        uint amountToGet;
-        uint amountToGive;
-    }
+  struct InnerExchangerRequestInfo {
+    address user;
+    address dfaToGive;
+    uint amountToGive;
+    uint amountToGet;
+  }
 
-    mapping (address => mapping (address => ExchangeRequest[])) public requests;
+  address public dfaAddress;
+  address public factoryAddress;
+  mapping (address => ExchangerRequestInfo[]) public requests;
 
-    modifier isEnough(ExchangeInfo memory info) {
-        DFA dfa = DFA(info.dfa);
-        require(info.amount <= dfa.balanceOf(info.user), "Does not enough dfa");
-        _;
-    }
+  modifier isAddressValid(address addressToCheck) {
+    require(addressToCheck != address(0), "Invalid address");
+    _;
+  }
 
-    function addExchangeRequest(
-        address user,
-        address dfaToGet,
-        uint amountToGet,
-        address dfaToGive,
-        uint amountToGive
-    ) external {
-        ExchangeRequest[] storage reqsToExchange = requests[dfaToGet][dfaToGive];
-        for (uint i = 0; i < reqsToExchange.length; i++) {
-            ExchangeRequest storage request = reqsToExchange[i];
-            if (request.amountToGet == 0 || request.amountToGive == 0) {
-                continue;
-            }
-            if (request.amountToGive * amountToGive == request.amountToGet * amountToGet) {
-                if (amountToGive <= request.amountToGet) {
-                    exchange(
-                        ExchangeInfo(user, dfaToGive, amountToGive),
-                        ExchangeInfo(request.user, dfaToGet, amountToGet)
-                    );
-                    request.amountToGet -= amountToGive;
-                    request.amountToGive -= amountToGet;
-                    return;
-                } else {
-                    exchange(
-                        ExchangeInfo(user, dfaToGive, request.amountToGet),
-                        ExchangeInfo(request.user, dfaToGet, request.amountToGive)
-                    );
-                    amountToGet -= request.amountToGet;
-                    amountToGive -= request.amountToGive;
-                    request.amountToGet = 0;
-                    request.amountToGive = 0;
-                }
-            }
-        }
-        ExchangeRequest[] storage reqsToSave = requests[dfaToGive][dfaToGet];
-        for (uint i = 0; i < reqsToSave.length; i++) {
-            ExchangeRequest storage request = reqsToSave[i];
-            if (request.user == user &&
-            request.amountToGive == 0 && request.amountToGet == 0) {
-                request.amountToGive += amountToGive;
-                request.amountToGet += amountToGet;
-                return;
-            }
-        }
-        for (uint i = 0; i < reqsToSave.length; i++) {
-            ExchangeRequest storage request = reqsToSave[i];
-            if (request.user == user &&
-                request.amountToGive * amountToGive == request.amountToGet * amountToGet) {
-                request.amountToGive += amountToGive;
-                request.amountToGet += amountToGet;
-                return;
-            }
-        }
-        reqsToSave.push(ExchangeRequest(user, amountToGet, amountToGive));
-    }
+  modifier isAmountsNotZero(uint amount1, uint amount2) {
+    require(amount1 > 0, "Number is equal to zero");
+    require(amount2 > 0, "Number is equal to zero");
+  _;
+  }
 
-    function exchange(
-        ExchangeInfo memory first,
-        ExchangeInfo memory second
-    ) internal
-    isEnough(first)
-    isEnough(second) {
-        DFA dfaFirst = DFA(first.dfa);
-        DFA dfaSecond = DFA(second.dfa);
-        dfaFirst.transferForExchange(first.user, second.user, first.amount);
-        dfaSecond.transferForExchange(second.user, first.user, second.amount);
+  modifier isAmountCanTransfer(uint amount, address dfa) {
+    require(
+      DFA(dfa).balanceOf(msg.sender) >= amount,
+      "Sender does not have enough dfa"
+    );
+    require(
+      DFA(dfa).allowance(msg.sender, address(this)) >= amount,
+      "Amount of DFA is not allowed"
+    );
+    _;
+  }
+
+  modifier isExchangerValid(address addressToCheck) {
+    require(
+      Factory(factoryAddress).getExchanger(addressToCheck) != address(0),
+      "Exchanger for dfa not found"
+    );
+    _;
+  }
+
+  modifier isSenderIsExchanger(address addressToCheck) {
+    require(
+      Factory(factoryAddress).getExchanger(addressToCheck) == msg.sender,
+      "Sender is not exchanger"
+    );
+    _;
+  }
+
+  constructor(address dfaAddressToLink) isAddressValid(dfaAddressToLink) {
+    dfaAddress = dfaAddressToLink;
+    factoryAddress = msg.sender;
+  }
+
+  function hasCorrectRequest(
+    address dfaToGive,
+    uint amountToGive,
+    uint amountToGet
+  )
+    external
+    view
+    isAmountsNotZero(amountToGive, amountToGet)
+    isAddressValid(dfaToGive)
+    returns (bool)
+  {
+    ExchangerRequestInfo[] memory requestList = requests[dfaToGive];
+    for (uint i = 0; i < requestList.length; i++) {
+      ExchangerRequestInfo memory request = requestList[i];
+      if (request.amountToGet == amountToGive && request.amountToGive == amountToGet) {
+        return true;
+      }
     }
+    return false;
+  }
+
+  function addRequest(
+    address dfaToGet,
+    uint amountToGet,
+    uint amountToGive
+  )
+    external
+    isAmountsNotZero(amountToGive, amountToGet)
+    isAddressValid(dfaToGet)
+    isExchangerValid(dfaToGet)
+    isAmountCanTransfer(amountToGive, dfaAddress)
+  {
+    address exchangerAddress = Factory(factoryAddress).getExchanger(dfaToGet);
+    Exchanger exchanger = Exchanger(exchangerAddress);
+    DFA(dfaAddress).transferFrom(msg.sender, address(this), amountToGive);
+    if (exchanger.hasCorrectRequest(dfaAddress, amountToGive, amountToGet)) {
+      DFA(dfaAddress).approve(exchangerAddress, amountToGive);
+      exchanger.tryToExchange(
+        InnerExchangerRequestInfo(
+          msg.sender,
+          dfaAddress,
+          amountToGive,
+          amountToGet
+        )
+      );
+    } else {
+      requests[dfaToGet].push(
+        ExchangerRequestInfo(
+          msg.sender,
+          amountToGet,
+          amountToGive
+        )
+      );
+    }
+  }
+
+  function tryToExchange(
+    InnerExchangerRequestInfo memory info
+  )
+    external
+    isAmountsNotZero(info.amountToGive, info.amountToGet)
+    isAddressValid(info.dfaToGive)
+    isSenderIsExchanger(info.dfaToGive)
+    isAddressValid(info.user)
+    isAmountCanTransfer(info.amountToGive, info.dfaToGive)
+  {
+    ExchangerRequestInfo[] memory requestList = requests[info.dfaToGive];
+    bool isValidRequestFound = false;
+    for (uint i = 0; i < requestList.length; i++) {
+      ExchangerRequestInfo memory request = requestList[i];
+      if (request.amountToGet == info.amountToGive && request.amountToGive == info.amountToGet) {
+        request.amountToGet = 0;
+        request.amountToGive = 0;
+        DFA(dfaAddress).transfer(info.user, info.amountToGet);
+        DFA(info.dfaToGive).transferFrom(msg.sender, address(this), info.amountToGive);
+        DFA(info.dfaToGive).transfer(request.user, info.amountToGive);
+        isValidRequestFound = true;
+      }
+    }
+    require(isValidRequestFound, "Valid request not found");
+  }
 }
