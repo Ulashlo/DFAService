@@ -1,6 +1,6 @@
 package com.hse.dfa.backend.configuration.contracts;
 
-import com.hse.dfa.backend.contracts.Exchanger;
+import com.hse.dfa.backend.contracts.Exchanger_old;
 import com.hse.dfa.backend.properties.contracts.ExchangerProperties;
 import com.hse.dfa.backend.properties.contracts.OwnerProperties;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +19,8 @@ public class ExchangerConfig {
     private final OwnerProperties owner;
 
     @Bean
-    public Exchanger exchanger() {
-        return Exchanger.load(
+    public Exchanger_old exchanger() {
+        return Exchanger_old.load(
             exchanger.getAddress(),
             web3j,
             Credentials.create(owner.getKey()),

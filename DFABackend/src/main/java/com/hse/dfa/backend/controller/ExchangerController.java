@@ -1,6 +1,6 @@
 package com.hse.dfa.backend.controller;
 
-import com.hse.dfa.backend.contracts.Exchanger;
+import com.hse.dfa.backend.contracts.Exchanger_old;
 import com.hse.dfa.backend.controller.dto.exchanger.ExchangeRequestDTO;
 import com.hse.dfa.backend.service.exchanger.ExchangerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,7 +16,7 @@ import java.math.BigInteger;
 @RequiredArgsConstructor
 public class ExchangerController {
     private final ExchangerService exchangerService;
-    private final Exchanger exchanger;
+    private final Exchanger_old exchanger;
 
     @Operation(summary = "Put exchange request to the exchanger.")
     @PutMapping(value = "/exchange")

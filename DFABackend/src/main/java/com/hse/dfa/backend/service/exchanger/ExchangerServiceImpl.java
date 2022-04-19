@@ -1,6 +1,6 @@
 package com.hse.dfa.backend.service.exchanger;
 
-import com.hse.dfa.backend.contracts.Exchanger;
+import com.hse.dfa.backend.contracts.Exchanger_old;
 import com.hse.dfa.backend.controller.dto.exchanger.ExchangeRequestDTO;
 import com.hse.dfa.backend.exceptions.contract.UserEthereumAddressAbsentException;
 import com.hse.dfa.backend.service.user_info.UserService;
@@ -14,7 +14,7 @@ import static java.lang.String.format;
 @Service
 @RequiredArgsConstructor
 public class ExchangerServiceImpl implements ExchangerService {
-    private final Exchanger exchanger;
+    private final Exchanger_old exchanger;
     private final UserService userService;
 
     @Override

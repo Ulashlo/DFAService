@@ -147,12 +147,12 @@ contract Exchanger {
     require(isValidRequestFound, "Valid request not found");
   }
 
-  function getRequestsByAddress(address dfaAddress)
+  function getRequestsByDfa(address dfa)
     public
     view
-    isAddressValid(dfaAddress)
+    isAddressValid(dfa)
     returns (ExchangerRequestInfo[] memory)
   {
-    return requests[dfaAddress];
+    return requests[dfa];
   }
 }

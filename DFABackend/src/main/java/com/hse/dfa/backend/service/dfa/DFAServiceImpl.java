@@ -1,17 +1,15 @@
 package com.hse.dfa.backend.service.dfa;
 
-import com.hse.dfa.backend.contracts.DFA;
-import com.hse.dfa.backend.contracts.Exchanger;
+import com.hse.dfa.backend.contracts.DFA_old;
+import com.hse.dfa.backend.contracts.Exchanger_old;
 import com.hse.dfa.backend.controller.dto.dfa.DFAInfoForCreateDTO;
 import com.hse.dfa.backend.exceptions.contract.UserEthereumAddressAbsentException;
 import com.hse.dfa.backend.service.user_info.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.tx.ClientTransactionManager;
 import org.web3j.tx.ReadonlyTransactionManager;
-import org.web3j.tx.TransactionManager;
 import org.web3j.tx.gas.ContractGasProvider;
 
 import java.math.BigInteger;
@@ -22,14 +20,14 @@ import static java.lang.String.format;
 @RequiredArgsConstructor
 public class DFAServiceImpl implements DFAService {
     private final Web3j web3j;
-    private final Exchanger exchanger;
+    private final Exchanger_old exchanger;
     private final ContractGasProvider gasProvider;
     private final UserService userService;
 
     @Override
     public String createDFA(DFAInfoForCreateDTO dto) throws Exception {
         final var currentUser = userService.getCurrentUser();
-        final var dfa = DFA.deploy(
+        final var dfa = DFA_old.deploy(
             web3j,
             new ClientTransactionManager(
                 web3j,
@@ -62,7 +60,7 @@ public class DFAServiceImpl implements DFAService {
                 )
             )
         );
-        final var dfa = DFA.load(
+        final var dfa = DFA_old.load(
             dfaAddress,
             web3j,
             new ReadonlyTransactionManager(
