@@ -18,6 +18,12 @@ contract Factory {
 //    address dfaToGive;
 //    uint amountToGive;
 //  }
+  struct DfaInfo {
+    address dfaAddress;
+    string name;
+    string symbol;
+    uint totalSupply;
+  }
 
   address[] dfaList;
   mapping(address => address) dfaToExchanger;
@@ -50,8 +56,19 @@ contract Factory {
     return dfaToExchanger[dfaAddress];
   }
 
-  function getAllDfa() public view returns (address[] memory) {
-    return dfaList;
+  function getAllDfa() public view returns (DfaInfo[] memory) {
+    DfaInfo[] memory info = new DfaInfo[](dfaList.length);
+    for (uint i = 0; i < dfaList.length; i++) {
+      address dfaAddress = dfaList[i];
+      DFA dfa = DFA(dfaAddress);
+      info[i] = DfaInfo(
+        dfaAddress,
+        dfa.name(),
+        dfa.symbol(),
+        dfa.totalSupply()
+      );
+    }
+    return info;
   }
 
 //  function getAllRequests() public view returns (ExchangerRequestFullInfo[] memory) {

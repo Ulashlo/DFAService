@@ -2,6 +2,8 @@ package com.hse.dfa.backend.service.dfa;
 
 import com.hse.dfa.backend.controller.dto.dfa.DFAInfoForCreateDTO;
 
+import java.util.List;
+
 /**
  * Service that provide interaction with exchanger
  */
@@ -21,4 +23,11 @@ public interface DFAService {
      * @return amount of dfa
      */
     Long getBalance(String dfaAddress) throws Exception;
+
+    /**
+     * Return all existing in system dfa.
+     *
+     * @return dfa addresses for all dfa
+     */
+    List<String> getAllDfa() throws Exception;
 }

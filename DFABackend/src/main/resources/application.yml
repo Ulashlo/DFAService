@@ -18,7 +18,7 @@ web3j:
     price: '20000000000'
     limit: '6721975'
 contracts:
-  exchanger:
+  factory:
     address: '0xae8F718CC3A233f8025979eB5143A55aDc45Adc0'
   owner:
     address: '0xe80f903D98191eC9Aa7Cd6081aE566A19ad450cd'

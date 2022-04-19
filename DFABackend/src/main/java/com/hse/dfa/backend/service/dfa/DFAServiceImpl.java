@@ -1,52 +1,40 @@
 package com.hse.dfa.backend.service.dfa;
 
-import com.hse.dfa.backend.contracts.DFA_old;
-import com.hse.dfa.backend.contracts.Exchanger_old;
 import com.hse.dfa.backend.controller.dto.dfa.DFAInfoForCreateDTO;
 import com.hse.dfa.backend.exceptions.contract.UserEthereumAddressAbsentException;
 import com.hse.dfa.backend.service.user_info.UserService;
+import com.hse.dfa.backend.util.contracts.ContractFabric;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.web3j.protocol.Web3j;
-import org.web3j.tx.ClientTransactionManager;
-import org.web3j.tx.ReadonlyTransactionManager;
-import org.web3j.tx.gas.ContractGasProvider;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import static java.lang.String.format;
 
 @Service
 @RequiredArgsConstructor
 public class DFAServiceImpl implements DFAService {
-    private final Web3j web3j;
-    private final Exchanger_old exchanger;
-    private final ContractGasProvider gasProvider;
     private final UserService userService;
+    private final ContractFabric contractFabric;
 
     @Override
     public String createDFA(DFAInfoForCreateDTO dto) throws Exception {
         final var currentUser = userService.getCurrentUser();
-        final var dfa = DFA_old.deploy(
-            web3j,
-            new ClientTransactionManager(
-                web3j,
-                currentUser.getAddress().orElseThrow(
-                    () -> new UserEthereumAddressAbsentException(
-                        format(
-                            "User with username = %s dont have ethereum address!",
-                            currentUser.getUsername()
-                        )
-                    )
+        final var userAddress = currentUser.getAddress().orElseThrow(
+            () -> new UserEthereumAddressAbsentException(
+                format(
+                    "User with username = %s dont have ethereum address!",
+                    currentUser.getUsername()
                 )
-            ),
-            gasProvider,
+            )
+        );
+        final var factory = contractFabric.factory(userAddress);
+        return factory.createDfa(
             BigInteger.valueOf(dto.getInitialSupply()),
-            exchanger.getContractAddress(),
             dto.getName(),
             dto.getSymbol()
-        ).send();
-        return dfa.getContractAddress();
+        ).send().getContractAddress();
     }
 
     @Override
@@ -60,16 +48,13 @@ public class DFAServiceImpl implements DFAService {
                 )
             )
         );
-        final var dfa = DFA_old.load(
-            dfaAddress,
-            web3j,
-            new ReadonlyTransactionManager(
-                web3j,
-                userAddress
-            ),
-            gasProvider
-        );
-        return dfa.balanceOf(userAddress).send()
-            .longValue();
+        final var dfa = contractFabric.dfa(dfaAddress);
+        return dfa.balanceOf(userAddress).send().longValue();
+    }
+
+    @Override
+    public List<String> getAllDfa() throws Exception {
+        final var factory = contractFabric.factory();
+        return factory.getAllDfa().send();
     }
 }
