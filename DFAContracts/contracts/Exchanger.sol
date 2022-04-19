@@ -66,7 +66,7 @@ contract Exchanger {
     factoryAddress = msg.sender;
   }
 
-  function hasCorrectRequest(
+  function getCorrectRequestUser(
     address dfaToGive,
     uint amountToGive,
     uint amountToGet
@@ -75,16 +75,16 @@ contract Exchanger {
     view
     isAmountsNotZero(amountToGive, amountToGet)
     isAddressValid(dfaToGive)
-    returns (bool)
+    returns (address)
   {
     ExchangerRequestInfo[] memory requestList = requests[dfaToGive];
     for (uint i = 0; i < requestList.length; i++) {
       ExchangerRequestInfo memory request = requestList[i];
       if (request.amountToGet == amountToGive && request.amountToGive == amountToGet) {
-        return true;
+        return request.user;
       }
     }
-    return false;
+    return address(0);
   }
 
   function addRequest(
@@ -101,8 +101,9 @@ contract Exchanger {
     address exchangerAddress = Factory(factoryAddress).getExchanger(dfaToGet);
     Exchanger exchanger = Exchanger(exchangerAddress);
     DFA(dfaAddress).transferFrom(msg.sender, address(this), amountToGive);
-    if (exchanger.hasCorrectRequest(dfaAddress, amountToGive, amountToGet)) {
-      DFA(dfaAddress).approve(exchangerAddress, amountToGive);
+    address user = exchanger.getCorrectRequestUser(dfaAddress, amountToGive, amountToGet);
+    if (user != address(0)) {
+      DFA(dfaAddress).transfer(user, amountToGive);
       exchanger.tryToExchange(
         InnerExchangerRequestInfo(
           msg.sender,
@@ -130,21 +131,28 @@ contract Exchanger {
     isAddressValid(info.dfaToGive)
     isSenderIsExchanger(info.dfaToGive)
     isAddressValid(info.user)
-    isAmountCanTransfer(info.amountToGive, info.dfaToGive)
   {
-    ExchangerRequestInfo[] memory requestList = requests[info.dfaToGive];
+    ExchangerRequestInfo[] storage requestList = requests[info.dfaToGive];
     bool isValidRequestFound = false;
     for (uint i = 0; i < requestList.length; i++) {
-      ExchangerRequestInfo memory request = requestList[i];
+      ExchangerRequestInfo storage request = requestList[i];
       if (request.amountToGet == info.amountToGive && request.amountToGive == info.amountToGet) {
         request.amountToGet = 0;
         request.amountToGive = 0;
         DFA(dfaAddress).transfer(info.user, info.amountToGet);
-        DFA(info.dfaToGive).transferFrom(msg.sender, address(this), info.amountToGive);
-        DFA(info.dfaToGive).transfer(request.user, info.amountToGive);
         isValidRequestFound = true;
+        break;
       }
     }
     require(isValidRequestFound, "Valid request not found");
+  }
+
+  function getRequestsByAddress(address dfaAddress)
+    public
+    view
+    isAddressValid(dfaAddress)
+    returns (ExchangerRequestInfo[] memory)
+  {
+    return requests[dfaAddress];
   }
 }

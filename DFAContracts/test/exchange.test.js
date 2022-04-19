@@ -71,15 +71,20 @@ contract('Exchange', accounts => {
             secondBalanceSecondDfa =
                 (await secondDfa.balanceOf.call(secondUser))
                     .toNumber();
-            let secondExchangerBalanceFirstDfa =
-                (await firstDfa.balanceOf.call(secondExchangerAddress))
+            let secondExchangerBalanceSecondDfa =
+                (await secondDfa.balanceOf.call(secondExchangerAddress))
                     .toNumber();
             assert.equal(firstBalanceFirstDfa, 800, 'Wrong balance at firstBalanceFirstDfa');
             assert.equal(firstBalanceSecondDfa, 200, 'Wrong balance at firstBalanceSecondDfa');
-            assert.equal(firstExchangerBalanceFirstDfa, 100, 'Wrong balance at firstExchangerBalanceFirstDfa');
             assert.equal(secondBalanceSecondDfa, 1700, 'Wrong balance at secondBalanceSecondDfa');
             assert.equal(secondBalanceFirstDfa, 100, 'Wrong balance at secondBalanceFirstDfa');
-            assert.equal(secondExchangerBalanceFirstDfa, 100, 'Wrong balance at secondExchangerBalanceFirstDfa');
+            assert.equal(firstExchangerBalanceFirstDfa, 100, 'Wrong balance at firstExchangerBalanceFirstDfa');
+            assert.equal(secondExchangerBalanceSecondDfa, 100, 'Wrong balance at secondExchangerBalanceSecondDfa');
+
+            let firstRequests = await firstExchanger.getRequestsByAddress(secondDfaAddress);
+            let secondRequests = await secondExchanger.getRequestsByAddress(firstDfaAddress);
+            console.log(JSON.stringify(firstRequests))
+            console.log(JSON.stringify(secondRequests))
         });
     });
 });
