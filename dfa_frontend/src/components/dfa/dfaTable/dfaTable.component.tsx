@@ -6,9 +6,10 @@ const { Column } = Table;
 
 export interface DfaTableProps {
   dfas: DFAViewDto[];
+  isLoading: boolean;
 }
 
-export const DfaTable = React.memo(({ dfas }: DfaTableProps) => {
+export const DfaTable = React.memo(({ dfas, isLoading }: DfaTableProps) => {
   const dataSource = useMemo(
     () =>
       dfas
@@ -19,7 +20,7 @@ export const DfaTable = React.memo(({ dfas }: DfaTableProps) => {
   return (
     <Row style={{ paddingTop: '20px' }}>
       <Col span={24}>
-        <Table pagination={false} size="large" dataSource={dataSource} tableLayout="fixed">
+        <Table pagination={false} size="large" dataSource={dataSource} tableLayout="fixed" loading={isLoading}>
           <Column width="22%" title="Имя" dataIndex="name" key="name" />
           <Column width="18%" title="Символ" dataIndex="symbol" key="symbol" />
           <Column width="45%" title="Адрес" dataIndex="address" key="address" />

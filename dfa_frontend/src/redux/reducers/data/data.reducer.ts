@@ -1,13 +1,19 @@
 /* eslint no-param-reassign: off */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { DFAViewDto } from '@src/generated/backend';
+import { LocalStorageService } from '@src/services/LocalStorageService';
 
-export interface DataState {
+export interface DataInfo {
   dfas: DFAViewDto[];
+  idDfasLoad: boolean;
 }
 
-const initialState: DataState = {
-  dfas: [],
+export interface DataStateType {
+  dataInfo: DataInfo;
+}
+
+const initialState: DataStateType = {
+  dataInfo: LocalStorageService.dataInfo().get(),
 };
 
 const dataSlice = createSlice({
@@ -15,7 +21,9 @@ const dataSlice = createSlice({
   initialState,
   reducers: {
     setDfas: (state, action: PayloadAction<DFAViewDto[]>) => {
-      state.dfas = action.payload;
+      state.dataInfo.dfas = action.payload;
+      state.dataInfo.idDfasLoad = true;
+      LocalStorageService.dataInfo().set({ ...state.dataInfo, dfas: action.payload, idDfasLoad: true });
     },
   },
 });
