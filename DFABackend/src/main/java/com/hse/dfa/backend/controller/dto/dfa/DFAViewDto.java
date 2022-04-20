@@ -11,11 +11,16 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Schema(title = "Info for create Dfa", description = "Info for creation new dfa.")
-public class DFAInfoForCreateDTO {
+@Schema(title = "Dfa info", description = "Info for presenting dfa.")
+public class DFAViewDto {
     @NotNull
-    @Schema(title = "Initial supply", description = "Initial supply for dfa.")
-    private Integer initialSupply;
+    @NotEmpty
+    @Schema(title = "Address", description = "Dfa address.")
+    private String address;
+    @NotNull
+    @NotEmpty
+    @Schema(title = "Owner", description = "Dfa owner address.")
+    private String owner;
     @NotNull
     @NotEmpty
     @Schema(title = "Name", description = "Dfa name.")
@@ -24,4 +29,7 @@ public class DFAInfoForCreateDTO {
     @NotEmpty
     @Schema(title = "Symbol", description = "Dfa symbol.")
     private String symbol;
+    @NotNull
+    @Schema(title = "Total supply", description = "Initial supply for dfa.")
+    private Long totalSupply;
 }

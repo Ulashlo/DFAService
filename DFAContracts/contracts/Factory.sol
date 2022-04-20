@@ -18,12 +18,12 @@ contract Factory {
 //    address dfaToGive;
 //    uint amountToGive;
 //  }
-  struct DfaInfo {
-    address dfaAddress;
-    string name;
-    string symbol;
-    uint totalSupply;
-  }
+//  struct DfaInfo {
+//    address dfaAddress;
+//    string name;
+//    string symbol;
+//    uint totalSupply;
+//  }
 
   address[] dfaList;
   mapping(address => address) dfaToExchanger;
@@ -37,7 +37,8 @@ contract Factory {
     uint initialSupply,
     string memory name,
     string memory symbol
-  ) external returns (address) {
+  ) external returns (address)
+  {
     address dfaAddress = address(
       new DFA(
         initialSupply,
@@ -47,29 +48,60 @@ contract Factory {
       )
     );
     Exchanger exchanger = new Exchanger(dfaAddress);
-    dfaToExchanger[address(dfaAddress)] = address(exchanger);
+    dfaToExchanger[dfaAddress] = address(exchanger);
     dfaList.push(dfaAddress);
     return dfaAddress;
   }
 
-  function getExchanger(address dfaAddress) public view returns (address) {
+  function getExchanger(address dfaAddress)
+    public
+    view
+    isAddressValid(dfaAddress)
+    returns (address)
+  {
     return dfaToExchanger[dfaAddress];
   }
 
-  function getAllDfa() public view returns (DfaInfo[] memory) {
-    DfaInfo[] memory info = new DfaInfo[](dfaList.length);
+  function getAllDfa() public view
+    returns (
+      address[] memory,
+      address[] memory,
+      string[] memory,
+      string[] memory,
+      uint[] memory
+    )
+  {
+    address[] memory addresses = new address[](dfaList.length);
+    address[] memory owners = new address[](dfaList.length);
+    string[] memory names = new string[](dfaList.length);
+    string[] memory symbols = new string[](dfaList.length);
+    uint[] memory supplies = new uint[](dfaList.length);
     for (uint i = 0; i < dfaList.length; i++) {
       address dfaAddress = dfaList[i];
       DFA dfa = DFA(dfaAddress);
-      info[i] = DfaInfo(
-        dfaAddress,
-        dfa.name(),
-        dfa.symbol(),
-        dfa.totalSupply()
-      );
+      addresses[i] = dfaAddress;
+      owners[i] = dfa.owner();
+      names[i] = dfa.name();
+      symbols[i] = dfa.symbol();
+      supplies[i] = dfa.totalSupply();
     }
-    return info;
+    return (addresses, owners, names, symbols, supplies);
   }
+
+//  function getAllDfaTest() public view returns (DfaInfo[] memory) {
+//    DfaInfo[] memory info = new DfaInfo[](dfaList.length);
+//    for (uint i = 0; i < dfaList.length; i++) {
+//      address dfaAddress = dfaList[i];
+//      DFA dfa = DFA(dfaAddress);
+//      info[i] = DfaInfo(
+//        dfaAddress,
+//        dfa.name(),
+//        dfa.symbol(),
+//        dfa.totalSupply()
+//      );
+//    }
+//    return info;
+//  }
 
 //  function getAllRequests() public view returns (ExchangerRequestFullInfo[] memory) {
 //    ExchangerRequestFullInfo[] requestList = address[](dfaList.length);

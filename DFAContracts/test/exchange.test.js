@@ -16,8 +16,8 @@ contract('Exchange', accounts => {
         await factory.createDfa(1000, 'first', 'f', {from: firstUser});
         await factory.createDfa(2000, 'second', 's', {from: secondUser});
         let dfaList = await factory.getAllDfa();
-        firstDfaAddress = dfaList[0];
-        secondDfaAddress = dfaList[1];
+        firstDfaAddress = dfaList[0][0];
+        secondDfaAddress = dfaList[0][1];
     });
 
     describe('#addRequest', () => {
@@ -81,8 +81,8 @@ contract('Exchange', accounts => {
             assert.equal(firstExchangerBalanceFirstDfa, 100, 'Wrong balance at firstExchangerBalanceFirstDfa');
             assert.equal(secondExchangerBalanceSecondDfa, 100, 'Wrong balance at secondExchangerBalanceSecondDfa');
 
-            let firstRequests = await firstExchanger.getRequestsByAddress(secondDfaAddress);
-            let secondRequests = await secondExchanger.getRequestsByAddress(firstDfaAddress);
+            let firstRequests = await firstExchanger.getRequestsByDfa(secondDfaAddress);
+            let secondRequests = await secondExchanger.getRequestsByDfa(firstDfaAddress);
             console.log(JSON.stringify(firstRequests))
             console.log(JSON.stringify(secondRequests))
         });

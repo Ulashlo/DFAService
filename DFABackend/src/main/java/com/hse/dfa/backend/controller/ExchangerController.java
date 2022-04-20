@@ -23,11 +23,11 @@ public class ExchangerController {
         exchangerService.addExchangeRequest(dto);
     }
 
-    @Operation(summary = "Put exchange request to the exchanger.")
-    @GetMapping(value = "/exchange")
-    public Object test(@RequestParam String dtoToGet,
-                     @RequestParam String dtoToGive,
-                     @RequestParam Long num) throws Exception {
-        return null;
-    }
+//    @Operation(summary = "Put exchange request to the exchanger.")
+//    @GetMapping(value = "/exchange")
+//    public Object test(@RequestParam String dtoToGet,
+//                     @RequestParam String dtoToGive,
+//                     @RequestParam Long num) throws Exception {
+//        return null;
+//    }
 }

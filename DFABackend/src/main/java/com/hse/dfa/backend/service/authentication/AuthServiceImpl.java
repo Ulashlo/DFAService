@@ -14,9 +14,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Key;
+import java.util.Base64;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -29,7 +32,7 @@ import static java.lang.String.format;
 public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
@@ -53,6 +56,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
+    //TODO Шифрование приватного ключа
     public void createNewAccount(UserInfoForCreateDTO dto) {
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw new UsernameIsAlreadyExistException(
@@ -69,6 +73,8 @@ public class AuthServiceImpl implements AuthService {
         final var user = new User(
             dto.getUsername(),
             passwordEncoder.encode(dto.getPassword()),
+            dto.getAddress(),
+            dto.getPrivateKey(),
             Set.of(defaultRole)
         );
         userRepository.saveAndFlush(user);

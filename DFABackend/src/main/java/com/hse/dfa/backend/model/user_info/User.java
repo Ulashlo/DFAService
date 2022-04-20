@@ -42,18 +42,33 @@ public class User implements UserDetails {
     @Column(name = "address")
     private String address;
 
+    @Column(name = "private_key")
+    private String privateKey;
+
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = ALL, fetch = EAGER)
     @Fetch(SUBSELECT)
     private Set<UserRole> userRoles = new HashSet<>();
 
-    public User(String username, String password, Set<Role> userRoles) {
+    public User(
+        String username,
+        String password,
+        String address,
+        String privateKey,
+        Set<Role> userRoles
+    ) {
         this.username = username;
         this.password = password;
+        this.address = address;
+        this.privateKey = privateKey;
         this.addRoles(userRoles);
     }
 
     public Optional<String> getAddress() {
         return ofNullable(address);
+    }
+
+    public Optional<String> getPrivateKey() {
+        return ofNullable(privateKey);
     }
 
     public void addRoles(Set<Role> roles) {

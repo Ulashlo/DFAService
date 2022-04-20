@@ -2,7 +2,8 @@ package com.hse.dfa.backend.controller.error;
 
 import com.hse.dfa.backend.exceptions.authentication.NotAuthenticatedRequestException;
 import com.hse.dfa.backend.exceptions.authentication.UsernameIsAlreadyExistException;
-import com.hse.dfa.backend.exceptions.contract.UserEthereumAddressAbsentException;
+import com.hse.dfa.backend.exceptions.contract.IncorrectEthereumResponseFormatException;
+import com.hse.dfa.backend.exceptions.contract.UserEthereumCredentialException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -17,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 import static com.hse.dfa.backend.controller.error.ApiError.createError;
 
@@ -61,22 +61,31 @@ public class RestExceptionResolver extends ResponseEntityExceptionHandler {
         return innerHandleException(HttpStatus.UNAUTHORIZED, ex.getUserMessage());
     }
 
-    @ExceptionHandler(UserEthereumAddressAbsentException.class)
+    @ExceptionHandler(UserEthereumCredentialException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    protected ResponseEntity<ApiError> handleUserEthereumAddressAbsentException(UserEthereumAddressAbsentException ex, HttpServletRequest request) {
+    protected ResponseEntity<ApiError> handleUserEthereumAddressAbsentException(UserEthereumCredentialException ex, HttpServletRequest request) {
         return innerHandleException(HttpStatus.NOT_FOUND, ex.getUserMessage());
+    }
+
+    @ExceptionHandler(IncorrectEthereumResponseFormatException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ApiError> handleIncorrectEthereumResponseFormatException(IncorrectEthereumResponseFormatException ex, HttpServletRequest request) {
+        return innerHandleException(HttpStatus.BAD_REQUEST, ex.getUserMessage());
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     private ResponseEntity<ApiError> handleThrowable(Exception ex, HttpServletRequest request) {
+        System.out.println(Arrays.stream(ex.getStackTrace())
+            .map(Objects::toString)
+            .reduce("", (s1, s2) -> s1 + '\n' + s2));
         return innerHandleException(
             HttpStatus.INTERNAL_SERVER_ERROR,
-//            ex.getMessage() + '\n' +
-//                Arrays.stream(ex.getStackTrace())
-//                    .map(Objects::toString)
-//                    .reduce("", (s1, s2) -> s1 + '\n' + s2)
-            "Неизвестная ошибка! Пожалуйста, обратитесь к администратору!"
+            ex.getMessage() + '\n' +
+                Arrays.stream(ex.getStackTrace())
+                    .map(Objects::toString)
+                    .reduce("", (s1, s2) -> s1 + '\n' + s2)
+//            "Неизвестная ошибка! Пожалуйста, обратитесь к администратору!"
         );
     }
 

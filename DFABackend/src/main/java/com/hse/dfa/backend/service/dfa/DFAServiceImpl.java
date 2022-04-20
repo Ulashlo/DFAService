@@ -1,16 +1,18 @@
 package com.hse.dfa.backend.service.dfa;
 
 import com.hse.dfa.backend.controller.dto.dfa.DFAInfoForCreateDTO;
-import com.hse.dfa.backend.exceptions.contract.UserEthereumAddressAbsentException;
+import com.hse.dfa.backend.controller.dto.dfa.DFAViewDto;
 import com.hse.dfa.backend.service.user_info.UserService;
 import com.hse.dfa.backend.util.contracts.ContractFabric;
+import com.hse.dfa.backend.util.converters.contract.DFAInfoConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.List;
 
-import static java.lang.String.format;
+import static com.hse.dfa.backend.util.checkers.UserChecker.checkAddress;
+import static com.hse.dfa.backend.util.checkers.UserChecker.checkPrivateKey;
 
 @Service
 @RequiredArgsConstructor
@@ -19,42 +21,30 @@ public class DFAServiceImpl implements DFAService {
     private final ContractFabric contractFabric;
 
     @Override
-    public String createDFA(DFAInfoForCreateDTO dto) throws Exception {
+    public void createDFA(DFAInfoForCreateDTO dto) throws Exception {
         final var currentUser = userService.getCurrentUser();
-        final var userAddress = currentUser.getAddress().orElseThrow(
-            () -> new UserEthereumAddressAbsentException(
-                format(
-                    "User with username = %s dont have ethereum address!",
-                    currentUser.getUsername()
-                )
-            )
-        );
-        final var factory = contractFabric.factory(userAddress);
-        return factory.createDfa(
+        final var privateKey = checkPrivateKey(currentUser);
+        final var factory = contractFabric.loadFactory(privateKey);
+        factory.createDfa(
             BigInteger.valueOf(dto.getInitialSupply()),
             dto.getName(),
             dto.getSymbol()
-        ).send().getContractAddress();
+        ).send();
     }
 
     @Override
     public Long getBalance(String dfaAddress) throws Exception {
         final var user = userService.getCurrentUser();
-        final var userAddress = user.getAddress().orElseThrow(
-            () -> new UserEthereumAddressAbsentException(
-                format(
-                    "User with username = %s dont have ethereum address!",
-                    user.getUsername()
-                )
-            )
-        );
-        final var dfa = contractFabric.dfa(dfaAddress);
+        final var userAddress = checkAddress(user);
+        final var dfa = contractFabric.loadDfa(dfaAddress);
         return dfa.balanceOf(userAddress).send().longValue();
     }
 
     @Override
-    public List<String> getAllDfa() throws Exception {
-        final var factory = contractFabric.factory();
-        return factory.getAllDfa().send();
+    public List<DFAViewDto> getAllDfa() throws Exception {
+        final var factory = contractFabric.loadFactory();
+        return DFAInfoConverter.tupleToDFAViewDto(
+            factory.getAllDfa().send()
+        );
     }
 }

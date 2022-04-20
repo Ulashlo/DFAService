@@ -13,14 +13,14 @@ jwt:
   expiration: 1800000
 web3j:
   server:
-    url: 'http://localhost:7545/'
+    url: 'http://127.0.0.1:7545'
   gas:
     price: '20000000000'
     limit: '6721975'
 contracts:
   factory:
-    address: '0xae8F718CC3A233f8025979eB5143A55aDc45Adc0'
+    address: '0xBe9777c4b013Fcc2Ba355B0eAee48Aab9802F316'
   owner:
-    address: '0xe80f903D98191eC9Aa7Cd6081aE566A19ad450cd'
-    key: 'bb672b7ccf16c770c7286da3b4c49bc7ca735a311538abd8aca2eda1a370c38a'
+    address: '0x8dEF63A0be76daaE5b818F6C67BB62C9b02D2E19'
+    key: 'dbc611241ee60b486fd2e41e6811ebcbe701a6cba74cd408512a67bd3d2ca812'
 

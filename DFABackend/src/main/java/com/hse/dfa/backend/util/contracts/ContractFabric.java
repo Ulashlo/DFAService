@@ -19,56 +19,56 @@ public class ContractFabric {
     private final FactoryProperties factory;
     private final OwnerProperties owner;
 
-    public Factory factory() {
+    public Factory loadFactory() {
         return Factory.load(
             factory.getAddress(),
             web3j,
-            Credentials.create(owner.getAddress()),
+            Credentials.create(owner.getKey()),
             gasProvider
         );
     }
 
-    public Factory factory(String userAddress) {
+    public Factory loadFactory(String privateKey) {
         return Factory.load(
             factory.getAddress(),
             web3j,
-            Credentials.create(userAddress),
+            Credentials.create(privateKey),
             gasProvider
         );
     }
 
-    public Exchanger exchanger(String exchangerAddress) {
+    public Exchanger loadExchanger(String exchangerAddress) {
         return Exchanger.load(
             exchangerAddress,
             web3j,
-            Credentials.create(owner.getAddress()),
+            Credentials.create(owner.getKey()),
             gasProvider
         );
     }
 
-    public Exchanger exchanger(String userAddress, String exchangerAddress) {
+    public Exchanger loadExchanger(String privateKey, String exchangerAddress) {
         return Exchanger.load(
             exchangerAddress,
             web3j,
-            Credentials.create(userAddress),
+            Credentials.create(privateKey),
             gasProvider
         );
     }
 
-    public DFA dfa(String dfaAddress) {
+    public DFA loadDfa(String dfaAddress) {
         return DFA.load(
             dfaAddress,
             web3j,
-            Credentials.create(owner.getAddress()),
+            Credentials.create(owner.getKey()),
             gasProvider
         );
     }
 
-    public DFA dfa(String userAddress, String dfaAddress) {
+    public DFA loadDfa(String privateKey, String dfaAddress) {
         return DFA.load(
             dfaAddress,
             web3j,
-            Credentials.create(userAddress),
+            Credentials.create(privateKey),
             gasProvider
         );
     }

@@ -151,8 +151,19 @@ contract Exchanger {
     public
     view
     isAddressValid(dfa)
-    returns (ExchangerRequestInfo[] memory)
+    returns (
+      uint[] memory,
+      uint[] memory
+    )
   {
-    return requests[dfa];
+    ExchangerRequestInfo[] memory reqs = requests[dfa];
+    uint[] memory amountsToGet = new uint[](reqs.length);
+    uint[] memory amountsToGive = new uint[](reqs.length);
+    for (uint i = 0; i < reqs.length; i++) {
+      ExchangerRequestInfo memory info = reqs[i];
+      amountsToGet[i] = info.amountToGet;
+      amountsToGive[i] = info.amountToGive;
+    }
+    return (amountsToGet, amountsToGive);
   }
 }

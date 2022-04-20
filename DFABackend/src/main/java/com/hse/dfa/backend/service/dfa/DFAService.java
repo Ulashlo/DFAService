@@ -1,6 +1,7 @@
 package com.hse.dfa.backend.service.dfa;
 
 import com.hse.dfa.backend.controller.dto.dfa.DFAInfoForCreateDTO;
+import com.hse.dfa.backend.controller.dto.dfa.DFAViewDto;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface DFAService {
      * @param dto info for creation new dfa
      * @return new dfa address
      */
-    String createDFA(DFAInfoForCreateDTO dto) throws Exception;
+    void createDFA(DFAInfoForCreateDTO dto) throws Exception;
 
     /**
      * Return amount of dfa for authenticated user.
@@ -29,5 +30,5 @@ public interface DFAService {
      *
      * @return dfa addresses for all dfa
      */
-    List<String> getAllDfa() throws Exception;
+    List<DFAViewDto> getAllDfa() throws Exception;
 }
