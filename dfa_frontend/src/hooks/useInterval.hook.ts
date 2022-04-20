@@ -12,9 +12,11 @@ export const useInterval = (callback: () => any, interval: number, delay?: numbe
     // eslint-disable-next-line no-undef
     let intervalTimerId: NodeJS.Timer;
     if (!delay) {
+      callback();
       intervalTimerId = setInterval(callback, INTERVAL);
     } else {
       delayTimerId = setTimeout(() => {
+        callback();
         intervalTimerId = setInterval(callback, INTERVAL);
       }, DELAY);
     }

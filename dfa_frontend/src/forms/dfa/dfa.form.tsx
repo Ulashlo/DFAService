@@ -5,6 +5,7 @@ import { pages } from '@src/CustomRouter';
 import { AllDfaForm } from '@src/forms/dfa/allDfa';
 import { MyDfaForm } from '@src/forms/dfa/myDfa';
 import { CreateDfaForm } from '@src/forms/dfa/createDfa';
+import { useAutoUpdateDfas } from '@src/hooks/useAutoUpdateDfas.hook';
 
 const { TabPane } = Tabs;
 
@@ -30,6 +31,8 @@ export function DfaForm() {
     (activeKey: string) => history.push(`${pages.dfa.uri}/${activeKey}`),
     [history],
   );
+
+  useAutoUpdateDfas();
 
   return (
     <Row>

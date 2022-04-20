@@ -1,5 +1,4 @@
 /* eslint no-param-reassign: off */
-import { LocalStorageService } from '@src/services/LocalStorageService';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ApiError } from '@src/generated/backend';
 
@@ -13,7 +12,10 @@ export interface ApiErrorStateType {
 }
 
 const initialState: ApiErrorStateType = {
-  apiErrorInfo: LocalStorageService.apiErrorInfo().get(),
+  apiErrorInfo: {
+    info: undefined,
+    shown: false,
+  },
 };
 
 const apiErrorSlice = createSlice({
@@ -22,13 +24,11 @@ const apiErrorSlice = createSlice({
   reducers: {
     setApiErrorInfo: (state, action: PayloadAction<ApiErrorInfo>) => {
       state.apiErrorInfo = action.payload;
-      LocalStorageService.apiErrorInfo().set(action.payload);
     },
     clearApiErrorInfo: (state) => {
       const { apiErrorInfo } = state;
       if (apiErrorInfo) {
         apiErrorInfo.shown = false;
-        LocalStorageService.apiErrorInfo().set(apiErrorInfo);
       }
     },
   },

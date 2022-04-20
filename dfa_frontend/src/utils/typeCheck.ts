@@ -1,9 +1,9 @@
 import { AuthInfo } from '@src/redux/reducers/auth/auth.reducer';
 import { ApiErrorInfo } from '@src/redux/reducers/apiError';
 import { ApiError } from '@src/generated/backend';
-import { DataInfo } from '@src/redux/reducers/data';
+import { DfasInfo } from '@src/redux/reducers/dfas';
 
-export const isDataInfo = (o: any): o is DataInfo => {
+export const isDataInfo = (o: any): o is DfasInfo => {
   return isObject(o) && typeof o.idDfasLoad === 'boolean' && isArrayOfDfas(o.dfas);
 };
 

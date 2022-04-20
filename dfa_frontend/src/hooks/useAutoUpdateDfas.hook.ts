@@ -2,11 +2,11 @@ import { useAppDispatch } from '@src/redux/hooks/useAppDispatch.hook';
 import { useAuthInfo } from '@src/redux/hooks/auth';
 import { useHttpClient } from '@src/hooks/useHttpClient.hook';
 import { useCallback } from 'react';
-import { setDfas } from '@src/redux/reducers/data';
+import { setDfas } from '@src/redux/reducers/dfas';
 import { useInterval } from '@src/hooks/useInterval.hook';
 import { INTERVAL } from '@src/utils/constraints';
 
-export const useAutoUpdateData = () => {
+export const useAutoUpdateDfas = () => {
   const dispatch = useAppDispatch();
   const authInfo = useAuthInfo();
 
