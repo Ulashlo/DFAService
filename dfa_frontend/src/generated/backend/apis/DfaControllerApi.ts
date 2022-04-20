@@ -21,6 +21,9 @@ import {
     DFAInfoForCreateDTO,
     DFAInfoForCreateDTOFromJSON,
     DFAInfoForCreateDTOToJSON,
+    DFAViewDto,
+    DFAViewDtoFromJSON,
+    DFAViewDtoToJSON,
 } from '../models';
 
 export interface CreateDFARequest {
@@ -46,12 +49,26 @@ export interface DfaControllerApiInterface {
      * @throws {RequiredError}
      * @memberof DfaControllerApiInterface
      */
-    createDFARaw(requestParameters: CreateDFARequest): Promise<runtime.ApiResponse<string>>;
+    createDFARaw(requestParameters: CreateDFARequest): Promise<runtime.ApiResponse<void>>;
 
     /**
      * Create new dfa.
      */
-    createDFA(requestParameters: CreateDFARequest): Promise<string>;
+    createDFA(requestParameters: CreateDFARequest): Promise<void>;
+
+    /**
+     * 
+     * @summary Return all existing in system dfa.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DfaControllerApiInterface
+     */
+    getAllDfaRaw(): Promise<runtime.ApiResponse<Array<DFAViewDto>>>;
+
+    /**
+     * Return all existing in system dfa.
+     */
+    getAllDfa(): Promise<Array<DFAViewDto>>;
 
     /**
      * 
@@ -78,7 +95,7 @@ export class DfaControllerApi extends runtime.BaseAPI implements DfaControllerAp
     /**
      * Create new dfa.
      */
-    async createDFARaw(requestParameters: CreateDFARequest): Promise<runtime.ApiResponse<string>> {
+    async createDFARaw(requestParameters: CreateDFARequest): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.dFAInfoForCreateDTO === null || requestParameters.dFAInfoForCreateDTO === undefined) {
             throw new runtime.RequiredError('dFAInfoForCreateDTO','Required parameter requestParameters.dFAInfoForCreateDTO was null or undefined when calling createDFA.');
         }
@@ -105,14 +122,47 @@ export class DfaControllerApi extends runtime.BaseAPI implements DfaControllerAp
             body: DFAInfoForCreateDTOToJSON(requestParameters.dFAInfoForCreateDTO),
         });
 
-        return new runtime.TextApiResponse(response) as any;
+        return new runtime.VoidApiResponse(response);
     }
 
     /**
      * Create new dfa.
      */
-    async createDFA(requestParameters: CreateDFARequest): Promise<string> {
-        const response = await this.createDFARaw(requestParameters);
+    async createDFA(requestParameters: CreateDFARequest): Promise<void> {
+        await this.createDFARaw(requestParameters);
+    }
+
+    /**
+     * Return all existing in system dfa.
+     */
+    async getAllDfaRaw(): Promise<runtime.ApiResponse<Array<DFAViewDto>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = typeof token === 'function' ? token("bearer-jwt", []) : token;
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/safe/dfa`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(DFAViewDtoFromJSON));
+    }
+
+    /**
+     * Return all existing in system dfa.
+     */
+    async getAllDfa(): Promise<Array<DFAViewDto>> {
+        const response = await this.getAllDfaRaw();
         return await response.value();
     }
 
@@ -141,7 +191,7 @@ export class DfaControllerApi extends runtime.BaseAPI implements DfaControllerAp
             }
         }
         const response = await this.request({
-            path: `/safe/dfa`,
+            path: `/safe/dfa/balance`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,

@@ -95,6 +95,9 @@ export function RegistrationForm({ goToLogin }: RegisterFormProps) {
       <Form.Item name="address" label="Адресс ethereum">
         <Input />
       </Form.Item>
+      <Form.Item name="privateKey" label="Приватный ключ ethereum">
+        <Input />
+      </Form.Item>
       <Form.Item {...tailFormItemLayout} name="submit">
         <Row>
           <Col flex="auto">

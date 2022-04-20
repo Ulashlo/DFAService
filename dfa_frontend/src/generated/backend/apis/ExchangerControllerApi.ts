@@ -27,12 +27,6 @@ export interface AddExchangeRequest {
     exchangeRequestDTO: ExchangeRequestDTO;
 }
 
-export interface TestRequest {
-    dtoToGet: string;
-    dtoToGive: string;
-    num: number;
-}
-
 /**
  * ExchangerControllerApi - interface
  * 
@@ -54,23 +48,6 @@ export interface ExchangerControllerApiInterface {
      * Put exchange request to the exchanger.
      */
     addExchange(requestParameters: AddExchangeRequest): Promise<void>;
-
-    /**
-     * 
-     * @summary Put exchange request to the exchanger.
-     * @param {string} dtoToGet 
-     * @param {string} dtoToGive 
-     * @param {number} num 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ExchangerControllerApiInterface
-     */
-    testRaw(requestParameters: TestRequest): Promise<runtime.ApiResponse<object>>;
-
-    /**
-     * Put exchange request to the exchanger.
-     */
-    test(requestParameters: TestRequest): Promise<object>;
 
 }
 
@@ -117,64 +94,6 @@ export class ExchangerControllerApi extends runtime.BaseAPI implements Exchanger
      */
     async addExchange(requestParameters: AddExchangeRequest): Promise<void> {
         await this.addExchangeRaw(requestParameters);
-    }
-
-    /**
-     * Put exchange request to the exchanger.
-     */
-    async testRaw(requestParameters: TestRequest): Promise<runtime.ApiResponse<object>> {
-        if (requestParameters.dtoToGet === null || requestParameters.dtoToGet === undefined) {
-            throw new runtime.RequiredError('dtoToGet','Required parameter requestParameters.dtoToGet was null or undefined when calling test.');
-        }
-
-        if (requestParameters.dtoToGive === null || requestParameters.dtoToGive === undefined) {
-            throw new runtime.RequiredError('dtoToGive','Required parameter requestParameters.dtoToGive was null or undefined when calling test.');
-        }
-
-        if (requestParameters.num === null || requestParameters.num === undefined) {
-            throw new runtime.RequiredError('num','Required parameter requestParameters.num was null or undefined when calling test.');
-        }
-
-        const queryParameters: any = {};
-
-        if (requestParameters.dtoToGet !== undefined) {
-            queryParameters['dtoToGet'] = requestParameters.dtoToGet;
-        }
-
-        if (requestParameters.dtoToGive !== undefined) {
-            queryParameters['dtoToGive'] = requestParameters.dtoToGive;
-        }
-
-        if (requestParameters.num !== undefined) {
-            queryParameters['num'] = requestParameters.num;
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = typeof token === 'function' ? token("bearer-jwt", []) : token;
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        const response = await this.request({
-            path: `/safe/exchange`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        });
-
-        return new runtime.JSONApiResponse<any>(response);
-    }
-
-    /**
-     * Put exchange request to the exchanger.
-     */
-    async test(requestParameters: TestRequest): Promise<object> {
-        const response = await this.testRaw(requestParameters);
-        return await response.value();
     }
 
 }

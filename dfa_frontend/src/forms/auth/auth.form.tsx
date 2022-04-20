@@ -8,12 +8,12 @@ export function AuthForm() {
   return (
     <Row style={{ height: '100%' }} justify="space-around" align="middle">
       {isLogin && (
-        <Col span={4}>
+        <Col span={5}>
           <LoginForm goToRegister={goToRegister} />
         </Col>
       )}
       {!isLogin && (
-        <Col span={7}>
+        <Col span={9}>
           <RegistrationForm goToLogin={goToLogin} />
         </Col>
       )}

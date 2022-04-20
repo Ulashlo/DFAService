@@ -14,48 +14,62 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * Info for creation new dfa.
+ * Info for presenting dfa.
  * @export
- * @interface DFAInfoForCreateDTO
+ * @interface DFAViewDto
  */
-export interface DFAInfoForCreateDTO {
+export interface DFAViewDto {
     /**
-     * Initial supply for dfa.
-     * @type {number}
-     * @memberof DFAInfoForCreateDTO
+     * Dfa address.
+     * @type {string}
+     * @memberof DFAViewDto
      */
-    initialSupply: number;
+    address: string;
+    /**
+     * Dfa owner address.
+     * @type {string}
+     * @memberof DFAViewDto
+     */
+    owner: string;
     /**
      * Dfa name.
      * @type {string}
-     * @memberof DFAInfoForCreateDTO
+     * @memberof DFAViewDto
      */
     name: string;
     /**
      * Dfa symbol.
      * @type {string}
-     * @memberof DFAInfoForCreateDTO
+     * @memberof DFAViewDto
      */
     symbol: string;
+    /**
+     * Initial supply for dfa.
+     * @type {number}
+     * @memberof DFAViewDto
+     */
+    totalSupply: number;
 }
 
-export function DFAInfoForCreateDTOFromJSON(json: any): DFAInfoForCreateDTO {
-    return DFAInfoForCreateDTOFromJSONTyped(json, false);
+export function DFAViewDtoFromJSON(json: any): DFAViewDto {
+    return DFAViewDtoFromJSONTyped(json, false);
 }
 
-export function DFAInfoForCreateDTOFromJSONTyped(json: any, ignoreDiscriminator: boolean): DFAInfoForCreateDTO {
+export function DFAViewDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): DFAViewDto {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'initialSupply': json['initialSupply'],
+        'address': json['address'],
+        'owner': json['owner'],
         'name': json['name'],
         'symbol': json['symbol'],
+        'totalSupply': json['totalSupply'],
     };
 }
 
-export function DFAInfoForCreateDTOToJSON(value?: DFAInfoForCreateDTO | null): any {
+export function DFAViewDtoToJSON(value?: DFAViewDto | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -64,9 +78,11 @@ export function DFAInfoForCreateDTOToJSON(value?: DFAInfoForCreateDTO | null): a
     }
     return {
         
-        'initialSupply': value.initialSupply,
+        'address': value.address,
+        'owner': value.owner,
         'name': value.name,
         'symbol': value.symbol,
+        'totalSupply': value.totalSupply,
     };
 }
 
