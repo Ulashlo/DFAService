@@ -14,6 +14,7 @@ public class TokenResponseConverter {
         return new TokenResponseDTO(
             tokenResponse.getToken(),
             details.getUsername(),
+            details.getAddress().orElse(""),
             details.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList()

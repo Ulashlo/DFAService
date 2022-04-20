@@ -12,14 +12,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Key;
-import java.util.Base64;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -43,7 +39,7 @@ public class AuthServiceImpl implements AuthService {
                 new UsernamePasswordAuthenticationToken(username, password)
             );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        final var user = (UserDetails) authentication.getPrincipal();
+        final var user = (User) authentication.getPrincipal();
         List<String> roles = user.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
             .toList();

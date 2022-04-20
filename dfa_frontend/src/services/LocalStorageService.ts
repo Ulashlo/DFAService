@@ -1,5 +1,5 @@
 import { AuthInfo } from '@src/redux/reducers/auth/auth.reducer';
-import { Try } from '@src/utils/Try';
+import { Try } from '@src/utils/try';
 import { isApiErrorInfo, isAuthInfo } from '@src/utils/typeCheck';
 import { ApiErrorInfo } from '@src/redux/reducers/apiError';
 

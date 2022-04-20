@@ -2,6 +2,8 @@ import {
   ApiError,
   AuthControllerApi,
   Configuration,
+  DfaControllerApi,
+  ExchangerControllerApi,
   FetchParams,
   RequestContext,
   ResponseContext,
@@ -16,6 +18,8 @@ import { setApiErrorInfo } from '@src/redux/reducers/apiError';
 
 export interface HttpClient {
   authControllerApi: AuthControllerApi;
+  dfaControllerApi: DfaControllerApi;
+  exchangerControllerApi: ExchangerControllerApi;
 }
 
 export const useHttpClient = (): Readonly<HttpClient> => {
@@ -69,5 +73,7 @@ function createApiConfiguration(dispatch: Dispatch<any>, token?: string): Config
 function createHttpClient(dispatch: Dispatch, configuration?: Configuration): HttpClient {
   return {
     authControllerApi: new AuthControllerApi(configuration),
+    dfaControllerApi: new DfaControllerApi(configuration),
+    exchangerControllerApi: new ExchangerControllerApi(configuration),
   };
 }

@@ -5,6 +5,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export interface AuthInfo {
   token: string;
   username: string;
+  address?: string;
   roles: string[];
 }
 

@@ -12,6 +12,7 @@ import NotificationService from '@src/services/NotificationService';
 import { clearApiErrorInfo } from '@src/redux/reducers/apiError';
 import 'antd/dist/antd.css';
 import { useSpinner } from '@src/redux/hooks/spinner';
+import { useAutoUpdateData } from '@src/hooks/useAutoUpdateData.hook';
 
 const { Header, Content } = Layout;
 
@@ -48,6 +49,8 @@ export function BaseLayoutForm({ children }: PropsWithChildren<{}>) {
       dispatch(clearApiErrorInfo());
     }
   }, [apiErrorInfo, dispatch]);
+
+  useAutoUpdateData();
 
   const handleLogout = useCallback(() => dispatch(clearAuthInfo()), [dispatch]);
 

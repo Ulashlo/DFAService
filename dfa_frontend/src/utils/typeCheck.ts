@@ -3,7 +3,13 @@ import { ApiErrorInfo } from '@src/redux/reducers/apiError';
 import { ApiError } from '@src/generated/backend';
 
 export const isAuthInfo = (o: any): o is AuthInfo => {
-  return isObject(o) && typeof o.token === 'string' && typeof o.username === 'string' && isArrayOfString(o.roles);
+  return (
+    isObject(o) &&
+    typeof o.token === 'string' &&
+    typeof o.username === 'string' &&
+    typeof o.address === 'string' &&
+    isArrayOfString(o.roles)
+  );
 };
 
 export const isApiErrorValues = (o: any): o is ApiError => {

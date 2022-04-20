@@ -1,9 +1,9 @@
 package com.hse.dfa.backend.controller.dto.authentication;
 
+import com.hse.dfa.backend.model.user_info.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.validation.constraints.NotNull;
 
@@ -14,5 +14,5 @@ public class TokenResponse {
     @NotNull
     private String token;
     @NotNull
-    private UserDetails userDetails;
+    private User userDetails;
 }

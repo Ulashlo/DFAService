@@ -24,6 +24,10 @@ public class TokenResponseDTO {
     @Schema(title = "Username", description = "Username.")
     private String username;
     @NotNull
+    @NotBlank
+    @Schema(title = "Address", description = "Ethereum address.")
+    private String address;
+    @NotNull
     @NotEmpty
     @ArraySchema(schema = @Schema(title = "Role", description = "User's role."))
     private List<String> roles;

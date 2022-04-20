@@ -32,6 +32,12 @@ export interface TokenResponseDTO {
      */
     username: string;
     /**
+     * Ethereum address.
+     * @type {string}
+     * @memberof TokenResponseDTO
+     */
+    address: string;
+    /**
      * 
      * @type {Array<string>}
      * @memberof TokenResponseDTO
@@ -51,6 +57,7 @@ export function TokenResponseDTOFromJSONTyped(json: any, ignoreDiscriminator: bo
         
         'token': json['token'],
         'username': json['username'],
+        'address': json['address'],
         'roles': json['roles'],
     };
 }
@@ -66,6 +73,7 @@ export function TokenResponseDTOToJSON(value?: TokenResponseDTO | null): any {
         
         'token': value.token,
         'username': value.username,
+        'address': value.address,
         'roles': value.roles,
     };
 }
