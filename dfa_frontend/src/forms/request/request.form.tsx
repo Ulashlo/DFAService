@@ -2,6 +2,9 @@ import React, { useCallback } from 'react';
 import { Col, Row, Tabs } from 'antd';
 import { useHistory, useParams } from 'react-router-dom';
 import { pages } from '@src/CustomRouter';
+import { AllRequestsForm } from '@src/forms/request/allRequests/allRequests.form';
+import { MyRequestsForm } from '@src/forms/request/myRequests';
+import { CreateRequestsForm } from '@src/forms/request/createRequests';
 
 const { TabPane } = Tabs;
 
@@ -33,9 +36,15 @@ export function RequestForm() {
     <Row>
       <Col span={24}>
         <Tabs activeKey={requestFormType} onChange={onSelectActiveTabKey}>
-          <TabPane tab="Все запросы на обмен" key={RequestFormType.ALL_REQUEST} />
-          <TabPane tab="Мои запросы на обмен" key={RequestFormType.MINE_REQUEST} />
-          <TabPane tab="Создать запросы на обмен" key={RequestFormType.CREATE_REQUEST} />
+          <TabPane tab="Все запросы на обмен" key={RequestFormType.ALL_REQUEST}>
+            <AllRequestsForm />
+          </TabPane>
+          <TabPane tab="Мои запросы на обмен" key={RequestFormType.MINE_REQUEST}>
+            <MyRequestsForm />
+          </TabPane>
+          <TabPane tab="Создать запросы на обмен" key={RequestFormType.CREATE_REQUEST}>
+            <CreateRequestsForm />
+          </TabPane>
         </Tabs>
       </Col>
     </Row>

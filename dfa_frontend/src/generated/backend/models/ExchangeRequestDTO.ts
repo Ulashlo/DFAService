@@ -30,7 +30,7 @@ export interface ExchangeRequestDTO {
      * @type {number}
      * @memberof ExchangeRequestDTO
      */
-    amountToGet?: number;
+    amountToGet: number;
     /**
      * Dfa, user want to give.
      * @type {string}
@@ -42,7 +42,7 @@ export interface ExchangeRequestDTO {
      * @type {number}
      * @memberof ExchangeRequestDTO
      */
-    amountToGive?: number;
+    amountToGive: number;
 }
 
 export function ExchangeRequestDTOFromJSON(json: any): ExchangeRequestDTO {
@@ -56,9 +56,9 @@ export function ExchangeRequestDTOFromJSONTyped(json: any, ignoreDiscriminator: 
     return {
         
         'dfaToGet': json['dfaToGet'],
-        'amountToGet': !exists(json, 'amountToGet') ? undefined : json['amountToGet'],
+        'amountToGet': json['amountToGet'],
         'dfaToGive': json['dfaToGive'],
-        'amountToGive': !exists(json, 'amountToGive') ? undefined : json['amountToGive'],
+        'amountToGive': json['amountToGive'],
     };
 }
 

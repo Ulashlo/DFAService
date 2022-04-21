@@ -17,10 +17,10 @@ export function BalanceForm() {
   const isBalancesLoading = !useBalancesIsLoad();
   const isLoading = useMemo(() => isDfasLoading || isBalancesLoading, [isDfasLoading, isBalancesLoading]);
   const dataSource = useMemo(() => {
-    const addresses = new Set(balances.map((balance) => balance.address.toLowerCase()));
     return balances
+      .filter((balance) => balance.address.length > 0)
       .map((balance): Balance => {
-        const dfa = dfas.find((d) => addresses.has(d.address.toLowerCase()));
+        const dfa = dfas.find((d) => d.address.toLowerCase() === balance.address.toLowerCase());
         if (dfa) {
           return {
             ...dfa,
@@ -36,7 +36,6 @@ export function BalanceForm() {
           balance: 0,
         };
       })
-      .filter((balance) => balance.address.length > 0)
       .sort((f: Balance, s: Balance) => f.name.localeCompare(s.name));
   }, [balances, dfas]);
   return (
