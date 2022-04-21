@@ -1,7 +1,8 @@
 package com.hse.dfa.backend.controller;
 
+import com.hse.dfa.backend.controller.dto.dfa.DFABalanceDTO;
 import com.hse.dfa.backend.controller.dto.dfa.DFAInfoForCreateDTO;
-import com.hse.dfa.backend.controller.dto.dfa.DFAViewDto;
+import com.hse.dfa.backend.controller.dto.dfa.DFAViewDTO;
 import com.hse.dfa.backend.service.dfa.DFAService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,9 +38,15 @@ public class DFAController {
         return dfaService.getBalance(dfaAddress);
     }
 
+    @Operation(summary = "Return amount of dfa for all existing dfa.")
+    @GetMapping(value = "/balances")
+    public List<DFABalanceDTO> getBalances() throws Exception {
+        return dfaService.getBalances();
+    }
+
     @Operation(summary = "Return all existing in system dfa.")
     @GetMapping
-    public List<DFAViewDto> getAllDfa() throws Exception {
+    public List<DFAViewDTO> getAllDfa() throws Exception {
         return dfaService.getAllDfa();
     }
 }

@@ -1,9 +1,9 @@
 /* eslint no-param-reassign: off */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { DFAViewDto } from '@src/generated/backend';
+import { DFAViewDTO } from '@src/generated/backend';
 
 export interface DfasInfo {
-  dfas: DFAViewDto[];
+  dfas: DFAViewDTO[];
   idDfasLoad: boolean;
 }
 
@@ -19,10 +19,10 @@ const initialState: DfasStateType = {
 };
 
 const dataSlice = createSlice({
-  name: 'data',
+  name: 'dfas',
   initialState,
   reducers: {
-    setDfas: (state, action: PayloadAction<DFAViewDto[]>) => {
+    setDfas: (state, action: PayloadAction<DFAViewDTO[]>) => {
       state.dfasInfo.dfas = action.payload;
       state.dfasInfo.idDfasLoad = true;
     },

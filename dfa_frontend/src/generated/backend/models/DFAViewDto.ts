@@ -16,46 +16,46 @@ import { exists, mapValues } from '../runtime';
 /**
  * Info for presenting dfa.
  * @export
- * @interface DFAViewDto
+ * @interface DFAViewDTO
  */
-export interface DFAViewDto {
+export interface DFAViewDTO {
     /**
      * Dfa address.
      * @type {string}
-     * @memberof DFAViewDto
+     * @memberof DFAViewDTO
      */
     address: string;
     /**
      * Dfa owner address.
      * @type {string}
-     * @memberof DFAViewDto
+     * @memberof DFAViewDTO
      */
     owner: string;
     /**
      * Dfa name.
      * @type {string}
-     * @memberof DFAViewDto
+     * @memberof DFAViewDTO
      */
     name: string;
     /**
      * Dfa symbol.
      * @type {string}
-     * @memberof DFAViewDto
+     * @memberof DFAViewDTO
      */
     symbol: string;
     /**
      * Initial supply for dfa.
      * @type {number}
-     * @memberof DFAViewDto
+     * @memberof DFAViewDTO
      */
     totalSupply: number;
 }
 
-export function DFAViewDtoFromJSON(json: any): DFAViewDto {
-    return DFAViewDtoFromJSONTyped(json, false);
+export function DFAViewDTOFromJSON(json: any): DFAViewDTO {
+    return DFAViewDTOFromJSONTyped(json, false);
 }
 
-export function DFAViewDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): DFAViewDto {
+export function DFAViewDTOFromJSONTyped(json: any, ignoreDiscriminator: boolean): DFAViewDTO {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -69,7 +69,7 @@ export function DFAViewDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     };
 }
 
-export function DFAViewDtoToJSON(value?: DFAViewDto | null): any {
+export function DFAViewDTOToJSON(value?: DFAViewDTO | null): any {
     if (value === undefined) {
         return undefined;
     }

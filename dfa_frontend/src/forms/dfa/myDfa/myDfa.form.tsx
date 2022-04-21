@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { Col, Row } from 'antd';
-import { useDfasInfo } from '@src/redux/hooks/data';
+import { useDfasInfo } from '@src/redux/hooks/dfas';
 import { useAuthInfo } from '@src/redux/hooks/auth';
 import { DfaTable } from '@src/components/dfa/dfaTable';
-import { useDfasIsLoad } from '@src/redux/hooks/data/useDfasIsLoad.hook';
+import { useDfasIsLoad } from '@src/redux/hooks/dfas/useDfasIsLoad.hook';
 
 export function MyDfaForm() {
   const rawDfas = useDfasInfo();

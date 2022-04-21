@@ -5,8 +5,9 @@ apis/ExchangerControllerApi.ts
 apis/index.ts
 index.ts
 models/ApiError.ts
+models/DFABalanceDTO.ts
 models/DFAInfoForCreateDTO.ts
-models/DFAViewDto.ts
+models/DFAViewDTO.ts
 models/ExchangeRequestDTO.ts
 models/TokenResponseDTO.ts
 models/UserInfoForCreateDTO.ts

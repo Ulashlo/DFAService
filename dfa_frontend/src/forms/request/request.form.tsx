@@ -9,6 +9,7 @@ const { TabPane } = Tabs;
 export enum RequestFormType {
   MINE_REQUEST = 'mineRequest',
   ALL_REQUEST = 'allRequest',
+  CREATE_REQUEST = 'createRequest',
 }
 
 interface RouteParams {
@@ -34,6 +35,7 @@ export function RequestForm() {
         <Tabs activeKey={requestFormType} onChange={onSelectActiveTabKey}>
           <TabPane tab="Все запросы на обмен" key={RequestFormType.ALL_REQUEST} />
           <TabPane tab="Мои запросы на обмен" key={RequestFormType.MINE_REQUEST} />
+          <TabPane tab="Создать запросы на обмен" key={RequestFormType.CREATE_REQUEST} />
         </Tabs>
       </Col>
     </Row>

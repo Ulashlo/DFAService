@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @Getter
 @Schema(title = "Dfa info", description = "Info for presenting dfa.")
-public class DFAViewDto {
+public class DFAViewDTO {
     @NotNull
     @NotEmpty
     @Schema(title = "Address", description = "Dfa address.")

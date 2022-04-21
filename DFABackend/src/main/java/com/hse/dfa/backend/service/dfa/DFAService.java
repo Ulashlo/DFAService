@@ -1,7 +1,8 @@
 package com.hse.dfa.backend.service.dfa;
 
+import com.hse.dfa.backend.controller.dto.dfa.DFABalanceDTO;
 import com.hse.dfa.backend.controller.dto.dfa.DFAInfoForCreateDTO;
-import com.hse.dfa.backend.controller.dto.dfa.DFAViewDto;
+import com.hse.dfa.backend.controller.dto.dfa.DFAViewDTO;
 
 import java.util.List;
 
@@ -26,9 +27,16 @@ public interface DFAService {
     Long getBalance(String dfaAddress) throws Exception;
 
     /**
+     * Return amount of dfa for authenticated user for all existing dfa.
+     *
+     * @return amount of dfa for all existing dfa
+     */
+    List<DFABalanceDTO> getBalances() throws Exception;
+
+    /**
      * Return all existing in system dfa.
      *
      * @return dfa addresses for all dfa
      */
-    List<DFAViewDto> getAllDfa() throws Exception;
+    List<DFAViewDTO> getAllDfa() throws Exception;
 }

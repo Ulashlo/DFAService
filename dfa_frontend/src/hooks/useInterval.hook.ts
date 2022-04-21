@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { DELAY, INTERVAL } from '@src/utils/constraints';
 
 export const useInterval = (callback: () => any, interval: number, delay?: number) => {
   if (interval <= 0 || (delay ?? 0) < 0) {
@@ -13,12 +12,12 @@ export const useInterval = (callback: () => any, interval: number, delay?: numbe
     let intervalTimerId: NodeJS.Timer;
     if (!delay) {
       callback();
-      intervalTimerId = setInterval(callback, INTERVAL);
+      intervalTimerId = setInterval(callback, interval);
     } else {
       delayTimerId = setTimeout(() => {
         callback();
-        intervalTimerId = setInterval(callback, INTERVAL);
-      }, DELAY);
+        intervalTimerId = setInterval(callback, interval);
+      }, delay);
     }
     return () => {
       if (delayTimerId) {

@@ -18,12 +18,15 @@ import {
     ApiError,
     ApiErrorFromJSON,
     ApiErrorToJSON,
+    DFABalanceDTO,
+    DFABalanceDTOFromJSON,
+    DFABalanceDTOToJSON,
     DFAInfoForCreateDTO,
     DFAInfoForCreateDTOFromJSON,
     DFAInfoForCreateDTOToJSON,
-    DFAViewDto,
-    DFAViewDtoFromJSON,
-    DFAViewDtoToJSON,
+    DFAViewDTO,
+    DFAViewDTOFromJSON,
+    DFAViewDTOToJSON,
 } from '../models';
 
 export interface CreateDFARequest {
@@ -63,12 +66,12 @@ export interface DfaControllerApiInterface {
      * @throws {RequiredError}
      * @memberof DfaControllerApiInterface
      */
-    getAllDfaRaw(): Promise<runtime.ApiResponse<Array<DFAViewDto>>>;
+    getAllDfaRaw(): Promise<runtime.ApiResponse<Array<DFAViewDTO>>>;
 
     /**
      * Return all existing in system dfa.
      */
-    getAllDfa(): Promise<Array<DFAViewDto>>;
+    getAllDfa(): Promise<Array<DFAViewDTO>>;
 
     /**
      * 
@@ -84,6 +87,20 @@ export interface DfaControllerApiInterface {
      * Return amount of dfa.
      */
     getBalance(requestParameters: GetBalanceRequest): Promise<number>;
+
+    /**
+     * 
+     * @summary Return amount of dfa for all existing dfa.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DfaControllerApiInterface
+     */
+    getBalancesRaw(): Promise<runtime.ApiResponse<Array<DFABalanceDTO>>>;
+
+    /**
+     * Return amount of dfa for all existing dfa.
+     */
+    getBalances(): Promise<Array<DFABalanceDTO>>;
 
 }
 
@@ -135,7 +152,7 @@ export class DfaControllerApi extends runtime.BaseAPI implements DfaControllerAp
     /**
      * Return all existing in system dfa.
      */
-    async getAllDfaRaw(): Promise<runtime.ApiResponse<Array<DFAViewDto>>> {
+    async getAllDfaRaw(): Promise<runtime.ApiResponse<Array<DFAViewDTO>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -155,13 +172,13 @@ export class DfaControllerApi extends runtime.BaseAPI implements DfaControllerAp
             query: queryParameters,
         });
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(DFAViewDtoFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(DFAViewDTOFromJSON));
     }
 
     /**
      * Return all existing in system dfa.
      */
-    async getAllDfa(): Promise<Array<DFAViewDto>> {
+    async getAllDfa(): Promise<Array<DFAViewDTO>> {
         const response = await this.getAllDfaRaw();
         return await response.value();
     }
@@ -205,6 +222,40 @@ export class DfaControllerApi extends runtime.BaseAPI implements DfaControllerAp
      */
     async getBalance(requestParameters: GetBalanceRequest): Promise<number> {
         const response = await this.getBalanceRaw(requestParameters);
+        return await response.value();
+    }
+
+    /**
+     * Return amount of dfa for all existing dfa.
+     */
+    async getBalancesRaw(): Promise<runtime.ApiResponse<Array<DFABalanceDTO>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = typeof token === 'function' ? token("bearer-jwt", []) : token;
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/safe/dfa/balances`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(DFABalanceDTOFromJSON));
+    }
+
+    /**
+     * Return amount of dfa for all existing dfa.
+     */
+    async getBalances(): Promise<Array<DFABalanceDTO>> {
+        const response = await this.getBalancesRaw();
         return await response.value();
     }
 

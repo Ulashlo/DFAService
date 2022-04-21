@@ -2,19 +2,19 @@ import { useAppDispatch } from '@src/redux/hooks/useAppDispatch.hook';
 import { useAuthInfo } from '@src/redux/hooks/auth';
 import { useHttpClient } from '@src/hooks/useHttpClient.hook';
 import { useCallback } from 'react';
-import { setDfas } from '@src/redux/reducers/dfas';
 import { useInterval } from '@src/hooks/useInterval.hook';
 import { INTERVAL } from '@src/utils/constraints';
+import { setBalances } from '@src/redux/reducers/balances';
 
-export const useAutoUpdateDfas = (delay?: number) => {
+export const useAutoUpdateBalances = (delay?: number) => {
   const dispatch = useAppDispatch();
   const authInfo = useAuthInfo();
 
   const { dfaControllerApi } = useHttpClient();
-  const updateDfas = useCallback(async () => {
-    const dfas = await dfaControllerApi.getAllDfa();
-    dispatch(setDfas(dfas));
+  const updateBalances = useCallback(async () => {
+    const balances = await dfaControllerApi.getBalances();
+    dispatch(setBalances(balances));
   }, [dispatch, dfaControllerApi]);
 
-  useInterval(authInfo ? updateDfas : () => {}, INTERVAL, delay);
+  useInterval(authInfo ? updateBalances : () => {}, INTERVAL, delay);
 };

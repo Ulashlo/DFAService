@@ -62,7 +62,7 @@ contract Factory {
     return dfaToExchanger[dfaAddress];
   }
 
-  function getAllDfa() public view
+  function getAllDfa() external view
     returns (
       address[] memory,
       address[] memory,
@@ -86,6 +86,22 @@ contract Factory {
       supplies[i] = dfa.totalSupply();
     }
     return (addresses, owners, names, symbols, supplies);
+  }
+
+  function getBalances()
+    external
+    view
+    returns (address[] memory, uint[] memory)
+  {
+    address[] memory addresses = new address[](dfaList.length);
+    uint[] memory balances = new uint[](dfaList.length);
+    for (uint i = 0; i < dfaList.length; i++) {
+      address dfaAddress = dfaList[i];
+      DFA dfa = DFA(dfaAddress);
+      addresses[i] = dfaAddress;
+      balances[i] = dfa.balanceOf(msg.sender);
+    }
+    return (addresses, balances);
   }
 
 //  function getAllDfaTest() public view returns (DfaInfo[] memory) {
