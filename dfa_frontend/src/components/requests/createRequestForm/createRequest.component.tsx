@@ -7,7 +7,6 @@ import { useDfasInfo } from '@src/redux/hooks/dfas';
 import { useAutoUpdateDfas } from '@src/hooks/useAutoUpdateDfas.hook';
 import { useBalancesInfo } from '@src/redux/hooks/balances';
 import { useAutoUpdateBalances } from '@src/hooks/useAutoUpdateBalances.hook';
-import { useAuthInfo } from '@src/redux/hooks/auth';
 import { ExchangeRequestDTO } from '@src/generated/backend';
 import { DELAY } from '@src/utils/constraints';
 
@@ -51,11 +50,14 @@ export function CreateRequest() {
   );
   const dfas = useDfasInfo();
   const balances = useBalancesInfo();
-  const authInfo = useAuthInfo();
   const dfaToBuy = useMemo(() => dfas, [dfas]);
   const dfaToSell = useMemo(
-    () => dfas.filter((dfa) => authInfo?.address && dfa.owner.toLowerCase() === authInfo.address.toLowerCase()),
-    [dfas, authInfo],
+    () =>
+      dfas.filter((dfa) => {
+        const balance = balances.find((b) => b.address === dfa.address)?.balance ?? 0;
+        return balance > 0;
+      }),
+    [dfas, balances],
   );
   return (
     <Form
