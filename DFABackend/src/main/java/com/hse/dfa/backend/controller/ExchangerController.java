@@ -1,5 +1,6 @@
 package com.hse.dfa.backend.controller;
 
+import com.hse.dfa.backend.controller.dto.dfa.AllRequestsDTO;
 import com.hse.dfa.backend.controller.dto.exchanger.ExchangeRequestDTO;
 import com.hse.dfa.backend.service.exchanger.ExchangerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @RestController
 @RequestMapping("/safe")
@@ -23,11 +25,9 @@ public class ExchangerController {
         exchangerService.addExchangeRequest(dto);
     }
 
-//    @Operation(summary = "Put exchange request to the exchanger.")
-//    @GetMapping(value = "/exchange")
-//    public Object test(@RequestParam String dtoToGet,
-//                     @RequestParam String dtoToGive,
-//                     @RequestParam Long num) throws Exception {
-//        return null;
-//    }
+    @Operation(summary = "Return all exchange requests.")
+    @GetMapping(value = "/exchange")
+    public List<AllRequestsDTO> getAllExchanges() throws Exception {
+        return exchangerService.getAllRequests();
+    }
 }

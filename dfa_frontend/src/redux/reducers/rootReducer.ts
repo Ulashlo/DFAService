@@ -4,6 +4,8 @@ import { apiErrorReducer } from '@src/redux/reducers/apiError';
 import { spinnerReducer } from '@src/redux/reducers/spinner';
 import { dfasReducer } from '@src/redux/reducers/dfas';
 import { balancesReducer } from '@src/redux/reducers/balances';
+import { dfaViewsReducer } from '@src/redux/reducers/dfas/dfaViews.reducer';
+import { requestsReducer } from '@src/redux/reducers/requests';
 
 export default combineReducers({
   auth: authReducer,
@@ -11,4 +13,6 @@ export default combineReducers({
   spinner: spinnerReducer,
   dfas: dfasReducer,
   balances: balancesReducer,
+  dfaViews: dfaViewsReducer,
+  requests: requestsReducer,
 });

@@ -88,6 +88,11 @@ contract Factory {
     return (addresses, owners, names, symbols, supplies);
   }
 
+  function getAllDfaAddresses() external view returns (address[] memory)
+  {
+    return dfaList;
+  }
+
   function getBalances()
     external
     view

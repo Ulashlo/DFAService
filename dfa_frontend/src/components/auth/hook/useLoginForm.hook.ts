@@ -18,8 +18,6 @@ export const useLoginForm = (): UseLoginForm => {
     async (nickname: string, password: string) => {
       try {
         const authInfo = await dispatch(doWithSpinner(() => authControllerApi.signIn({ nickname, password })));
-        // const authInfo = await authControllerApi.signIn({ nickname, password });
-
         dispatch(setAuthInfo(authInfo));
         goToPreviousPath();
       } catch (error: any) {

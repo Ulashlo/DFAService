@@ -1,6 +1,5 @@
 import { useHttpClient } from '@src/hooks/useHttpClient.hook';
 import React, { useCallback, useMemo } from 'react';
-import { ExchangeRequestDTO } from '@src/generated/backend';
 import NotificationService from '@src/services/NotificationService';
 import { Button, Form, InputNumber, Select } from 'antd';
 import { DollarOutlined } from '@ant-design/icons';
@@ -9,6 +8,8 @@ import { useAutoUpdateDfas } from '@src/hooks/useAutoUpdateDfas.hook';
 import { useBalancesInfo } from '@src/redux/hooks/balances';
 import { useAutoUpdateBalances } from '@src/hooks/useAutoUpdateBalances.hook';
 import { useAuthInfo } from '@src/redux/hooks/auth';
+import { ExchangeRequestDTO } from '@src/generated/backend';
+import { DELAY } from '@src/utils/constraints';
 
 function getRequiredRule(message: string): { required: boolean; message: string } {
   return { required: true, message };
@@ -16,10 +17,10 @@ function getRequiredRule(message: string): { required: boolean; message: string 
 
 const formItemLayout = {
   labelCol: {
-    sm: { span: 8 },
+    sm: { span: 10 },
   },
   wrapperCol: {
-    sm: { span: 16 },
+    sm: { span: 14 },
   },
 };
 
@@ -30,15 +31,15 @@ const tailFormItemLayout = {
       offset: 0,
     },
     sm: {
-      span: 16,
-      offset: 8,
+      span: 14,
+      offset: 10,
     },
   },
 };
 
 export function CreateRequest() {
   useAutoUpdateDfas();
-  useAutoUpdateBalances();
+  useAutoUpdateBalances(DELAY);
   const { exchangerControllerApi } = useHttpClient();
   const creteRequest = useCallback(
     (info: ExchangeRequestDTO) => {

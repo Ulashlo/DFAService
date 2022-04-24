@@ -4,11 +4,14 @@ apis/DfaControllerApi.ts
 apis/ExchangerControllerApi.ts
 apis/index.ts
 index.ts
+models/AllRequestsDTO.ts
 models/ApiError.ts
 models/DFABalanceDTO.ts
 models/DFAInfoForCreateDTO.ts
 models/DFAViewDTO.ts
+models/ExchangeInfo.ts
 models/ExchangeRequestDTO.ts
+models/RequestsForDFADTO.ts
 models/TokenResponseDTO.ts
 models/UserInfoForCreateDTO.ts
 models/index.ts

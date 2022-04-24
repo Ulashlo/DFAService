@@ -15,6 +15,9 @@
 
 import * as runtime from '../runtime';
 import {
+    AllRequestsDTO,
+    AllRequestsDTOFromJSON,
+    AllRequestsDTOToJSON,
     ApiError,
     ApiErrorFromJSON,
     ApiErrorToJSON,
@@ -48,6 +51,20 @@ export interface ExchangerControllerApiInterface {
      * Put exchange request to the exchanger.
      */
     addExchange(requestParameters: AddExchangeRequest): Promise<void>;
+
+    /**
+     * 
+     * @summary Return all exchange requests.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ExchangerControllerApiInterface
+     */
+    getAllExchangesRaw(): Promise<runtime.ApiResponse<Array<AllRequestsDTO>>>;
+
+    /**
+     * Return all exchange requests.
+     */
+    getAllExchanges(): Promise<Array<AllRequestsDTO>>;
 
 }
 
@@ -94,6 +111,40 @@ export class ExchangerControllerApi extends runtime.BaseAPI implements Exchanger
      */
     async addExchange(requestParameters: AddExchangeRequest): Promise<void> {
         await this.addExchangeRaw(requestParameters);
+    }
+
+    /**
+     * Return all exchange requests.
+     */
+    async getAllExchangesRaw(): Promise<runtime.ApiResponse<Array<AllRequestsDTO>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = typeof token === 'function' ? token("bearer-jwt", []) : token;
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/safe/exchange`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(AllRequestsDTOFromJSON));
+    }
+
+    /**
+     * Return all exchange requests.
+     */
+    async getAllExchanges(): Promise<Array<AllRequestsDTO>> {
+        const response = await this.getAllExchangesRaw();
+        return await response.value();
     }
 
 }

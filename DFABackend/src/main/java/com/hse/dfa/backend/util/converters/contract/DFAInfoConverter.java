@@ -2,9 +2,11 @@ package com.hse.dfa.backend.util.converters.contract;
 
 import com.hse.dfa.backend.controller.dto.dfa.DFABalanceDTO;
 import com.hse.dfa.backend.controller.dto.dfa.DFAViewDTO;
+import com.hse.dfa.backend.controller.dto.dfa.ExchangeInfo;
 import com.hse.dfa.backend.exceptions.contract.IncorrectEthereumResponseFormatException;
 import lombok.NoArgsConstructor;
 import org.web3j.tuples.generated.Tuple2;
+import org.web3j.tuples.generated.Tuple3;
 import org.web3j.tuples.generated.Tuple5;
 
 import java.math.BigInteger;
@@ -65,6 +67,35 @@ public class DFAInfoConverter {
                     new DFABalanceDTO(
                         addresses.get(i),
                         balance
+                    )
+                );
+            }
+        }
+        return result;
+    }
+
+    public static List<ExchangeInfo> tupleToRequestInfoDTO(
+        Tuple3<List<String>, List<BigInteger>, List<BigInteger>> tuple
+    ) {
+        final var users = tuple.component1();
+        final var amountsToGet = tuple.component2();
+        final var amountsToGive = tuple.component3();
+        int length = users.size();
+        if (amountsToGive.size() != length || amountsToGet.size() != length) {
+            throw new IncorrectEthereumResponseFormatException(
+                "Arrays for request info list has different size!"
+            );
+        }
+        final var result = new LinkedList<ExchangeInfo>();
+        for (int i = 0; i < length; i++) {
+            long amountToGive = amountsToGive.get(i).longValue();
+            long amountToGet = amountsToGet.get(i).longValue();
+            if (amountToGive > 0 && amountToGet > 0) {
+                result.add(
+                    new ExchangeInfo(
+                        users.get(i),
+                        amountToGive,
+                        amountToGet
                     )
                 );
             }

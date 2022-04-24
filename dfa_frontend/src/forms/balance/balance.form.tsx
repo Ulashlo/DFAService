@@ -1,17 +1,18 @@
 import React, { useMemo } from 'react';
 import { Col, Row } from 'antd';
-import { useDfasInfo, useDfasIsLoad } from '@src/redux/hooks/dfas';
+import { useDfasIsLoad } from '@src/redux/hooks/dfas';
 import { useBalancesInfo, useBalancesIsLoad } from '@src/redux/hooks/balances';
 import { useAutoUpdateDfas } from '@src/hooks/useAutoUpdateDfas.hook';
 import { useAutoUpdateBalances } from '@src/hooks/useAutoUpdateBalances.hook';
 import { DELAY } from '@src/utils/constraints';
 import { Balance, BalancesTable } from '@src/components/dfa/dfaTable';
+import { useDfaViews } from '@src/redux/hooks/dfas/useDfaViews.hook';
 
 export function BalanceForm() {
   useAutoUpdateDfas();
   useAutoUpdateBalances(DELAY);
 
-  const dfas = useDfasInfo();
+  const dfas = useDfaViews();
   const isDfasLoading = !useDfasIsLoad();
   const balances = useBalancesInfo();
   const isBalancesLoading = !useBalancesIsLoad();
@@ -20,11 +21,11 @@ export function BalanceForm() {
     return balances
       .filter((balance) => balance.address.length > 0)
       .map((balance): Balance => {
-        const dfa = dfas.find((d) => d.address.toLowerCase() === balance.address.toLowerCase());
-        if (dfa) {
+        if (dfas) {
+          const dfa = dfas[balance.address];
           return {
             ...dfa,
-            balance: balance.balance,
+            ...balance,
           };
         }
         return {
