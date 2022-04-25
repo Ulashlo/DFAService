@@ -2,7 +2,7 @@ import React, { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'r
 import { Button, Col, Input, Row, Typography } from 'antd';
 import { UserInfoForUpdateDTO, UserViewDTO } from '@src/generated/backend';
 import { useHttpClient } from '@src/hooks/useHttpClient.hook';
-import { doWithLocalSpinner, doWithSpinner } from '@src/redux/reducers/spinner';
+import { doWithLocalSpinner } from '@src/redux/reducers/spinner';
 
 export function AboutMeForm() {
   const [userInfo, setUserInfo] = useState<UserViewDTO>({
@@ -46,16 +46,15 @@ export function AboutMeForm() {
   );
 
   const updateUserInfo = async () => {
-    await doWithSpinner(() =>
-      userControllerApi.updateUserInfo({
-        userInfoForUpdateDTO: currentUserInfo,
-      }),
-    );
+    await userControllerApi.updateUserInfo({
+      userInfoForUpdateDTO: currentUserInfo,
+    });
     setUserInfo((prevState) => ({
       username: prevState.username,
       address: currentUserInfo.address ?? '',
       privateKey: currentUserInfo.privateKey ?? '',
     }));
+    console.log('done');
   };
 
   return (

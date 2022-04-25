@@ -61,6 +61,15 @@ contract Exchanger {
     _;
   }
 
+  event ExchangeCompleted(
+    address firstUser,
+    address firstDfa,
+    uint firstAmount,
+    address secondUser,
+    address secondDfa,
+    uint secondAmount
+  );
+
   constructor(address dfaAddressToLink) isAddressValid(dfaAddressToLink) {
     dfaAddress = dfaAddressToLink;
     factoryAddress = msg.sender;
@@ -137,6 +146,14 @@ contract Exchanger {
     for (uint i = 0; i < requestList.length; i++) {
       ExchangerRequestInfo storage request = requestList[i];
       if (request.amountToGet == info.amountToGive && request.amountToGive == info.amountToGet) {
+        emit ExchangeCompleted(
+          request.user,
+          dfaAddress,
+          request.amountToGive,
+          info.user,
+          info.dfaToGive,
+          info.amountToGive
+        );
         request.amountToGet = 0;
         request.amountToGive = 0;
         DFA(dfaAddress).transfer(info.user, info.amountToGet);

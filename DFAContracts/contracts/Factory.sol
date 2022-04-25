@@ -33,6 +33,8 @@ contract Factory {
     _;
   }
 
+  event DFACreated(address whoCreate, address dfaAddress, string name, string symbol, uint initialSupply);
+
   function createDfa(
     uint initialSupply,
     string memory name,
@@ -50,6 +52,13 @@ contract Factory {
     Exchanger exchanger = new Exchanger(dfaAddress);
     dfaToExchanger[dfaAddress] = address(exchanger);
     dfaList.push(dfaAddress);
+    emit DFACreated(
+      msg.sender,
+      dfaAddress,
+      name,
+      symbol,
+      initialSupply
+    );
     return dfaAddress;
   }
 

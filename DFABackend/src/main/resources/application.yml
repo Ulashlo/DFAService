@@ -19,8 +19,8 @@ web3j:
     limit: '6721975'
 contracts:
   factory:
-    address: '0xB55602f88C0B12C34B0fAF65455Ffac5a32b3192'
+    address: '0xD25e27752DAB1458c49b426f83e6442a5A9D4e49'
   owner:
-    address: '0x9ccaf13FBaCAF3a0C36155d637919ddfC2718c1e'
-    key: '56acc2d2e407abf09ebb39fc16f5b7e21d5ddc2a6191787da0817cdfeefbaf08'
+    address: '0x8C7501a2fEcB9Dd6CFd0C026f25688c64072D609'
+    key: '99a5884e42239bdd341a99be0ba1cb11f1635002c7b2c47be572494aef3800ab'
 
