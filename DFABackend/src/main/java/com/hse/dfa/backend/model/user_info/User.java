@@ -3,6 +3,7 @@ package com.hse.dfa.backend.model.user_info;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,9 +40,11 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
+    @Setter
     @Column(name = "address")
     private String address;
 
+    @Setter
     @Column(name = "private_key")
     private String privateKey;
 

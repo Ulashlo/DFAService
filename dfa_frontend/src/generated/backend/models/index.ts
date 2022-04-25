@@ -8,3 +8,5 @@ export * from './ExchangeRequestDTO';
 export * from './RequestsForDFADTO';
 export * from './TokenResponseDTO';
 export * from './UserInfoForCreateDTO';
+export * from './UserInfoForUpdateDTO';
+export * from './UserViewDTO';

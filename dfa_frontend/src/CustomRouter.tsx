@@ -56,7 +56,7 @@ export const pages: Record<PageName, Readonly<PageInfo>> = {
     params: [],
     requiresAuth: true,
     component: AboutMeForm,
-    description: 'Личный кабинет',
+    description: 'Профиль',
   },
   balance: {
     id: 'balance',

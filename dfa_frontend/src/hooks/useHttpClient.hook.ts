@@ -7,6 +7,7 @@ import {
   FetchParams,
   RequestContext,
   ResponseContext,
+  UserControllerApi,
 } from '@src/generated/backend';
 import { useAppDispatch } from '@src/redux/hooks/useAppDispatch.hook';
 import { useAuthInfo } from '@src/redux/hooks/auth/useAuthInfo.hook';
@@ -20,6 +21,7 @@ export interface HttpClient {
   authControllerApi: AuthControllerApi;
   dfaControllerApi: DfaControllerApi;
   exchangerControllerApi: ExchangerControllerApi;
+  userControllerApi: UserControllerApi;
 }
 
 export const useHttpClient = (): Readonly<HttpClient> => {
@@ -75,5 +77,6 @@ function createHttpClient(dispatch: Dispatch, configuration?: Configuration): Ht
     authControllerApi: new AuthControllerApi(configuration),
     dfaControllerApi: new DfaControllerApi(configuration),
     exchangerControllerApi: new ExchangerControllerApi(configuration),
+    userControllerApi: new UserControllerApi(configuration),
   };
 }
