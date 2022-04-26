@@ -1,5 +1,5 @@
 import { Button, Form, Input, InputNumber } from 'antd';
-import { DollarOutlined, LockOutlined, UserOutlined } from '@ant-design/icons';
+import { DollarOutlined } from '@ant-design/icons';
 import React, { useCallback } from 'react';
 import { useHttpClient } from '@src/hooks/useHttpClient.hook';
 import { DFAInfoForCreateDTO } from '@src/generated/backend';
@@ -49,14 +49,14 @@ export function CreateDfa() {
       onFinish={(info: DFAInfoForCreateDTO) => creteDfa(info)}
     >
       <Form.Item name="name" label="Имя ЦФА" rules={getRequiredRule('Имя не может быть пустым!')}>
-        <Input placeholder="Введите имя" prefix={<UserOutlined />} />
+        <Input placeholder="Введите имя" />
       </Form.Item>
       <Form.Item
         name="symbol"
         label="Условное обозначение"
         rules={getRequiredRule('Обозначение не может быть пустым!')}
       >
-        <Input placeholder="Введите обозначение" prefix={<LockOutlined />} />
+        <Input placeholder="Введите обозначение" />
       </Form.Item>
       <Form.Item
         name="initialSupply"

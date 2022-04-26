@@ -44,7 +44,7 @@ export function CreateRequest() {
     (info: ExchangeRequestDTO) => {
       exchangerControllerApi
         .addExchange({ exchangeRequestDTO: info })
-        .then(() => NotificationService.reportSuccess(`Запрос на обмен успешно подан!`));
+        .then(() => NotificationService.reportSuccess(`Запрос успешно создан!`));
     },
     [exchangerControllerApi],
   );
