@@ -9,6 +9,12 @@ contract Exchanger {
     address user;
     uint amountToGet;
     uint amountToGive;
+    bool isComplete;
+  }
+
+  struct ExchangerRequestInfoArray {
+    ExchangerRequestInfo[] array;
+    uint activeRequestsCount;
   }
 
   struct InnerExchangerRequestInfo {
@@ -20,7 +26,7 @@ contract Exchanger {
 
   address public dfaAddress;
   address public factoryAddress;
-  mapping (address => ExchangerRequestInfo[]) public requests;
+  mapping (address => ExchangerRequestInfoArray) public requests;
 
   modifier isAddressValid(address addressToCheck) {
     require(addressToCheck != address(0), "Invalid address");
@@ -86,10 +92,12 @@ contract Exchanger {
     isAddressValid(dfaToGive)
     returns (address)
   {
-    ExchangerRequestInfo[] memory requestList = requests[dfaToGive];
+    ExchangerRequestInfo[] memory requestList = requests[dfaToGive].array;
     for (uint i = 0; i < requestList.length; i++) {
       ExchangerRequestInfo memory request = requestList[i];
-      if (request.amountToGet == amountToGive && request.amountToGive == amountToGet) {
+      if (!request.isComplete &&
+          request.amountToGet == amountToGive &&
+          request.amountToGive == amountToGet) {
         return request.user;
       }
     }
@@ -122,13 +130,15 @@ contract Exchanger {
         )
       );
     } else {
-      requests[dfaToGet].push(
+      requests[dfaToGet].array.push(
         ExchangerRequestInfo(
           msg.sender,
           amountToGet,
-          amountToGive
+          amountToGive,
+          false
         )
       );
+      requests[dfaToGet].activeRequestsCount += 1;
     }
   }
 
@@ -141,11 +151,15 @@ contract Exchanger {
     isSenderIsExchanger(info.dfaToGive)
     isAddressValid(info.user)
   {
-    ExchangerRequestInfo[] storage requestList = requests[info.dfaToGive];
+    ExchangerRequestInfo[] storage requestList = requests[info.dfaToGive].array;
     bool isValidRequestFound = false;
     for (uint i = 0; i < requestList.length; i++) {
       ExchangerRequestInfo storage request = requestList[i];
       if (request.amountToGet == info.amountToGive && request.amountToGive == info.amountToGet) {
+        request.isComplete = true;
+        DFA(dfaAddress).transfer(info.user, info.amountToGet);
+        isValidRequestFound = true;
+        requests[info.dfaToGive].activeRequestsCount -= 1;
         emit ExchangeCompleted(
           request.user,
           dfaAddress,
@@ -154,10 +168,6 @@ contract Exchanger {
           info.dfaToGive,
           info.amountToGive
         );
-        request.amountToGet = 0;
-        request.amountToGive = 0;
-        DFA(dfaAddress).transfer(info.user, info.amountToGet);
-        isValidRequestFound = true;
         break;
       }
     }
@@ -174,15 +184,20 @@ contract Exchanger {
       uint[] memory
     )
   {
-    ExchangerRequestInfo[] memory reqs = requests[dfa];
-    address[] memory users = new address[](reqs.length);
-    uint[] memory amountsToGet = new uint[](reqs.length);
-    uint[] memory amountsToGive = new uint[](reqs.length);
+    ExchangerRequestInfo[] memory reqs = requests[dfa].array;
+    uint len = requests[dfa].activeRequestsCount;
+    address[] memory users = new address[](len);
+    uint[] memory amountsToGet = new uint[](len);
+    uint[] memory amountsToGive = new uint[](len);
+    uint j = 0;
     for (uint i = 0; i < reqs.length; i++) {
-      ExchangerRequestInfo memory info = reqs[i];
-      users[i] = info.user;
-      amountsToGet[i] = info.amountToGet;
-      amountsToGive[i] = info.amountToGive;
+      if (!reqs[i].isComplete) {
+        ExchangerRequestInfo memory info = reqs[i];
+        users[j] = info.user;
+        amountsToGet[j] = info.amountToGet;
+        amountsToGive[j] = info.amountToGive;
+        j += 1;
+      }
     }
     return (users, amountsToGet, amountsToGive);
   }
