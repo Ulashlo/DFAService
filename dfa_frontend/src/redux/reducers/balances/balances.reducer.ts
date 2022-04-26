@@ -26,8 +26,12 @@ const dataSlice = createSlice({
       state.balancesInfo.balances = action.payload;
       state.balancesInfo.isBalanceLoad = true;
     },
+    clearBalances: (state) => {
+      state.balancesInfo.balances = [];
+      state.balancesInfo.isBalanceLoad = false;
+    },
   },
 });
 
 export const balancesReducer = dataSlice.reducer;
-export const { setBalances } = dataSlice.actions;
+export const { setBalances, clearBalances } = dataSlice.actions;

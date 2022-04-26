@@ -26,8 +26,12 @@ const dataSlice = createSlice({
       state.requestsInfo.requests = action.payload;
       state.requestsInfo.idRequestsLoad = true;
     },
+    clearRequests: (state) => {
+      state.requestsInfo.requests = [];
+      state.requestsInfo.idRequestsLoad = false;
+    },
   },
 });
 
 export const requestsReducer = dataSlice.reducer;
-export const { setRequests } = dataSlice.actions;
+export const { setRequests, clearRequests } = dataSlice.actions;
