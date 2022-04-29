@@ -1,60 +1,19 @@
 import { Col, ConfigProvider, Layout, Menu, Row, Space, Spin } from 'antd';
-import React, { PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { CaretDownOutlined } from '@ant-design/icons';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import ruRu from 'antd/lib/locale/ru_RU';
 import { useAuthInfo } from '@src/redux/hooks/auth/useAuthInfo.hook';
-import { useAppDispatch } from '@src/redux/hooks/useAppDispatch.hook';
-import { clearAuthInfo } from '@src/redux/reducers/auth';
-import { isParentPagePanel, PagePanel, pagePanels, pages, ParentPagePanel } from '@src/CustomRouter';
-import { useApiErrorInfo } from '@src/redux/hooks/apiError';
-import NotificationService from '@src/services/NotificationService';
-import { clearApiErrorInfo } from '@src/redux/reducers/apiError';
+import { isParentPagePanel, PagePanel, pagePanels, ParentPagePanel } from '@src/CustomRouter';
 import { useSpinner } from '@src/redux/hooks/spinner';
-import { clearRequests } from '@src/redux/reducers/requests';
-import { clearBalances } from '@src/redux/reducers/balances';
+import { useBaseLayoutForm } from '@src/forms/baseLayout/hook';
 
 const { Header, Content } = Layout;
 
-const isCurrentPageSelected = (page: PagePanel, pathname: string) =>
-  page.uri === pathname || page.uri === `/${pathname.split('/')[1]}`;
-
 export function BaseLayoutForm({ children }: PropsWithChildren<{}>) {
   const authInfo = useAuthInfo();
-  const apiErrorInfo = useApiErrorInfo();
-  const { pathname } = useLocation();
-  const dispatch = useAppDispatch();
   const spinner = useSpinner();
-
-  const selectedMenuItem = useMemo((): Omit<PagePanel, 'uri'> => {
-    const selectedPagePanel = pagePanels
-      .flatMap((pagePanel) => (isParentPagePanel(pagePanel) ? pagePanel.children : [pagePanel]))
-      .find((pagePanel) => isCurrentPageSelected(pagePanel, pathname));
-    if (selectedPagePanel) {
-      return selectedPagePanel;
-    }
-    const selectedPage = Object.values(pages).find((page) => isCurrentPageSelected(page, pathname));
-    if (selectedPage) {
-      return selectedPage;
-    }
-    return {
-      id: 'someId',
-      description: '',
-    };
-  }, [pathname]);
-
-  useEffect(() => {
-    if (apiErrorInfo?.shown) {
-      NotificationService.reportApiError(apiErrorInfo);
-      dispatch(clearApiErrorInfo());
-    }
-  }, [apiErrorInfo, dispatch]);
-
-  const handleLogout = useCallback(() => {
-    dispatch(clearAuthInfo());
-    dispatch(clearRequests());
-    dispatch(clearBalances());
-  }, [dispatch]);
+  const { selectedMenuItem, handleLogout } = useBaseLayoutForm();
 
   return (
     <ConfigProvider locale={ruRu}>
