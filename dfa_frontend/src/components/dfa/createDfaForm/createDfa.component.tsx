@@ -37,7 +37,7 @@ export function CreateDfa() {
     (info: DFAInfoForCreateDTO) => {
       dfaControllerApi
         .createDFA({ dFAInfoForCreateDTO: info })
-        .then(() => NotificationService.reportSuccess(`Заявка на создание ЦФА с именем ${info.name} учпешно подана!`));
+        .then(() => NotificationService.reportSuccess(`Заявка на создание ЦФА с именем ${info.name} успешно подана!`));
     },
     [dfaControllerApi],
   );

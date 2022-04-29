@@ -7,6 +7,8 @@ import com.hse.dfa.backend.service.user_info.UserService;
 import com.hse.dfa.backend.util.contracts.ContractFabric;
 import com.hse.dfa.backend.util.converters.contract.DFAInfoConverter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -14,9 +16,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static com.hse.dfa.backend.util.checkers.UserChecker.checkPrivateKey;
+import static java.lang.String.format;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ExchangerServiceImpl implements ExchangerService {
     private final ContractFabric contractFabric;
     private final UserService userService;
@@ -50,6 +54,12 @@ public class ExchangerServiceImpl implements ExchangerService {
                 if (dfaToGet.equals(dfaToGive)) {
                     continue;
                 }
+                log.info(format(
+                    "Trying to load requests from %s with dfa to give = %s dfa to get = %s",
+                    exchangerAddress,
+                    dfaToGive,
+                    dfaToGet
+                ));
                 final var requestInfo =
                     DFAInfoConverter.tupleToRequestInfoDTO(
                         exchanger.getRequestsByDfa(dfaToGet).send()

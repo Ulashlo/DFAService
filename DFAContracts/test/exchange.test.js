@@ -87,4 +87,41 @@ contract('Exchange', accounts => {
             console.log(JSON.stringify(secondRequests))
         });
     });
+
+    describe('#getRequestsByDfa', () => {
+        it('Should return correct requests', async () => {
+            let firstDfa = await DFA.at(firstDfaAddress);
+            let secondDfa = await DFA.at(secondDfaAddress);
+
+            let firstExchangerAddress = await factory.getExchanger(firstDfaAddress);
+            let secondExchangerAddress = await factory.getExchanger(secondDfaAddress);
+            let firstExchanger = await Exchanger.at(firstExchangerAddress);
+            let secondExchanger = await Exchanger.at(secondExchangerAddress);
+
+            await firstDfa.approve(firstExchangerAddress, 100, {from: firstUser});
+            await firstExchanger.addRequest(secondDfaAddress, 200, 100, {from: firstUser});
+            await firstDfa.approve(firstExchangerAddress, 100, {from: firstUser});
+            await firstExchanger.addRequest(secondDfaAddress, 200, 100, {from: firstUser});
+            await firstDfa.approve(firstExchangerAddress, 100, {from: firstUser});
+            await firstExchanger.addRequest(secondDfaAddress, 100, 100, {from: firstUser});
+            await firstDfa.approve(firstExchangerAddress, 100, {from: firstUser});
+            await firstExchanger.addRequest(secondDfaAddress, 150, 100, {from: firstUser});
+            await secondDfa.approve(secondExchangerAddress, 100, {from: secondUser});
+            await secondExchanger.addRequest(firstDfaAddress, 100, 100, {from: secondUser});
+            await secondDfa.approve(secondExchangerAddress, 200, {from: secondUser});
+            await secondExchanger.addRequest(firstDfaAddress, 100, 200, {from: secondUser});
+
+            let firstRequests = await firstExchanger.getRequestsByDfa(secondDfaAddress);
+            assert.equal(firstRequests["0"][0], firstUser);
+            assert.equal(firstRequests["0"][1], firstUser);
+            assert.equal(firstRequests["1"][0].toNumber(), 200);
+            assert.equal(firstRequests["1"][1].toNumber(), 150);
+            assert.equal(firstRequests["2"][0].toNumber(), 100);
+            assert.equal(firstRequests["2"][1].toNumber(), 100);
+            let secondRequests = await secondExchanger.getRequestsByDfa(firstDfaAddress);
+            assert.equal(secondRequests["0"].length, 0);
+            assert.equal(secondRequests["1"].length, 0);
+            assert.equal(secondRequests["2"].length, 0);
+        });
+    });
 });
