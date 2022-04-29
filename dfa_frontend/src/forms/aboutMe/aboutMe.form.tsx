@@ -1,62 +1,9 @@
-import React, { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { Button, Col, Input, Row, Typography } from 'antd';
-import { UserInfoForUpdateDTO, UserViewDTO } from '@src/generated/backend';
-import { useHttpClient } from '@src/hooks/useHttpClient.hook';
-import { doWithLocalSpinner } from '@src/redux/reducers/spinner';
+import { useAboutMeForm } from '@src/forms/aboutMe/hook';
 
 export function AboutMeForm() {
-  const [userInfo, setUserInfo] = useState<UserViewDTO>({
-    username: '',
-    address: '',
-    privateKey: '',
-  });
-  const [currentUserInfo, setCurrentUserInfo] = useState<UserInfoForUpdateDTO>({
-    address: '',
-    privateKey: '',
-  });
-  const { userControllerApi } = useHttpClient();
-
-  useEffect(() => {
-    doWithLocalSpinner(() => userControllerApi.getUserInfo(), {
-      showSpinner: () => {},
-      hideSpinner: () => {},
-    }).then((info) => {
-      setUserInfo(info);
-      setCurrentUserInfo({
-        address: info.address,
-        privateKey: info.privateKey,
-      });
-    });
-  }, [userControllerApi]);
-
-  const isUpdated = useMemo(() => {
-    return userInfo.address === currentUserInfo.address && userInfo.privateKey === currentUserInfo.privateKey;
-  }, [userInfo, currentUserInfo]);
-
-  const setAddress = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) =>
-      setCurrentUserInfo((prevState) => ({ ...prevState, address: event.target.value })),
-    [setCurrentUserInfo],
-  );
-
-  const setPrivateKey = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) =>
-      setCurrentUserInfo((prevState) => ({ ...prevState, privateKey: event.target.value })),
-    [setCurrentUserInfo],
-  );
-
-  const updateUserInfo = async () => {
-    await userControllerApi.updateUserInfo({
-      userInfoForUpdateDTO: currentUserInfo,
-    });
-    setUserInfo((prevState) => ({
-      username: prevState.username,
-      address: currentUserInfo.address ?? '',
-      privateKey: currentUserInfo.privateKey ?? '',
-    }));
-    console.log('done');
-  };
-
+  const { currentUserInfo, setAddress, setPrivateKey, updateUserInfo, isUpdated } = useAboutMeForm();
   return (
     <Row style={{ height: '80%' }} justify="space-around" align="middle">
       <Col span={9}>

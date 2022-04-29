@@ -4,6 +4,15 @@ import { Col, Row, Table } from 'antd';
 
 const { Column } = Table;
 
+export interface DFAViewRow {
+  address: string;
+  owner: string;
+  name: string;
+  symbol: string;
+  totalSupply: string;
+  key: string;
+}
+
 export interface DfaTableProps {
   dfas: DFAViewDTO[];
   isLoading: boolean;
@@ -13,8 +22,8 @@ export const DfaTable = React.memo(({ dfas, isLoading }: DfaTableProps) => {
   const dataSource = useMemo(
     () =>
       dfas
-        .map((dfa) => ({ ...dfa, key: dfa.address }))
-        .sort((f: DFAViewDTO, s: DFAViewDTO) => f.name.localeCompare(s.name)),
+        .map((dfa) => ({ ...dfa, totalSupply: `${dfa.totalSupply} ${dfa.symbol}`, key: dfa.address }))
+        .sort((f: DFAViewRow, s: DFAViewRow) => f.name.localeCompare(s.name)),
     [dfas],
   );
   return (

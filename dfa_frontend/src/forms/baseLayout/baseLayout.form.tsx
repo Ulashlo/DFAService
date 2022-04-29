@@ -10,7 +10,6 @@ import { isParentPagePanel, PagePanel, pagePanels, pages, ParentPagePanel } from
 import { useApiErrorInfo } from '@src/redux/hooks/apiError';
 import NotificationService from '@src/services/NotificationService';
 import { clearApiErrorInfo } from '@src/redux/reducers/apiError';
-import 'antd/dist/antd.css';
 import { useSpinner } from '@src/redux/hooks/spinner';
 import { clearRequests } from '@src/redux/reducers/requests';
 import { clearBalances } from '@src/redux/reducers/balances';

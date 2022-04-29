@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import storeFactory from './redux/storeFactory';
 import { CustomRouter } from './CustomRouter';
+import 'antd/dist/antd.css';
 
 const store = storeFactory();
 
