@@ -12,13 +12,13 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
-@RequestMapping("/safe")
+@RequestMapping("/safe/exchange")
 @RequiredArgsConstructor
 public class ExchangerController {
     private final ExchangerService exchangerService;
 
     @Operation(summary = "Put exchange request to the exchanger.")
-    @PutMapping(value = "/exchange")
+    @PutMapping
     public void addExchange(@Parameter(description = "Info for creation request to exchange.")
                             @RequestBody
                             @NotNull ExchangeRequestDTO dto) throws Exception {
@@ -26,7 +26,7 @@ public class ExchangerController {
     }
 
     @Operation(summary = "Return all exchange requests.")
-    @GetMapping(value = "/exchange")
+    @GetMapping
     public List<AllRequestsDTO> getAllExchanges() throws Exception {
         return exchangerService.getAllRequests();
     }
