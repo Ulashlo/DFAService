@@ -2,6 +2,7 @@
 apis/AuthControllerApi.ts
 apis/DfaControllerApi.ts
 apis/ExchangerControllerApi.ts
+apis/RequestControllerApi.ts
 apis/UserControllerApi.ts
 apis/index.ts
 index.ts
@@ -12,10 +13,12 @@ models/DFAInfoForCreateDTO.ts
 models/DFAViewDTO.ts
 models/ExchangeInfo.ts
 models/ExchangeRequestDTO.ts
+models/IssuerRequestDTO.ts
 models/RequestsForDFADTO.ts
 models/TokenResponseDTO.ts
 models/UserInfoForCreateDTO.ts
 models/UserInfoForUpdateDTO.ts
+models/UserLinkDTO.ts
 models/UserViewDTO.ts
 models/index.ts
 runtime.ts
