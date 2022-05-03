@@ -8,6 +8,7 @@ import { clearApiErrorInfo } from '@src/redux/reducers/apiError';
 import { clearAuthInfo } from '@src/redux/reducers/auth';
 import { clearRequests } from '@src/redux/reducers/requests';
 import { clearBalances } from '@src/redux/reducers/balances';
+import { clearIssuerRequests } from '@src/redux/reducers/issuerRequests';
 
 export interface UseBaseLayoutForm {
   selectedMenuItem: Omit<PagePanel, 'uri'>;
@@ -51,6 +52,7 @@ export const useBaseLayoutForm = (): UseBaseLayoutForm => {
     dispatch(clearAuthInfo());
     dispatch(clearRequests());
     dispatch(clearBalances());
+    dispatch(clearIssuerRequests());
   }, [dispatch]);
 
   return {
