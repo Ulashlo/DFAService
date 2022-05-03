@@ -2,7 +2,7 @@ import { useApiErrorInfo } from '@src/redux/hooks/apiError';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '@src/redux/hooks/useAppDispatch.hook';
 import { useCallback, useEffect, useMemo } from 'react';
-import { isParentPagePanel, PagePanel, pagePanels, pages } from '@src/CustomRouter';
+import { isParentPagePanel, PagePanel, pages, usersPagePanels } from '@src/CustomRouter';
 import NotificationService from '@src/services/NotificationService';
 import { clearApiErrorInfo } from '@src/redux/reducers/apiError';
 import { clearAuthInfo } from '@src/redux/reducers/auth';
@@ -23,7 +23,7 @@ export const useBaseLayoutForm = (): UseBaseLayoutForm => {
   const dispatch = useAppDispatch();
 
   const selectedMenuItem = useMemo((): Omit<PagePanel, 'uri'> => {
-    const selectedPagePanel = pagePanels
+    const selectedPagePanel = usersPagePanels
       .flatMap((pagePanel) => (isParentPagePanel(pagePanel) ? pagePanel.children : [pagePanel]))
       .find((pagePanel) => isCurrentPageSelected(pagePanel, pathname));
     if (selectedPagePanel) {
@@ -36,6 +36,7 @@ export const useBaseLayoutForm = (): UseBaseLayoutForm => {
     return {
       id: 'someId',
       description: '',
+      roleAllowed: '',
     };
   }, [pathname]);
 

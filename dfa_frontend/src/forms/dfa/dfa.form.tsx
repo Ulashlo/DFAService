@@ -6,6 +6,8 @@ import { AllDfaForm } from '@src/forms/dfa/allDfa';
 import { MyDfaForm } from '@src/forms/dfa/myDfa';
 import { CreateDfaForm } from '@src/forms/dfa/createDfa';
 import { useAutoUpdateDfas } from '@src/hooks/useAutoUpdateDfas.hook';
+import { ISSUER } from '@src/utils/constraints';
+import { useAuthInfo } from '@src/redux/hooks/auth';
 
 const { TabPane } = Tabs;
 
@@ -26,6 +28,7 @@ export function DfaForm() {
     ? (raw as DfaFormType)
     : DfaFormType.ALL_DFA;
   const history = useHistory();
+  const authInfo = useAuthInfo();
 
   const onSelectActiveTabKey = useCallback(
     (activeKey: string) => history.push(`${pages.dfa.uri}/${activeKey}`),
@@ -41,12 +44,16 @@ export function DfaForm() {
           <TabPane tab="Все ЦФА" key={DfaFormType.ALL_DFA}>
             <AllDfaForm />
           </TabPane>
-          <TabPane tab="Мои ЦФА" key={DfaFormType.MINE_DFA}>
-            <MyDfaForm />
-          </TabPane>
-          <TabPane tab="Создать ЦФА" key={DfaFormType.CREATE_DFA}>
-            <CreateDfaForm />
-          </TabPane>
+          {authInfo?.roles.includes(ISSUER) && (
+            <>
+              <TabPane tab="Мои ЦФА" key={DfaFormType.MINE_DFA}>
+                <MyDfaForm />
+              </TabPane>
+              <TabPane tab="Создать ЦФА" key={DfaFormType.CREATE_DFA}>
+                <CreateDfaForm />
+              </TabPane>
+            </>
+          )}
         </Tabs>
       </Col>
     </Row>

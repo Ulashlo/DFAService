@@ -4,7 +4,7 @@ import { CaretDownOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import ruRu from 'antd/lib/locale/ru_RU';
 import { useAuthInfo } from '@src/redux/hooks/auth/useAuthInfo.hook';
-import { isParentPagePanel, PagePanel, pagePanels, ParentPagePanel } from '@src/CustomRouter';
+import { isParentPagePanel, PagePanel, ParentPagePanel, usersPagePanels } from '@src/CustomRouter';
 import { useSpinner } from '@src/redux/hooks/spinner';
 import { useBaseLayoutForm } from '@src/forms/baseLayout/hook';
 
@@ -22,12 +22,16 @@ export function BaseLayoutForm({ children }: PropsWithChildren<{}>) {
         {authInfo && (
           <Header style={{ backgroundColor: 'white', padding: '0px 15px' }}>
             <Menu style={{ fontWeight: 'bold' }} mode="horizontal" selectedKeys={[selectedMenuItem.id]}>
-              {pagePanels.map((pagePanel) => {
-                if (isParentPagePanel(pagePanel)) {
-                  return renderSubMenu(pagePanel);
-                }
-                return renderMenuItem(pagePanel);
-              })}
+              {usersPagePanels
+                .filter(
+                  (pagePanel) => pagePanel.roleAllowed.length === 0 || authInfo?.roles.includes(pagePanel.roleAllowed),
+                )
+                .map((pagePanel) => {
+                  if (isParentPagePanel(pagePanel)) {
+                    return renderSubMenu(pagePanel);
+                  }
+                  return renderMenuItem(pagePanel);
+                })}
               <Menu.Item onClick={handleLogout} key="exitPageMenuItem">
                 Выйти
               </Menu.Item>

@@ -1,11 +1,13 @@
 import React from 'react';
-import { BrowserRouter, Redirect, Route, RouteProps, useHistory, Switch } from 'react-router-dom';
+import { BrowserRouter, Redirect, Route, RouteProps, Switch, useHistory } from 'react-router-dom';
 import { AuthForm } from '@src/forms/auth';
 import { useAuthInfo } from '@src/redux/hooks/auth';
 import { DfaForm } from '@src/forms/dfa';
 import { RequestForm } from '@src/forms/request';
 import { AboutMeForm } from '@src/forms/aboutMe';
 import { BalanceForm } from '@src/forms/balance/balance.form';
+import { ADMIN, TRADER } from '@src/utils/constraints';
+import { AdminRequestForm } from '@src/forms/adminRequest';
 import { BaseLayoutForm } from './forms/baseLayout';
 import { NotFound } from './forms/notFound/notFound.form';
 
@@ -21,9 +23,10 @@ export interface PageInfo {
   requiresAuth: boolean;
   component: React.ComponentType;
   description: string;
+  roleAllowed: string;
 }
 
-export type PageName = 'auth' | 'dfa' | 'request' | 'aboutMe' | 'balance';
+export type PageName = 'auth' | 'dfa' | 'request' | 'adminRequest' | 'aboutMe' | 'balance';
 
 export const pages: Record<PageName, Readonly<PageInfo>> = {
   auth: {
@@ -33,6 +36,7 @@ export const pages: Record<PageName, Readonly<PageInfo>> = {
     requiresAuth: false,
     component: AuthForm,
     description: 'Авторизация',
+    roleAllowed: '',
   },
   dfa: {
     id: 'dfa',
@@ -41,6 +45,7 @@ export const pages: Record<PageName, Readonly<PageInfo>> = {
     requiresAuth: true,
     component: DfaForm,
     description: 'ЦФА',
+    roleAllowed: '',
   },
   request: {
     id: 'request',
@@ -49,6 +54,16 @@ export const pages: Record<PageName, Readonly<PageInfo>> = {
     requiresAuth: true,
     component: RequestForm,
     description: 'Запросы на обмен ЦФА',
+    roleAllowed: '',
+  },
+  adminRequest: {
+    id: 'adminRequest',
+    uri: '/adminRequest',
+    params: [{ name: 'adminRequestFormType', optional: true }],
+    requiresAuth: true,
+    component: AdminRequestForm,
+    description: 'Запросы',
+    roleAllowed: ADMIN,
   },
   aboutMe: {
     id: 'aboutMe',
@@ -57,6 +72,7 @@ export const pages: Record<PageName, Readonly<PageInfo>> = {
     requiresAuth: true,
     component: AboutMeForm,
     description: 'Профиль',
+    roleAllowed: '',
   },
   balance: {
     id: 'balance',
@@ -65,6 +81,7 @@ export const pages: Record<PageName, Readonly<PageInfo>> = {
     requiresAuth: true,
     component: BalanceForm,
     description: 'Баланс',
+    roleAllowed: TRADER,
   },
 };
 
@@ -72,20 +89,23 @@ export interface PagePanel {
   id: string;
   uri: string;
   description: string;
+  roleAllowed: string;
 }
 
 export interface ParentPagePanel {
   id: string;
   children: PagePanel[];
   description: string;
+  roleAllowed: string;
 }
 
 export const isParentPagePanel = (o: PagePanel | ParentPagePanel): o is ParentPagePanel => 'children' in o;
 
-export const pagePanels: ReadonlyArray<PagePanel | ParentPagePanel> = [
+export const usersPagePanels: ReadonlyArray<PagePanel | ParentPagePanel> = [
   pages.dfa,
   pages.request,
   pages.balance,
+  pages.adminRequest,
   pages.aboutMe,
 ];
 

@@ -6,6 +6,7 @@ import {
   ExchangerControllerApi,
   FetchParams,
   RequestContext,
+  RequestControllerApi,
   ResponseContext,
   UserControllerApi,
 } from '@src/generated/backend';
@@ -22,6 +23,7 @@ export interface HttpClient {
   dfaControllerApi: DfaControllerApi;
   exchangerControllerApi: ExchangerControllerApi;
   userControllerApi: UserControllerApi;
+  requestControllerApi: RequestControllerApi;
 }
 
 export const useHttpClient = (): Readonly<HttpClient> => {
@@ -78,5 +80,6 @@ function createHttpClient(dispatch: Dispatch, configuration?: Configuration): Ht
     dfaControllerApi: new DfaControllerApi(configuration),
     exchangerControllerApi: new ExchangerControllerApi(configuration),
     userControllerApi: new UserControllerApi(configuration),
+    requestControllerApi: new RequestControllerApi(configuration),
   };
 }

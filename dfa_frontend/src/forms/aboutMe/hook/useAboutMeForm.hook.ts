@@ -2,12 +2,14 @@ import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { UserInfoForUpdateDTO, UserViewDTO } from '@src/generated/backend';
 import { useHttpClient } from '@src/hooks/useHttpClient.hook';
 import { doWithLocalSpinner } from '@src/redux/reducers/spinner';
+import NotificationService from '@src/services/NotificationService';
 
 export interface UseAboutMeForm {
   currentUserInfo: UserInfoForUpdateDTO;
   setAddress: (event: ChangeEvent<HTMLInputElement>) => void;
   setPrivateKey: (event: ChangeEvent<HTMLInputElement>) => void;
   updateUserInfo: () => Promise<void>;
+  verify: () => Promise<void>;
   isUpdated: boolean;
 }
 
@@ -21,7 +23,7 @@ export const useAboutMeForm = (): UseAboutMeForm => {
     address: '',
     privateKey: '',
   });
-  const { userControllerApi } = useHttpClient();
+  const { userControllerApi, requestControllerApi } = useHttpClient();
 
   useEffect(() => {
     doWithLocalSpinner(() => userControllerApi.getUserInfo(), {
@@ -63,11 +65,17 @@ export const useAboutMeForm = (): UseAboutMeForm => {
     }));
   }, [userControllerApi, setUserInfo, currentUserInfo]);
 
+  const verify = useCallback(async () => {
+    await requestControllerApi.addIssuerRequest();
+    NotificationService.reportSuccess('Заявка на верификацию отправлена');
+  }, [requestControllerApi]);
+
   return {
     currentUserInfo,
     setAddress,
     setPrivateKey,
     updateUserInfo,
+    verify,
     isUpdated,
   };
 };

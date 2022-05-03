@@ -3,6 +3,7 @@ package com.hse.dfa.backend.controller;
 import com.hse.dfa.backend.controller.dto.dfa.DFABalanceDTO;
 import com.hse.dfa.backend.controller.dto.dfa.DFAInfoForCreateDTO;
 import com.hse.dfa.backend.controller.dto.dfa.DFAViewDTO;
+import com.hse.dfa.backend.model.user_info.RoleName;
 import com.hse.dfa.backend.service.dfa.DFAService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,6 +14,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
+import static com.hse.dfa.backend.model.user_info.RoleName.ISSUER;
 import static com.hse.dfa.backend.model.user_info.RoleName.TRADER;
 
 @RestController
@@ -24,6 +26,7 @@ public class DFAController {
 
     @Operation(summary = "Create new dfa.")
     @PutMapping
+    @RolesAllowed(ISSUER)
     public void createDFA(@Parameter(description = "Info for creation new dfa.")
                           @RequestBody
                           @NotNull DFAInfoForCreateDTO dto) throws Exception {
