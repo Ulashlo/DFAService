@@ -4,42 +4,66 @@ pragma solidity ^0.8.3;
 import "./DFA.sol";
 import "./Exchanger.sol";
 
-contract Factory {
-//  struct ExchangerRequestInfo {
-//    address user;
-//    uint amountToGet;
-//    uint amountToGive;
-//  }
-//
-//  struct ExchangerRequestFullInfo {
-//    address user;
-//    address dfaToGet;
-//    uint amountToGet;
-//    address dfaToGive;
-//    uint amountToGive;
-//  }
-//  struct DfaInfo {
-//    address dfaAddress;
-//    string name;
-//    string symbol;
-//    uint totalSupply;
-//  }
 
+contract Factory {
+  //  struct ExchangerRequestInfo {
+  //    address user;
+  //    uint amountToGet;
+  //    uint amountToGive;
+  //  }
+  //
+  //  struct ExchangerRequestFullInfo {
+  //    address user;
+  //    address dfaToGet;
+  //    uint amountToGet;
+  //    address dfaToGive;
+  //    uint amountToGive;
+  //  }
+  //  struct DfaInfo {
+  //    address dfaAddress;
+  //    string name;
+  //    string symbol;
+  //    uint totalSupply;
+  //  }
+
+  address owner;
   address[] dfaList;
   mapping(address => address) dfaToExchanger;
+  mapping(address => bool) verifiedUsers;
 
   modifier isAddressValid(address addressToCheck) {
     require(addressToCheck != address(0), "Invalid token address");
     _;
   }
 
+  modifier isUserVerified() {
+    require(verifiedUsers[msg.sender], "User not verified");
+    _;
+  }
+
+  modifier isUserNotVerified(address user) {
+    require(!verifiedUsers[user], "User already verified");
+    _;
+  }
+
+  modifier isOwner() {
+    require(msg.sender == owner, "User is not owner");
+    _;
+  }
+
+  constructor() {
+    owner = msg.sender;
+  }
+
   event DFACreated(address whoCreate, address dfaAddress, string name, string symbol, uint initialSupply);
+
+  event UserVerified(address user);
 
   function createDfa(
     uint initialSupply,
     string memory name,
     string memory symbol
-  ) external returns (address)
+  ) external isUserVerified returns (address)
   {
     address dfaAddress = address(
       new DFA(
@@ -62,23 +86,33 @@ contract Factory {
     return dfaAddress;
   }
 
+  function verifyUser(address user)
+  external
+  isAddressValid(user)
+  isUserNotVerified(user)
+  isOwner
+  {
+    verifiedUsers[user] = true;
+    emit UserVerified(user);
+  }
+
   function getExchanger(address dfaAddress)
-    public
-    view
-    isAddressValid(dfaAddress)
-    returns (address)
+  public
+  view
+  isAddressValid(dfaAddress)
+  returns (address)
   {
     return dfaToExchanger[dfaAddress];
   }
 
   function getAllDfa() external view
-    returns (
-      address[] memory,
-      address[] memory,
-      string[] memory,
-      string[] memory,
-      uint[] memory
-    )
+  returns (
+    address[] memory,
+    address[] memory,
+    string[] memory,
+    string[] memory,
+    uint[] memory
+  )
   {
     address[] memory addresses = new address[](dfaList.length);
     address[] memory owners = new address[](dfaList.length);
@@ -103,9 +137,9 @@ contract Factory {
   }
 
   function getBalances()
-    external
-    view
-    returns (address[] memory, uint[] memory)
+  external
+  view
+  returns (address[] memory, uint[] memory)
   {
     address[] memory addresses = new address[](dfaList.length);
     uint[] memory balances = new uint[](dfaList.length);
@@ -118,41 +152,41 @@ contract Factory {
     return (addresses, balances);
   }
 
-//  function getAllDfaTest() public view returns (DfaInfo[] memory) {
-//    DfaInfo[] memory info = new DfaInfo[](dfaList.length);
-//    for (uint i = 0; i < dfaList.length; i++) {
-//      address dfaAddress = dfaList[i];
-//      DFA dfa = DFA(dfaAddress);
-//      info[i] = DfaInfo(
-//        dfaAddress,
-//        dfa.name(),
-//        dfa.symbol(),
-//        dfa.totalSupply()
-//      );
-//    }
-//    return info;
-//  }
+  //  function getAllDfaTest() public view returns (DfaInfo[] memory) {
+  //    DfaInfo[] memory info = new DfaInfo[](dfaList.length);
+  //    for (uint i = 0; i < dfaList.length; i++) {
+  //      address dfaAddress = dfaList[i];
+  //      DFA dfa = DFA(dfaAddress);
+  //      info[i] = DfaInfo(
+  //        dfaAddress,
+  //        dfa.name(),
+  //        dfa.symbol(),
+  //        dfa.totalSupply()
+  //      );
+  //    }
+  //    return info;
+  //  }
 
-//  function getAllRequests() public view returns (ExchangerRequestFullInfo[] memory) {
-//    ExchangerRequestFullInfo[] requestList = address[](dfaList.length);
-//    for (uint i = 0; i < dfaList.length; i++) {
-//
-//    }
-//    return requestList;
-//  }
+  //  function getAllRequests() public view returns (ExchangerRequestFullInfo[] memory) {
+  //    ExchangerRequestFullInfo[] requestList = address[](dfaList.length);
+  //    for (uint i = 0; i < dfaList.length; i++) {
+  //
+  //    }
+  //    return requestList;
+  //  }
 
-//  function getAllDfaByUser(address user)
-//    public
-//    view
-//    isAddressValid(user)
-//    returns (address[])
-//  {
-//    address[] usersDfa = address[]();
-//    for (uint i = 0; i < dfaList.length; i++) {
-//      if (DFA(dfaList[i]).owner() == user) {
-//        usersDfa.push(dfaList[i]);
-//      }
-//    }
-//    return usersDfa;
-//  }
+  //  function getAllDfaByUser(address user)
+  //    public
+  //    view
+  //    isAddressValid(user)
+  //    returns (address[])
+  //  {
+  //    address[] usersDfa = address[]();
+  //    for (uint i = 0; i < dfaList.length; i++) {
+  //      if (DFA(dfaList[i]).owner() == user) {
+  //        usersDfa.push(dfaList[i]);
+  //      }
+  //    }
+  //    return usersDfa;
+  //  }
 }

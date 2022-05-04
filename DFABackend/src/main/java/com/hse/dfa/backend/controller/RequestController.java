@@ -38,7 +38,7 @@ public class RequestController {
     public void acceptIssuerRequest(
         @PathVariable
         @Schema(title = "Request id", description = "Request for accepting id")
-        @NotNull Long requestId) {
+        @NotNull Long requestId) throws Exception {
         requestService.acceptIssuerRequest(requestId);
     }
 

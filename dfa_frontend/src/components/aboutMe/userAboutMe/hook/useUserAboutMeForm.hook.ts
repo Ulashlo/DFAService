@@ -4,7 +4,7 @@ import { useHttpClient } from '@src/hooks/useHttpClient.hook';
 import { doWithLocalSpinner } from '@src/redux/reducers/spinner';
 import NotificationService from '@src/services/NotificationService';
 
-export interface UseAboutMeForm {
+export interface UseUserAboutMeForm {
   currentUserInfo: UserInfoForUpdateDTO;
   setAddress: (event: ChangeEvent<HTMLInputElement>) => void;
   setPrivateKey: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -13,7 +13,7 @@ export interface UseAboutMeForm {
   isUpdated: boolean;
 }
 
-export const useAboutMeForm = (): UseAboutMeForm => {
+export const useUserAboutMeForm = (): UseUserAboutMeForm => {
   const [userInfo, setUserInfo] = useState<UserViewDTO>({
     username: '',
     address: '',

@@ -23,7 +23,7 @@ public interface RequestService {
     /**
      * Accept issuer requests.
      */
-    void acceptIssuerRequest(Long requestId);
+    void acceptIssuerRequest(Long requestId) throws Exception;
 
     /**
      * Cancel issuer requests.
