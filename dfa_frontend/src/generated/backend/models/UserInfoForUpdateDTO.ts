@@ -20,6 +20,12 @@ import { exists, mapValues } from '../runtime';
  */
 export interface UserInfoForUpdateDTO {
     /**
+     * Users email.
+     * @type {string}
+     * @memberof UserInfoForUpdateDTO
+     */
+    email?: string;
+    /**
      * Ethereum address.
      * @type {string}
      * @memberof UserInfoForUpdateDTO
@@ -43,6 +49,7 @@ export function UserInfoForUpdateDTOFromJSONTyped(json: any, ignoreDiscriminator
     }
     return {
         
+        'email': !exists(json, 'email') ? undefined : json['email'],
         'address': !exists(json, 'address') ? undefined : json['address'],
         'privateKey': !exists(json, 'privateKey') ? undefined : json['privateKey'],
     };
@@ -57,6 +64,7 @@ export function UserInfoForUpdateDTOToJSON(value?: UserInfoForUpdateDTO | null):
     }
     return {
         
+        'email': value.email,
         'address': value.address,
         'privateKey': value.privateKey,
     };

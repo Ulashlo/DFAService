@@ -21,6 +21,8 @@ public class UserInfoForCreateDTO {
     @NotEmpty
     @Schema(title = "Password", description = "Password.")
     private String password;
+    @Schema(title = "Email", description = "Users email.")
+    private String email;
     @Schema(title = "Address", description = "Ethereum address.")
     private String address;
     @Schema(title = "Private key", description = "Ethereum private key.")

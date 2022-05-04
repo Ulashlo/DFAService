@@ -4,6 +4,7 @@ create table if not exists user_info.user (
     id          bigserial primary key,
     username    text not null unique,
     password    text not null,
+    email       text,
     address     text,
     private_key text
 );

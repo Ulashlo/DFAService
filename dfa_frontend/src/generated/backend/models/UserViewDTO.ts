@@ -26,6 +26,12 @@ export interface UserViewDTO {
      */
     username: string;
     /**
+     * Users email.
+     * @type {string}
+     * @memberof UserViewDTO
+     */
+    email: string;
+    /**
      * Ethereum address.
      * @type {string}
      * @memberof UserViewDTO
@@ -50,6 +56,7 @@ export function UserViewDTOFromJSONTyped(json: any, ignoreDiscriminator: boolean
     return {
         
         'username': json['username'],
+        'email': json['email'],
         'address': json['address'],
         'privateKey': json['privateKey'],
     };
@@ -65,6 +72,7 @@ export function UserViewDTOToJSON(value?: UserViewDTO | null): any {
     return {
         
         'username': value.username,
+        'email': value.email,
         'address': value.address,
         'privateKey': value.privateKey,
     };

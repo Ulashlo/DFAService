@@ -18,6 +18,9 @@ public class UserViewDTO {
     @Schema(title = "Username", description = "Username.")
     private String username;
     @NotNull
+    @Schema(title = "Email", description = "Users email.")
+    private String email;
+    @NotNull
     @Schema(title = "Address", description = "Ethereum address.")
     private String address;
     @NotNull

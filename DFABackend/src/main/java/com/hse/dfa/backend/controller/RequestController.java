@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 import static com.hse.dfa.backend.model.user_info.RoleName.ADMIN;
+import static com.hse.dfa.backend.model.user_info.RoleName.TRADER;
 
 @RestController
 @RequestMapping("/safe/request")
@@ -21,6 +22,7 @@ public class RequestController {
 
     @Operation(summary = "Add request for issuer rights.")
     @PutMapping("/issuer")
+    @RolesAllowed(TRADER)
     public void addIssuerRequest() {
         requestService.addIssuerRequest();
     }

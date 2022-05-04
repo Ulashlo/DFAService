@@ -69,6 +69,7 @@ public class AuthServiceImpl implements AuthService {
         final var user = new User(
             dto.getUsername(),
             passwordEncoder.encode(dto.getPassword()),
+            dto.getEmail(),
             dto.getAddress(),
             dto.getPrivateKey(),
             Set.of(defaultRole)

@@ -21,7 +21,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
 public class SecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
     private static final String LOGIN_ENTRY_POINT = "/auth/**";
     private static final String SAFE_ENTRY_POINT = "/safe/**";

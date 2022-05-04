@@ -6,6 +6,7 @@ import NotificationService from '@src/services/NotificationService';
 
 export interface UseUserAboutMeForm {
   currentUserInfo: UserInfoForUpdateDTO;
+  setEmail: (event: ChangeEvent<HTMLInputElement>) => void;
   setAddress: (event: ChangeEvent<HTMLInputElement>) => void;
   setPrivateKey: (event: ChangeEvent<HTMLInputElement>) => void;
   updateUserInfo: () => Promise<void>;
@@ -16,10 +17,12 @@ export interface UseUserAboutMeForm {
 export const useUserAboutMeForm = (): UseUserAboutMeForm => {
   const [userInfo, setUserInfo] = useState<UserViewDTO>({
     username: '',
+    email: '',
     address: '',
     privateKey: '',
   });
   const [currentUserInfo, setCurrentUserInfo] = useState<UserInfoForUpdateDTO>({
+    email: '',
     address: '',
     privateKey: '',
   });
@@ -32,6 +35,7 @@ export const useUserAboutMeForm = (): UseUserAboutMeForm => {
     }).then((info) => {
       setUserInfo(info);
       setCurrentUserInfo({
+        email: info.email,
         address: info.address,
         privateKey: info.privateKey,
       });
@@ -39,8 +43,18 @@ export const useUserAboutMeForm = (): UseUserAboutMeForm => {
   }, [userControllerApi]);
 
   const isUpdated = useMemo(() => {
-    return userInfo.address === currentUserInfo.address && userInfo.privateKey === currentUserInfo.privateKey;
+    return (
+      userInfo.address === currentUserInfo.address &&
+      userInfo.privateKey === currentUserInfo.privateKey &&
+      userInfo.email === currentUserInfo.email
+    );
   }, [userInfo, currentUserInfo]);
+
+  const setEmail = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) =>
+      setCurrentUserInfo((prevState) => ({ ...prevState, email: event.target.value })),
+    [setCurrentUserInfo],
+  );
 
   const setAddress = useCallback(
     (event: ChangeEvent<HTMLInputElement>) =>
@@ -59,6 +73,7 @@ export const useUserAboutMeForm = (): UseUserAboutMeForm => {
       userInfoForUpdateDTO: currentUserInfo,
     });
     setUserInfo((prevState) => ({
+      email: currentUserInfo.email ?? '',
       username: prevState.username,
       address: currentUserInfo.address ?? '',
       privateKey: currentUserInfo.privateKey ?? '',
@@ -72,6 +87,7 @@ export const useUserAboutMeForm = (): UseUserAboutMeForm => {
 
   return {
     currentUserInfo,
+    setEmail,
     setAddress,
     setPrivateKey,
     updateUserInfo,

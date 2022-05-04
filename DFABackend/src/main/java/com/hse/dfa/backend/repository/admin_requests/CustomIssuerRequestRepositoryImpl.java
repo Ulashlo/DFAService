@@ -27,7 +27,8 @@ public class CustomIssuerRequestRepositoryImpl implements CustomIssuerRequestRep
         return entityManager.createQuery(
                 "select ir.id as id, " +
                     "           ir.dateCreated as dateCreated, " +
-                    "           u.username as username " +
+                    "           u.username as username," +
+                    "           u.email as email " +
                     "from IssuerRequest ir join ir.userWhoSent u " +
                     "where ir.status = 'CREATED'", Tuple.class
             ).getResultList().stream()
@@ -35,7 +36,7 @@ public class CustomIssuerRequestRepositoryImpl implements CustomIssuerRequestRep
                 tuple.get("id", Long.class),
                 new UserLinkDTO(
                     tuple.get("username", String.class),
-                    "email"
+                    tuple.get("email", String.class)
                 ),
                 tuple.get("dateCreated", OffsetDateTime.class)
             )).collect(Collectors.toList());

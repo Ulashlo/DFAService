@@ -32,6 +32,12 @@ export interface UserInfoForCreateDTO {
      */
     password: string;
     /**
+     * Users email.
+     * @type {string}
+     * @memberof UserInfoForCreateDTO
+     */
+    email?: string;
+    /**
      * Ethereum address.
      * @type {string}
      * @memberof UserInfoForCreateDTO
@@ -57,6 +63,7 @@ export function UserInfoForCreateDTOFromJSONTyped(json: any, ignoreDiscriminator
         
         'username': json['username'],
         'password': json['password'],
+        'email': !exists(json, 'email') ? undefined : json['email'],
         'address': !exists(json, 'address') ? undefined : json['address'],
         'privateKey': !exists(json, 'privateKey') ? undefined : json['privateKey'],
     };
@@ -73,6 +80,7 @@ export function UserInfoForCreateDTOToJSON(value?: UserInfoForCreateDTO | null):
         
         'username': value.username,
         'password': value.password,
+        'email': value.email,
         'address': value.address,
         'privateKey': value.privateKey,
     };

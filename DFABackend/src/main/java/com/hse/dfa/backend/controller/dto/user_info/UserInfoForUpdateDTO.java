@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @Schema(title = "User info for update", description = "User info for update.")
 public class UserInfoForUpdateDTO {
+    @Schema(title = "Email", description = "Users email.")
+    private String email;
     @Schema(title = "Address", description = "Ethereum address.")
     private String address;
     @Schema(title = "Private key", description = "Ethereum private key.")

@@ -11,6 +11,7 @@ public class UserConverter {
     public static UserViewDTO toUserViewDTO(User user) {
         return new UserViewDTO(
             user.getUsername(),
+            user.getEmail().orElse(""),
             user.getAddress().orElse(""),
             user.getPrivateKey().orElse("")
         );

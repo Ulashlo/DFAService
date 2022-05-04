@@ -41,6 +41,10 @@ public class User implements UserDetails {
     private String password;
 
     @Setter
+    @Column(name = "email")
+    private String email;
+
+    @Setter
     @Column(name = "address")
     private String address;
 
@@ -48,6 +52,7 @@ public class User implements UserDetails {
     @Column(name = "private_key")
     private String privateKey;
 
+    @Getter
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = ALL, fetch = EAGER)
     @Fetch(SUBSELECT)
     private Set<UserRole> userRoles = new HashSet<>();
@@ -55,15 +60,21 @@ public class User implements UserDetails {
     public User(
         String username,
         String password,
+        String email,
         String address,
         String privateKey,
         Set<Role> userRoles
     ) {
         this.username = username;
         this.password = password;
+        this.email = email;
         this.address = address;
         this.privateKey = privateKey;
         this.addRoles(userRoles);
+    }
+
+    public Optional<String> getEmail() {
+        return ofNullable(email);
     }
 
     public Optional<String> getAddress() {

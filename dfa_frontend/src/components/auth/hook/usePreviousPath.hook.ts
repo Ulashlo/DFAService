@@ -15,7 +15,7 @@ export const usePreviousPath = (): UsePreviousPath => {
     } else if (from) {
       history.push(from);
     } else {
-      history.push('/');
+      history.push('/dfa');
     }
   }, [history]);
 

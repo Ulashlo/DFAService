@@ -4,8 +4,12 @@ import com.hse.dfa.backend.exceptions.authentication.NotAuthenticatedRequestExce
 import com.hse.dfa.backend.exceptions.authentication.UsernameIsAlreadyExistException;
 import com.hse.dfa.backend.exceptions.contract.IncorrectEthereumResponseFormatException;
 import com.hse.dfa.backend.exceptions.contract.UserEthereumCredentialException;
+import com.hse.dfa.backend.exceptions.request.UserIsAlreadyIssuerException;
+import com.hse.dfa.backend.exceptions.request.UserIsAlreadySendIssuerRequestException;
+import com.hse.dfa.backend.exceptions.userInfo.IssuerCanNotChangeEthereumInfoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -73,6 +77,30 @@ public class RestExceptionResolver extends ResponseEntityExceptionHandler {
         return innerHandleException(HttpStatus.BAD_REQUEST, ex.getUserMessage());
     }
 
+    @ExceptionHandler(UserIsAlreadyIssuerException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    protected ResponseEntity<ApiError> handleUserIsAlreadyIssuerException(UserIsAlreadyIssuerException ex, HttpServletRequest request) {
+        return innerHandleException(HttpStatus.FORBIDDEN, ex.getUserMessage());
+    }
+
+    @ExceptionHandler(UserIsAlreadySendIssuerRequestException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    protected ResponseEntity<ApiError> handleUserIsAlreadySendIssuerRequestException(UserIsAlreadySendIssuerRequestException ex, HttpServletRequest request) {
+        return innerHandleException(HttpStatus.FORBIDDEN, ex.getUserMessage());
+    }
+
+    @ExceptionHandler(IssuerCanNotChangeEthereumInfoException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    protected ResponseEntity<ApiError> handleIssuerCanNotChangeEthereumInfoException(IssuerCanNotChangeEthereumInfoException ex, HttpServletRequest request) {
+        return innerHandleException(HttpStatus.FORBIDDEN, ex.getUserMessage());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    protected ResponseEntity<ApiError> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
+        return innerHandleException(HttpStatus.FORBIDDEN, "Доступ запрещен!");
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     private ResponseEntity<ApiError> handleThrowable(Exception ex, HttpServletRequest request) {
@@ -81,11 +109,12 @@ public class RestExceptionResolver extends ResponseEntityExceptionHandler {
             .reduce("", (s1, s2) -> s1 + '\n' + s2));
         return innerHandleException(
             HttpStatus.INTERNAL_SERVER_ERROR,
-            ex.getMessage() + '\n' +
-                Arrays.stream(ex.getStackTrace())
-                    .map(Objects::toString)
-                    .reduce("", (s1, s2) -> s1 + '\n' + s2)
-//            "Неизвестная ошибка! Пожалуйста, обратитесь к администратору!"
+//            ex.getClass().getName()
+//            ex.getMessage() + '\n' +
+//                Arrays.stream(ex.getStackTrace())
+//                    .map(Objects::toString)
+//                    .reduce("", (s1, s2) -> s1 + '\n' + s2)
+            "Неизвестная ошибка! Пожалуйста, обратитесь к администратору!"
         );
     }
 

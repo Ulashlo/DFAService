@@ -3,6 +3,8 @@ package com.hse.dfa.backend.service.user_info;
 import com.hse.dfa.backend.controller.dto.user_info.UserInfoForUpdateDTO;
 import com.hse.dfa.backend.controller.dto.user_info.UserViewDTO;
 import com.hse.dfa.backend.exceptions.authentication.NotAuthenticatedRequestException;
+import com.hse.dfa.backend.exceptions.userInfo.IssuerCanNotChangeEthereumInfoException;
+import com.hse.dfa.backend.model.user_info.RoleType;
 import com.hse.dfa.backend.model.user_info.User;
 import com.hse.dfa.backend.repository.user_info.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +48,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUserInfo(UserInfoForUpdateDTO dto) {
         final var user = getCurrentUser();
+        if (!dto.getPrivateKey().equals(user.getPrivateKey().orElse("")) ||
+            !dto.getAddress().equals(user.getAddress().orElse(""))) {
+            if (
+                user.getUserRoles().stream()
+                    .anyMatch(
+                        userRole -> userRole.getRole().getRoleType().equals(RoleType.ISSUER)
+                    )
+            ) {
+                throw new IssuerCanNotChangeEthereumInfoException("Issuer can not change ethereum info!");
+            }
+        }
+        user.setEmail(dto.getEmail());
         user.setAddress(dto.getAddress());
         user.setPrivateKey(dto.getPrivateKey());
         userRepository.saveAndFlush(user);

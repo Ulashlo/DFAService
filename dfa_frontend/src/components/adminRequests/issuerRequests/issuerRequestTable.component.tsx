@@ -42,7 +42,7 @@ export const IssuerRequestsTable = React.memo(({ requests, isLoading }: IssuerRe
       <Col span={24}>
         <Table pagination={false} size="large" dataSource={dataSource} tableLayout="fixed" loading={isLoading}>
           <Column width="26%" title="Имя пользователя" dataIndex="username" key="username" />
-          <Column width="26%" title="Email пользователя" dataIndex="string" key="string" />
+          <Column width="26%" title="Email пользователя" dataIndex="email" key="email" />
           <Column width="28%" title="Дата создания заявки" dataIndex="dateCreated" key="dateCreated" />
           <Column
             width="10%"

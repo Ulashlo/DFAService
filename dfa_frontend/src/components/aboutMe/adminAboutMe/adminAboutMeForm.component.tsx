@@ -5,7 +5,7 @@ import { useAdminAboutMeForm } from '@src/components/aboutMe/adminAboutMe/hook';
 
 export function AdminAboutMeForm() {
   const authInfo = useAuthInfo();
-  const { isUpdated, updateUserInfo } = useAdminAboutMeForm();
+  const { currentUserInfo, setEmail, updateUserInfo, isUpdated } = useAdminAboutMeForm();
 
   return (
     <Row style={{ height: '80%' }} justify="space-around" align="middle">
@@ -27,7 +27,7 @@ export function AdminAboutMeForm() {
               <Typography.Title level={5}>{authInfo?.username}</Typography.Title>
             </Row>
             <Row justify="start" style={{ paddingTop: '20px' }}>
-              <Input />
+              <Input value={currentUserInfo.email} onChange={setEmail} />
             </Row>
             <Row justify="start" style={{ paddingTop: '20px' }}>
               <Button type="primary" htmlType="submit" disabled={isUpdated} onClick={updateUserInfo}>

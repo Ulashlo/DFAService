@@ -5,7 +5,8 @@ import { useAuthInfo } from '@src/redux/hooks/auth';
 import { ISSUER } from '@src/utils/constraints';
 
 export function UserAboutMeForm() {
-  const { currentUserInfo, setAddress, setPrivateKey, updateUserInfo, verify, isUpdated } = useUserAboutMeForm();
+  const { currentUserInfo, setEmail, setAddress, setPrivateKey, updateUserInfo, verify, isUpdated } =
+    useUserAboutMeForm();
   const authInfo = useAuthInfo();
 
   return (
@@ -31,7 +32,7 @@ export function UserAboutMeForm() {
               <Typography.Title level={5}>{authInfo?.username}</Typography.Title>
             </Row>
             <Row justify="start" style={{ paddingTop: '20px' }}>
-              <Input />
+              <Input value={currentUserInfo.email} onChange={setEmail} />
             </Row>
             <Row justify="start" style={{ paddingTop: '20px' }}>
               {authInfo?.roles.includes(ISSUER) ? (
@@ -70,12 +71,25 @@ export function UserAboutMeForm() {
             </Row>
           </Col>
           <Col span={15} offset={1}>
-            <Row justify="start" style={{ paddingTop: '20px' }}>
-              <Input value={currentUserInfo.address} onChange={setAddress} />
-            </Row>
-            <Row justify="start" style={{ paddingTop: '20px' }}>
-              <Input value={currentUserInfo.privateKey} onChange={setPrivateKey} />
-            </Row>
+            {authInfo?.roles.includes(ISSUER) ? (
+              <>
+                <Row justify="start" style={{ paddingTop: '20px' }}>
+                  <Typography.Title level={5}>{currentUserInfo.address}</Typography.Title>
+                </Row>
+                <Row justify="start" style={{ paddingTop: '20px' }}>
+                  <Typography.Title level={5}>{currentUserInfo.privateKey}</Typography.Title>
+                </Row>
+              </>
+            ) : (
+              <>
+                <Row justify="start" style={{ paddingTop: '20px' }}>
+                  <Input value={currentUserInfo.address} onChange={setAddress} />
+                </Row>
+                <Row justify="start" style={{ paddingTop: '20px' }}>
+                  <Input value={currentUserInfo.privateKey} onChange={setPrivateKey} />
+                </Row>
+              </>
+            )}
             <Row justify="start" style={{ paddingTop: '20px' }}>
               <Button type="primary" htmlType="submit" disabled={isUpdated} onClick={updateUserInfo}>
                 Сохранить
