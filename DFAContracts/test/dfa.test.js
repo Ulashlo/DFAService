@@ -6,6 +6,7 @@ contract('DFA', accounts => {
 
     beforeEach('Setup DFA', async () => {
         owner = accounts[0];
+
         dfa = await DFA.new(
             1000,
             'first',

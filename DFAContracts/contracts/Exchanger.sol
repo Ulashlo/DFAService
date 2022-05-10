@@ -4,123 +4,19 @@ pragma solidity ^0.8.3;
 import "./DFA.sol";
 import "./Factory.sol";
 
-enum ExchangeStatus{ OPEN, CLOSE }
-enum ExchangeType{ INDIVISIBLE, DIVISIBLE }
+contract Exchanger {
+  enum ExchangeStatus{ OPEN, CLOSE }
+  enum ExchangeType{ INDIVISIBLE, DIVISIBLE }
 
-struct ExchangerRequestInfo {
-  ExchangeType exchangeType;
-  address user;
-  uint amountToGet;
-  uint amountToGive;
-  uint endTime;
-  ExchangeStatus status;
-}
-
-struct ExchangeRequestView {
-  ExchangeType exchangeType;
-  address dfaToGive;
-  uint amountToGive;
-  uint amountToGet;
-}
-
-struct ReciprocalRequestInfo {
-  bool isFound;
-  address user;
-  uint index;
-  uint reciprocalAmountToGet;
-  uint reciprocalAmountToGive;
-}
-
-library ExchangerUtils {
-  struct ExchangeInfo {
+  struct ExchangerRequestInfo {
+    ExchangeType exchangeType;
+    address user;
     uint amountToGet;
     uint amountToGive;
+    uint endTime;
+    ExchangeStatus status;
   }
 
-  modifier isAddressValid(address addressToCheck) {
-    require(addressToCheck != address(0), "Invalid address");
-    _;
-  }
-
-  modifier isAmountsNotZero(uint amount1, uint amount2) {
-    require(amount1 > 0, "Number is equal to zero");
-    require(amount2 > 0, "Number is equal to zero");
-    _;
-  }
-
-  function isIndivisibleReciprocalToIndivisible(
-    ExchangeInfo memory first,
-    ExchangeInfo memory second
-  ) private pure returns(bool) {
-    return first.amountToGet == second.amountToGive && second.amountToGet == first.amountToGive;
-  }
-
-  function isDivisibleReciprocalToDivisible(
-    ExchangeInfo memory first,
-    ExchangeInfo memory second
-  ) private pure returns(bool) {
-    return first.amountToGive * second.amountToGive == first.amountToGet * second.amountToGet;
-  }
-
-  function isDivisibleReciprocalToIndivisible(
-    ExchangeInfo memory first,
-    ExchangeInfo memory second
-  ) private pure returns(bool) {
-    return first.amountToGive * second.amountToGive == first.amountToGet * second.amountToGet &&
-    first.amountToGet >= second.amountToGive &&
-    first.amountToGive >= second.amountToGet;
-  }
-
-  function getReciprocalRequestInfo(
-    ExchangeRequestView memory info,
-    uint index,
-    ExchangerRequestInfo[] memory requestList
-  )
-    external
-    view
-    isAmountsNotZero(info.amountToGive, info.amountToGet)
-    isAddressValid(info.dfaToGive)
-    returns (ReciprocalRequestInfo memory)
-  {
-    for (uint i = index; i < requestList.length; i++) {
-      ExchangerRequestInfo memory request = requestList[i];
-      if (request.status == ExchangeStatus.CLOSE || request.endTime < block.timestamp) {
-        continue;
-      }
-      bool cond = false;
-      if (request.exchangeType == ExchangeType.INDIVISIBLE &&
-        info.exchangeType == ExchangeType.INDIVISIBLE) {
-        cond = isIndivisibleReciprocalToIndivisible(
-          ExchangeInfo(info.amountToGet, info.amountToGive),
-          ExchangeInfo(request.amountToGet, request.amountToGive)
-        );
-      } else if (request.exchangeType == ExchangeType.INDIVISIBLE &&
-        info.exchangeType == ExchangeType.DIVISIBLE) {
-        cond = isDivisibleReciprocalToIndivisible(
-          ExchangeInfo(info.amountToGet, info.amountToGive),
-          ExchangeInfo(request.amountToGet, request.amountToGive)
-        );
-      } else if (request.exchangeType == ExchangeType.DIVISIBLE &&
-        info.exchangeType == ExchangeType.INDIVISIBLE) {
-        cond = isDivisibleReciprocalToIndivisible(
-          ExchangeInfo(request.amountToGet, request.amountToGive),
-          ExchangeInfo(info.amountToGet, info.amountToGive)
-        );
-      } else {
-        cond = isDivisibleReciprocalToDivisible(
-          ExchangeInfo(info.amountToGet, info.amountToGive),
-          ExchangeInfo(request.amountToGet, request.amountToGive)
-        );
-      }
-      if (cond) {
-        return ReciprocalRequestInfo(true, request.user, i, request.amountToGet, request.amountToGive);
-      }
-    }
-    return ReciprocalRequestInfo(false, address(0), 0, 0, 0);
-  }
-}
-
-contract Exchanger {
   struct ExchangeRequestData {
     ExchangeType exchangeType;
     address dfaToGet;
@@ -129,12 +25,32 @@ contract Exchanger {
     uint endTime;
   }
 
+  struct ExchangeRequestView {
+    ExchangeType exchangeType;
+    address dfaToGive;
+    uint amountToGive;
+    uint amountToGet;
+  }
+
+  struct ExchangeInfo {
+    uint amountToGet;
+    uint amountToGive;
+  }
+
   struct TryToExchangeParams {
     address dfaToGive;
     uint amountToGive;
     uint amountToGet;
     uint requestIndex;
     address buyer;
+  }
+
+  struct ReciprocalRequestInfo {
+    bool isFound;
+    address user;
+    uint index;
+    uint reciprocalAmountToGet;
+    uint reciprocalAmountToGive;
   }
 
   address public dfaAddress;
@@ -194,31 +110,85 @@ contract Exchanger {
     factoryAddress = msg.sender;
   }
 
+  function isIndivisibleReciprocalToIndivisible(
+    ExchangeInfo memory first,
+    ExchangeInfo memory second
+  ) private pure returns(bool) {
+    return first.amountToGet == second.amountToGive && second.amountToGet == first.amountToGive;
+  }
+
+  function isDivisibleReciprocalToDivisible(
+    ExchangeInfo memory first,
+    ExchangeInfo memory second
+  ) private pure returns(bool) {
+    return first.amountToGive * second.amountToGive == first.amountToGet * second.amountToGet;
+  }
+
+  function isDivisibleReciprocalToIndivisible(
+    ExchangeInfo memory first,
+    ExchangeInfo memory second
+  ) private pure returns(bool) {
+    return first.amountToGive * second.amountToGive == first.amountToGet * second.amountToGet &&
+    first.amountToGet >= second.amountToGive &&
+    first.amountToGive >= second.amountToGet;
+  }
+
   function getReciprocalRequestInfo(
     ExchangeRequestView memory info,
     uint index
   )
-    external
-    view
-    isAmountsNotZero(info.amountToGive, info.amountToGet)
-    isAddressValid(info.dfaToGive)
-    returns (ReciprocalRequestInfo memory)
+  external
+  view
+  isAmountsNotZero(info.amountToGive, info.amountToGet)
+  isAddressValid(info.dfaToGive)
+  returns (ReciprocalRequestInfo memory)
   {
-    return ExchangerUtils.getReciprocalRequestInfo(
-      info,
-      index,
-      requests[info.dfaToGive]
-    );
+    ExchangerRequestInfo[] memory requestList = requests[info.dfaToGive];
+    for (uint i = index; i < requestList.length; i++) {
+      ExchangerRequestInfo memory request = requestList[i];
+      if (request.status == ExchangeStatus.CLOSE || request.endTime < block.timestamp) {
+        continue;
+      }
+      bool cond = false;
+      if (request.exchangeType == ExchangeType.INDIVISIBLE &&
+        info.exchangeType == ExchangeType.INDIVISIBLE) {
+        cond = isIndivisibleReciprocalToIndivisible(
+          ExchangeInfo(info.amountToGet, info.amountToGive),
+          ExchangeInfo(request.amountToGet, request.amountToGive)
+        );
+      } else if (request.exchangeType == ExchangeType.INDIVISIBLE &&
+        info.exchangeType == ExchangeType.DIVISIBLE) {
+        cond = isDivisibleReciprocalToIndivisible(
+          ExchangeInfo(info.amountToGet, info.amountToGive),
+          ExchangeInfo(request.amountToGet, request.amountToGive)
+        );
+      } else if (request.exchangeType == ExchangeType.DIVISIBLE &&
+        info.exchangeType == ExchangeType.INDIVISIBLE) {
+        cond = isDivisibleReciprocalToIndivisible(
+          ExchangeInfo(request.amountToGet, request.amountToGive),
+          ExchangeInfo(info.amountToGet, info.amountToGive)
+        );
+      } else {
+        cond = isDivisibleReciprocalToDivisible(
+          ExchangeInfo(info.amountToGet, info.amountToGive),
+          ExchangeInfo(request.amountToGet, request.amountToGive)
+        );
+      }
+      if (cond) {
+        return ReciprocalRequestInfo(true, request.user, i, request.amountToGet, request.amountToGive);
+      }
+    }
+    return ReciprocalRequestInfo(false, address(0), 0, 0, 0);
   }
 
   function addRequest(
     ExchangeRequestData memory data
   )
-    external
-    isAmountsNotZero(data.amountToGive, data.amountToGet)
-    isAddressValid(data.dfaToGet)
-    isExchangerValid(data.dfaToGet)
-    isAmountCanTransfer(data.amountToGive)
+  external
+  isAmountsNotZero(data.amountToGive, data.amountToGet)
+  isAddressValid(data.dfaToGet)
+  isExchangerValid(data.dfaToGet)
+  isAmountCanTransfer(data.amountToGive)
   {
     address exchangerAddress = Factory(factoryAddress).getExchanger(data.dfaToGet);
     Exchanger exchanger = Exchanger(exchangerAddress);
@@ -229,8 +199,7 @@ contract Exchanger {
     // uint reciprocalAmountToGet;
     // uint reciprocalAmountToGive;
     ReciprocalRequestInfo memory requestInfo = exchanger.getReciprocalRequestInfo(
-      ExchangeRequestView(data.exchangeType, dfaAddress, data.amountToGive, data.amountToGet),
-      0
+      ExchangeRequestView(data.exchangeType, dfaAddress, data.amountToGive, data.amountToGet), 0
     );
     if (data.exchangeType == ExchangeType.INDIVISIBLE) {
       if (requestInfo.isFound) {
@@ -289,8 +258,7 @@ contract Exchanger {
           data.amountToGet = 0;
         }
         requestInfo = exchanger.getReciprocalRequestInfo(
-          ExchangeRequestView(data.exchangeType, dfaAddress, data.amountToGive, data.amountToGet),
-          requestInfo.index + 1
+          ExchangeRequestView(data.exchangeType, dfaAddress, data.amountToGive, data.amountToGet), requestInfo.index + 1
         );
       }
       if(data.amountToGet > 0 && data.amountToGive > 0) {
@@ -337,14 +305,14 @@ contract Exchanger {
   }
 
   function getRequestsByDfa(address dfa)
-    public
-    view
-    isAddressValid(dfa)
-    returns (
-      address[] memory,
-      uint[] memory,
-      uint[] memory
-    )
+  public
+  view
+  isAddressValid(dfa)
+  returns (
+    address[] memory,
+    uint[] memory,
+    uint[] memory
+  )
   {
     ExchangerRequestInfo[] memory reqs = requests[dfa];
     uint len = 0;

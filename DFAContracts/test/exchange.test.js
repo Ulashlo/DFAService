@@ -13,6 +13,8 @@ contract('Exchange', accounts => {
         firstUser = accounts[0];
         secondUser = accounts[1];
         factory = await Factory.new();
+        factory.verifyUser(firstUser);
+        factory.verifyUser(secondUser);
         await factory.createDfa(1000, 'first', 'f', {from: firstUser});
         await factory.createDfa(2000, 'second', 's', {from: secondUser});
         let dfaList = await factory.getAllDfa();

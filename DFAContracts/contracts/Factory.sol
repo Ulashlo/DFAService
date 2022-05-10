@@ -66,32 +66,32 @@ contract Factory {
   }
 
   function verifyUser(address user)
-    external
-    isAddressValid(user)
-    isUserNotVerified(user)
-    isOwner
+  external
+  isAddressValid(user)
+  isUserNotVerified(user)
+  isOwner
   {
     verifiedUsers[user] = true;
     emit UserVerified(user);
   }
 
   function getExchanger(address dfaAddress)
-    public
-    view
-    isAddressValid(dfaAddress)
-    returns (address)
+  public
+  view
+  isAddressValid(dfaAddress)
+  returns (address)
   {
     return dfaToExchanger[dfaAddress];
   }
 
   function getAllDfa() external view
-    returns (
-      address[] memory,
-      address[] memory,
-      string[] memory,
-      string[] memory,
-      uint[] memory
-    )
+  returns (
+    address[] memory,
+    address[] memory,
+    string[] memory,
+    string[] memory,
+    uint[] memory
+  )
   {
     address[] memory addresses = new address[](dfaList.length);
     address[] memory owners = new address[](dfaList.length);
@@ -116,9 +116,9 @@ contract Factory {
   }
 
   function getBalances()
-    external
-    view
-    returns (address[] memory, uint[] memory)
+  external
+  view
+  returns (address[] memory, uint[] memory)
   {
     address[] memory addresses = new address[](dfaList.length);
     uint[] memory balances = new uint[](dfaList.length);
