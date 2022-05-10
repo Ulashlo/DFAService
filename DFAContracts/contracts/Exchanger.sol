@@ -4,29 +4,38 @@ pragma solidity ^0.8.3;
 import "./DFA.sol";
 import "./Factory.sol";
 
-contract Exchanger {
-  struct ExchangerRequestInfo {
-    address user;
+enum ExchangeStatus{ OPEN, CLOSE }
+enum ExchangeType{ INDIVISIBLE, DIVISIBLE }
+
+struct ExchangerRequestInfo {
+  ExchangeType exchangeType;
+  address user;
+  uint amountToGet;
+  uint amountToGive;
+  uint endTime;
+  ExchangeStatus status;
+}
+
+struct ExchangeRequestView {
+  ExchangeType exchangeType;
+  address dfaToGive;
+  uint amountToGive;
+  uint amountToGet;
+}
+
+struct ReciprocalRequestInfo {
+  bool isFound;
+  address user;
+  uint index;
+  uint reciprocalAmountToGet;
+  uint reciprocalAmountToGive;
+}
+
+library ExchangerUtils {
+  struct ExchangeInfo {
     uint amountToGet;
     uint amountToGive;
-    bool isComplete;
   }
-
-  struct ExchangerRequestInfoArray {
-    ExchangerRequestInfo[] array;
-    uint activeRequestsCount;
-  }
-
-  struct InnerExchangerRequestInfo {
-    address user;
-    address dfaToGive;
-    uint amountToGive;
-    uint amountToGet;
-  }
-
-  address public dfaAddress;
-  address public factoryAddress;
-  mapping (address => ExchangerRequestInfoArray) public requests;
 
   modifier isAddressValid(address addressToCheck) {
     require(addressToCheck != address(0), "Invalid address");
@@ -36,16 +45,120 @@ contract Exchanger {
   modifier isAmountsNotZero(uint amount1, uint amount2) {
     require(amount1 > 0, "Number is equal to zero");
     require(amount2 > 0, "Number is equal to zero");
-  _;
+    _;
   }
 
-  modifier isAmountCanTransfer(uint amount, address dfa) {
+  function isIndivisibleReciprocalToIndivisible(
+    ExchangeInfo memory first,
+    ExchangeInfo memory second
+  ) private pure returns(bool) {
+    return first.amountToGet == second.amountToGive && second.amountToGet == first.amountToGive;
+  }
+
+  function isDivisibleReciprocalToDivisible(
+    ExchangeInfo memory first,
+    ExchangeInfo memory second
+  ) private pure returns(bool) {
+    return first.amountToGive * second.amountToGive == first.amountToGet * second.amountToGet;
+  }
+
+  function isDivisibleReciprocalToIndivisible(
+    ExchangeInfo memory first,
+    ExchangeInfo memory second
+  ) private pure returns(bool) {
+    return first.amountToGive * second.amountToGive == first.amountToGet * second.amountToGet &&
+    first.amountToGet >= second.amountToGive &&
+    first.amountToGive >= second.amountToGet;
+  }
+
+  function getReciprocalRequestInfo(
+    ExchangeRequestView memory info,
+    uint index,
+    ExchangerRequestInfo[] memory requestList
+  )
+    external
+    view
+    isAmountsNotZero(info.amountToGive, info.amountToGet)
+    isAddressValid(info.dfaToGive)
+    returns (ReciprocalRequestInfo memory)
+  {
+    for (uint i = index; i < requestList.length; i++) {
+      ExchangerRequestInfo memory request = requestList[i];
+      if (request.status == ExchangeStatus.CLOSE || request.endTime < block.timestamp) {
+        continue;
+      }
+      bool cond = false;
+      if (request.exchangeType == ExchangeType.INDIVISIBLE &&
+        info.exchangeType == ExchangeType.INDIVISIBLE) {
+        cond = isIndivisibleReciprocalToIndivisible(
+          ExchangeInfo(info.amountToGet, info.amountToGive),
+          ExchangeInfo(request.amountToGet, request.amountToGive)
+        );
+      } else if (request.exchangeType == ExchangeType.INDIVISIBLE &&
+        info.exchangeType == ExchangeType.DIVISIBLE) {
+        cond = isDivisibleReciprocalToIndivisible(
+          ExchangeInfo(info.amountToGet, info.amountToGive),
+          ExchangeInfo(request.amountToGet, request.amountToGive)
+        );
+      } else if (request.exchangeType == ExchangeType.DIVISIBLE &&
+        info.exchangeType == ExchangeType.INDIVISIBLE) {
+        cond = isDivisibleReciprocalToIndivisible(
+          ExchangeInfo(request.amountToGet, request.amountToGive),
+          ExchangeInfo(info.amountToGet, info.amountToGive)
+        );
+      } else {
+        cond = isDivisibleReciprocalToDivisible(
+          ExchangeInfo(info.amountToGet, info.amountToGive),
+          ExchangeInfo(request.amountToGet, request.amountToGive)
+        );
+      }
+      if (cond) {
+        return ReciprocalRequestInfo(true, request.user, i, request.amountToGet, request.amountToGive);
+      }
+    }
+    return ReciprocalRequestInfo(false, address(0), 0, 0, 0);
+  }
+}
+
+contract Exchanger {
+  struct ExchangeRequestData {
+    ExchangeType exchangeType;
+    address dfaToGet;
+    uint amountToGet;
+    uint amountToGive;
+    uint endTime;
+  }
+
+  struct TryToExchangeParams {
+    address dfaToGive;
+    uint amountToGive;
+    uint amountToGet;
+    uint requestIndex;
+    address buyer;
+  }
+
+  address public dfaAddress;
+  address public factoryAddress;
+  mapping (address => ExchangerRequestInfo[]) public requests;
+
+  modifier isAddressValid(address addressToCheck) {
+    require(addressToCheck != address(0), "Invalid address");
+    _;
+  }
+
+  modifier isAmountsNotZero(uint amount1, uint amount2) {
+    require(amount1 > 0, "Number is equal to zero");
+    require(amount2 > 0, "Number is equal to zero");
+    _;
+  }
+
+  modifier isAmountCanTransfer(uint amount) {
     require(
-      DFA(dfa).balanceOf(msg.sender) >= amount,
+      DFA(dfaAddress).balanceOf(msg.sender) >= amount,
       "Sender does not have enough dfa"
     );
     require(
-      DFA(dfa).allowance(msg.sender, address(this)) >= amount,
+      DFA(dfaAddress).allowance(msg.sender, address(this)) >= amount,
       "Amount of DFA is not allowed"
     );
     _;
@@ -81,97 +194,146 @@ contract Exchanger {
     factoryAddress = msg.sender;
   }
 
-  function getCorrectRequestUser(
-    address dfaToGive,
-    uint amountToGive,
-    uint amountToGet
+  function getReciprocalRequestInfo(
+    ExchangeRequestView memory info,
+    uint index
   )
     external
     view
-    isAmountsNotZero(amountToGive, amountToGet)
-    isAddressValid(dfaToGive)
-    returns (address)
+    isAmountsNotZero(info.amountToGive, info.amountToGet)
+    isAddressValid(info.dfaToGive)
+    returns (ReciprocalRequestInfo memory)
   {
-    ExchangerRequestInfo[] memory requestList = requests[dfaToGive].array;
-    for (uint i = 0; i < requestList.length; i++) {
-      ExchangerRequestInfo memory request = requestList[i];
-      if (!request.isComplete &&
-          request.amountToGet == amountToGive &&
-          request.amountToGive == amountToGet) {
-        return request.user;
-      }
-    }
-    return address(0);
+    return ExchangerUtils.getReciprocalRequestInfo(
+      info,
+      index,
+      requests[info.dfaToGive]
+    );
   }
 
   function addRequest(
-    address dfaToGet,
-    uint amountToGet,
-    uint amountToGive
+    ExchangeRequestData memory data
   )
     external
-    isAmountsNotZero(amountToGive, amountToGet)
-    isAddressValid(dfaToGet)
-    isExchangerValid(dfaToGet)
-    isAmountCanTransfer(amountToGive, dfaAddress)
+    isAmountsNotZero(data.amountToGive, data.amountToGet)
+    isAddressValid(data.dfaToGet)
+    isExchangerValid(data.dfaToGet)
+    isAmountCanTransfer(data.amountToGive)
   {
-    address exchangerAddress = Factory(factoryAddress).getExchanger(dfaToGet);
+    address exchangerAddress = Factory(factoryAddress).getExchanger(data.dfaToGet);
     Exchanger exchanger = Exchanger(exchangerAddress);
-    DFA(dfaAddress).transferFrom(msg.sender, address(this), amountToGive);
-    address user = exchanger.getCorrectRequestUser(dfaAddress, amountToGive, amountToGet);
-    if (user != address(0)) {
-      DFA(dfaAddress).transfer(user, amountToGive);
-      exchanger.tryToExchange(
-        InnerExchangerRequestInfo(
-          msg.sender,
-          dfaAddress,
-          amountToGive,
-          amountToGet
-        )
-      );
+    DFA(dfaAddress).transferFrom(msg.sender, address(this), data.amountToGive);
+    // bool isFound;
+    // address user;
+    // uint index;
+    // uint reciprocalAmountToGet;
+    // uint reciprocalAmountToGive;
+    ReciprocalRequestInfo memory requestInfo = exchanger.getReciprocalRequestInfo(
+      ExchangeRequestView(data.exchangeType, dfaAddress, data.amountToGive, data.amountToGet),
+      0
+    );
+    if (data.exchangeType == ExchangeType.INDIVISIBLE) {
+      if (requestInfo.isFound) {
+        DFA(dfaAddress).transfer(requestInfo.user, data.amountToGive);
+        exchanger.tryToExchange(
+          TryToExchangeParams(
+            dfaAddress,
+            data.amountToGive,
+            data.amountToGet,
+            requestInfo.index,
+            msg.sender
+          )
+        );
+        data.amountToGive = 0;
+        data.amountToGet = 0;
+      } else {
+        requests[data.dfaToGet].push(
+          ExchangerRequestInfo(
+            data.exchangeType,
+            msg.sender,
+            data.amountToGet,
+            data.amountToGive,
+            data.endTime,
+            ExchangeStatus.OPEN
+          )
+        );
+      }
     } else {
-      requests[dfaToGet].array.push(
-        ExchangerRequestInfo(
-          msg.sender,
-          amountToGet,
-          amountToGive,
-          false
-        )
-      );
-      requests[dfaToGet].activeRequestsCount += 1;
+      while (requestInfo.isFound) {
+        if (requestInfo.reciprocalAmountToGet <= data.amountToGive &&
+          requestInfo.reciprocalAmountToGive <= data.amountToGet) {
+          DFA(dfaAddress).transfer(requestInfo.user, requestInfo.reciprocalAmountToGet);
+          exchanger.tryToExchange(
+            TryToExchangeParams(
+              dfaAddress,
+              requestInfo.reciprocalAmountToGet,
+              requestInfo.reciprocalAmountToGive,
+              requestInfo.index,
+              msg.sender
+            )
+          );
+          data.amountToGive -= requestInfo.reciprocalAmountToGet;
+          data.amountToGet -= requestInfo.reciprocalAmountToGive;
+        } else {
+          DFA(dfaAddress).transfer(requestInfo.user, data.amountToGive);
+          exchanger.tryToExchange(
+            TryToExchangeParams(
+              dfaAddress,
+              data.amountToGive,
+              data.amountToGet,
+              requestInfo.index,
+              msg.sender
+            )
+          );
+          data.amountToGive = 0;
+          data.amountToGet = 0;
+        }
+        requestInfo = exchanger.getReciprocalRequestInfo(
+          ExchangeRequestView(data.exchangeType, dfaAddress, data.amountToGive, data.amountToGet),
+          requestInfo.index + 1
+        );
+      }
+      if(data.amountToGet > 0 && data.amountToGive > 0) {
+        requests[data.dfaToGet].push(
+          ExchangerRequestInfo(
+            data.exchangeType,
+            msg.sender,
+            data.amountToGet,
+            data.amountToGive,
+            data.endTime,
+            ExchangeStatus.OPEN
+          )
+        );
+      }
     }
   }
 
   function tryToExchange(
-    InnerExchangerRequestInfo memory info
+    TryToExchangeParams memory params
   )
-    external
-    isAmountsNotZero(info.amountToGive, info.amountToGet)
-    isAddressValid(info.dfaToGive)
-    isSenderIsExchanger(info.dfaToGive)
-    isAddressValid(info.user)
+  external
+  isAmountsNotZero(params.amountToGive, params.amountToGet)
+  isAddressValid(params.dfaToGive)
+  isSenderIsExchanger(params.dfaToGive)
+  isAddressValid(params.buyer)
   {
-    ExchangerRequestInfo[] storage requestList = requests[info.dfaToGive].array;
-    bool isValidRequestFound = false;
-    for (uint i = 0; i < requestList.length; i++) {
-      ExchangerRequestInfo storage request = requestList[i];
-      if (request.amountToGet == info.amountToGive && request.amountToGive == info.amountToGet) {
-        request.isComplete = true;
-        DFA(dfaAddress).transfer(info.user, info.amountToGet);
-        isValidRequestFound = true;
-        requests[info.dfaToGive].activeRequestsCount -= 1;
-        emit ExchangeCompleted(
-          request.user,
-          dfaAddress,
-          request.amountToGive,
-          info.user,
-          info.dfaToGive,
-          info.amountToGive
-        );
-        break;
-      }
+    ExchangerRequestInfo storage request = requests[params.dfaToGive][params.requestIndex];
+    request.amountToGet -= params.amountToGive;
+    request.amountToGive -= params.amountToGet;
+    if (request.exchangeType == ExchangeType.INDIVISIBLE ||
+    request.amountToGet == 0 ||
+      request.amountToGive == 0) {
+      request.status = ExchangeStatus.CLOSE;
     }
-    require(isValidRequestFound, "Valid request not found");
+    DFA(dfaAddress).transfer(params.buyer, params.amountToGet);
+    emit ExchangeCompleted(
+      request.user,
+      dfaAddress,
+      request.amountToGive,
+      params.buyer,
+      params.dfaToGive,
+      params.amountToGive
+    );
   }
 
   function getRequestsByDfa(address dfa)
@@ -184,14 +346,19 @@ contract Exchanger {
       uint[] memory
     )
   {
-    ExchangerRequestInfo[] memory reqs = requests[dfa].array;
-    uint len = requests[dfa].activeRequestsCount;
+    ExchangerRequestInfo[] memory reqs = requests[dfa];
+    uint len = 0;
+    for (uint i = 0; i < reqs.length; i++) {
+      if (reqs[i].status == ExchangeStatus.OPEN && reqs[i].endTime >= block.timestamp) {
+        len++;
+      }
+    }
     address[] memory users = new address[](len);
     uint[] memory amountsToGet = new uint[](len);
     uint[] memory amountsToGive = new uint[](len);
     uint j = 0;
     for (uint i = 0; i < reqs.length; i++) {
-      if (!reqs[i].isComplete) {
+      if (reqs[i].status == ExchangeStatus.OPEN && reqs[i].endTime >= block.timestamp) {
         ExchangerRequestInfo memory info = reqs[i];
         users[j] = info.user;
         amountsToGet[j] = info.amountToGet;

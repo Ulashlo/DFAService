@@ -22,8 +22,8 @@ contract DFA is ERC20 {
     string memory symbol,
     address dfaOwner
   )
-    ERC20(name, symbol)
-    isAddressValid(dfaOwner)
+  ERC20(name, symbol)
+  isAddressValid(dfaOwner)
   {
     _mint(dfaOwner, initialSupply);
     owner = dfaOwner;
