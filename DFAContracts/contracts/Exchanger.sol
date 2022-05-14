@@ -17,7 +17,7 @@ contract Exchanger {
     ExchangeStatus status;
   }
 
-  struct ExchangeRequestData {
+  struct AddExchangeRequestParams {
     ExchangeType exchangeType;
     address dfaToGet;
     uint amountToGet;
@@ -25,14 +25,14 @@ contract Exchanger {
     uint endTime;
   }
 
-  struct ExchangeRequestView {
+  struct GetReciprocalRequestInfoParams {
     ExchangeType exchangeType;
     address dfaToGive;
     uint amountToGive;
     uint amountToGet;
   }
 
-  struct ExchangeInfo {
+  struct ExchangeView {
     uint amountToGet;
     uint amountToGive;
   }
@@ -111,22 +111,22 @@ contract Exchanger {
   }
 
   function isIndivisibleReciprocalToIndivisible(
-    ExchangeInfo memory first,
-    ExchangeInfo memory second
+    ExchangeView memory first,
+    ExchangeView memory second
   ) private pure returns(bool) {
     return first.amountToGet == second.amountToGive && second.amountToGet == first.amountToGive;
   }
 
   function isDivisibleReciprocalToDivisible(
-    ExchangeInfo memory first,
-    ExchangeInfo memory second
+    ExchangeView memory first,
+    ExchangeView memory second
   ) private pure returns(bool) {
     return first.amountToGive * second.amountToGive == first.amountToGet * second.amountToGet;
   }
 
   function isDivisibleReciprocalToIndivisible(
-    ExchangeInfo memory first,
-    ExchangeInfo memory second
+    ExchangeView memory first,
+    ExchangeView memory second
   ) private pure returns(bool) {
     return first.amountToGive * second.amountToGive == first.amountToGet * second.amountToGet &&
     first.amountToGet >= second.amountToGive &&
@@ -134,7 +134,7 @@ contract Exchanger {
   }
 
   function getReciprocalRequestInfo(
-    ExchangeRequestView memory info,
+    GetReciprocalRequestInfoParams memory info,
     uint index
   )
     external
@@ -153,25 +153,25 @@ contract Exchanger {
       if (request.exchangeType == ExchangeType.INDIVISIBLE &&
         info.exchangeType == ExchangeType.INDIVISIBLE) {
         cond = isIndivisibleReciprocalToIndivisible(
-          ExchangeInfo(info.amountToGet, info.amountToGive),
-          ExchangeInfo(request.amountToGet, request.amountToGive)
+          ExchangeView(info.amountToGet, info.amountToGive),
+          ExchangeView(request.amountToGet, request.amountToGive)
         );
       } else if (request.exchangeType == ExchangeType.INDIVISIBLE &&
         info.exchangeType == ExchangeType.DIVISIBLE) {
         cond = isDivisibleReciprocalToIndivisible(
-          ExchangeInfo(info.amountToGet, info.amountToGive),
-          ExchangeInfo(request.amountToGet, request.amountToGive)
+          ExchangeView(info.amountToGet, info.amountToGive),
+          ExchangeView(request.amountToGet, request.amountToGive)
         );
       } else if (request.exchangeType == ExchangeType.DIVISIBLE &&
         info.exchangeType == ExchangeType.INDIVISIBLE) {
         cond = isDivisibleReciprocalToIndivisible(
-          ExchangeInfo(request.amountToGet, request.amountToGive),
-          ExchangeInfo(info.amountToGet, info.amountToGive)
+          ExchangeView(request.amountToGet, request.amountToGive),
+          ExchangeView(info.amountToGet, info.amountToGive)
         );
       } else {
         cond = isDivisibleReciprocalToDivisible(
-          ExchangeInfo(info.amountToGet, info.amountToGive),
-          ExchangeInfo(request.amountToGet, request.amountToGive)
+          ExchangeView(info.amountToGet, info.amountToGive),
+          ExchangeView(request.amountToGet, request.amountToGive)
         );
       }
       if (cond) {
@@ -182,7 +182,7 @@ contract Exchanger {
   }
 
   function addRequest(
-    ExchangeRequestData memory data
+    AddExchangeRequestParams memory data
   )
     external
     isAmountsNotZero(data.amountToGive, data.amountToGet)
@@ -194,7 +194,7 @@ contract Exchanger {
     Exchanger exchanger = Exchanger(exchangerAddress);
     DFA(dfaAddress).transferFrom(msg.sender, address(this), data.amountToGive);
     ReciprocalRequestInfo memory requestInfo = exchanger.getReciprocalRequestInfo(
-      ExchangeRequestView(data.exchangeType, dfaAddress, data.amountToGive, data.amountToGet), 0
+      GetReciprocalRequestInfoParams(data.exchangeType, dfaAddress, data.amountToGive, data.amountToGet), 0
     );
     if (data.exchangeType == ExchangeType.INDIVISIBLE) {
       if (requestInfo.isFound) {
@@ -256,7 +256,7 @@ contract Exchanger {
           break;
         }
         requestInfo = exchanger.getReciprocalRequestInfo(
-          ExchangeRequestView(data.exchangeType, dfaAddress, data.amountToGive, data.amountToGet), requestInfo.index + 1
+          GetReciprocalRequestInfoParams(data.exchangeType, dfaAddress, data.amountToGive, data.amountToGet), requestInfo.index + 1
         );
       }
       if(data.amountToGet > 0 && data.amountToGive > 0) {

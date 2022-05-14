@@ -3,16 +3,26 @@ import { useAutoUpdateDfas } from '@src/hooks/useAutoUpdateDfas.hook';
 import { useAutoUpdateBalances } from '@src/hooks/useAutoUpdateBalances.hook';
 import { DELAY } from '@src/utils/constraints';
 import { useHttpClient } from '@src/hooks/useHttpClient.hook';
-import { DFABalanceDTO, DFAViewDTO, ExchangeRequestDTO } from '@src/generated/backend';
+import { DFABalanceDTO, DFAViewDTO, ExchangeRequestDTOTypeEnum } from '@src/generated/backend';
 import NotificationService from '@src/services/NotificationService';
 import { useDfasInfo } from '@src/redux/hooks/dfas';
 import { useBalancesInfo } from '@src/redux/hooks/balances';
+import { Moment } from 'moment';
 
 export interface UseCreateRequestForm {
   dfaToBuy: DFAViewDTO[];
   dfaToSell: DFAViewDTO[];
   balances: DFABalanceDTO[];
-  creteRequest: (info: ExchangeRequestDTO) => void;
+  creteRequest: (info: ExchangeRequestFormInfo) => void;
+}
+
+export interface ExchangeRequestFormInfo {
+  type: ExchangeRequestDTOTypeEnum;
+  dfaToGet: string;
+  amountToGet: number;
+  dfaToGive: string;
+  amountToGive: number;
+  endTime: Moment;
 }
 
 export const useCreateRequestForm = (): UseCreateRequestForm => {
@@ -20,9 +30,14 @@ export const useCreateRequestForm = (): UseCreateRequestForm => {
   useAutoUpdateBalances(DELAY);
   const { exchangerControllerApi } = useHttpClient();
   const creteRequest = useCallback(
-    (info: ExchangeRequestDTO) => {
+    (info: ExchangeRequestFormInfo) => {
       exchangerControllerApi
-        .addExchange({ exchangeRequestDTO: info })
+        .addExchange({
+          exchangeRequestDTO: {
+            ...info,
+            endTime: info.endTime.unix(),
+          },
+        })
         .then(() => NotificationService.reportSuccess(`Запрос успешно создан!`));
     },
     [exchangerControllerApi],

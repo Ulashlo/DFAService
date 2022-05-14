@@ -1,5 +1,6 @@
 package com.hse.dfa.backend.service.exchanger;
 
+import com.hse.dfa.backend.contracts.Exchanger;
 import com.hse.dfa.backend.controller.dto.dfa.AllRequestsDTO;
 import com.hse.dfa.backend.controller.dto.dfa.RequestsForDFADTO;
 import com.hse.dfa.backend.controller.dto.exchanger.ExchangeRequestDTO;
@@ -7,7 +8,6 @@ import com.hse.dfa.backend.service.user_info.UserService;
 import com.hse.dfa.backend.util.contracts.ContractFabric;
 import com.hse.dfa.backend.util.converters.contract.DFAInfoConverter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +35,13 @@ public class ExchangerServiceImpl implements ExchangerService {
         final var dfa = contractFabric.loadDfa(privateKey, dto.getDfaToGive());
         dfa.approve(exchangerAddress, BigInteger.valueOf(dto.getAmountToGive())).send();
         exchanger.addRequest(
-            dto.getDfaToGet(),
-            BigInteger.valueOf(dto.getAmountToGet()),
-            BigInteger.valueOf(dto.getAmountToGive())
+            new Exchanger.AddExchangeRequestParams(
+                dto.getType().getCode(),
+                dto.getDfaToGet(),
+                BigInteger.valueOf(dto.getAmountToGet()),
+                BigInteger.valueOf(dto.getAmountToGive()),
+                BigInteger.valueOf(dto.getEndTime())
+            )
         ).send();
     }
 

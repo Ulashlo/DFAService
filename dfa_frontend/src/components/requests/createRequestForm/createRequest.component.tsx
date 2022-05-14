@@ -1,8 +1,9 @@
 import React from 'react';
-import { Button, Form, InputNumber, Select } from 'antd';
+import { Button, DatePicker, Form, InputNumber, Radio, Select } from 'antd';
 import { DollarOutlined } from '@ant-design/icons';
-import { ExchangeRequestDTO } from '@src/generated/backend';
-import { useCreateRequestForm } from '@src/components/requests/createRequestForm/hook';
+import { ExchangeRequestDTOTypeEnum } from '@src/generated/backend';
+import { ExchangeRequestFormInfo, useCreateRequestForm } from '@src/components/requests/createRequestForm/hook';
+import moment, { Moment } from 'moment';
 
 function getRequiredRule(message: string): { required: boolean; message: string } {
   return { required: true, message };
@@ -38,8 +39,18 @@ export function CreateRequest() {
       {...formItemLayout}
       style={{ padding: '10px' }}
       size="large"
-      onFinish={(info: ExchangeRequestDTO) => creteRequest(info)}
+      onFinish={(info: ExchangeRequestFormInfo) => creteRequest(info)}
     >
+      <Form.Item name="type" label="Тип заявки" rules={[{ required: true, message: 'Выберете тип!' }]}>
+        <Radio.Group>
+          <Radio.Button key="DIVISIBLE" value={ExchangeRequestDTOTypeEnum.DIVISIBLE}>
+            Делимая
+          </Radio.Button>
+          <Radio.Button key="INDIVISIBLE" value={ExchangeRequestDTOTypeEnum.INDIVISIBLE}>
+            Неделимая
+          </Radio.Button>
+        </Radio.Group>
+      </Form.Item>
       <Form.Item name="dfaToGet" label="ЦФА на покупку" rules={[getRequiredRule('Выберете ЦФА!')]}>
         <Select placeholder="Выберете ЦФА">
           {dfaToBuy.map((dfa) => (
@@ -113,6 +124,13 @@ export function CreateRequest() {
           precision={0}
           prefix={<DollarOutlined />}
         />
+      </Form.Item>
+      <Form.Item
+        name="endTime"
+        label="Время действия"
+        rules={[getRequiredRule('Время действия не может быть пустым!')]}
+      >
+        <DatePicker showTime disabledDate={(currentDate: Moment) => currentDate.isBefore(moment(new Date()))} />
       </Form.Item>
       <Form.Item {...tailFormItemLayout} name="submit">
         <Button type="primary" htmlType="submit">

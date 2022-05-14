@@ -20,6 +20,12 @@ import { exists, mapValues } from '../runtime';
  */
 export interface ExchangeRequestDTO {
     /**
+     * Divisible or indivisible.
+     * @type {string}
+     * @memberof ExchangeRequestDTO
+     */
+    type: ExchangeRequestDTOTypeEnum;
+    /**
      * Dfa, user want to get.
      * @type {string}
      * @memberof ExchangeRequestDTO
@@ -43,6 +49,12 @@ export interface ExchangeRequestDTO {
      * @memberof ExchangeRequestDTO
      */
     amountToGive: number;
+    /**
+     * End time.
+     * @type {number}
+     * @memberof ExchangeRequestDTO
+     */
+    endTime: number;
 }
 
 export function ExchangeRequestDTOFromJSON(json: any): ExchangeRequestDTO {
@@ -55,10 +67,12 @@ export function ExchangeRequestDTOFromJSONTyped(json: any, ignoreDiscriminator: 
     }
     return {
         
+        'type': json['type'],
         'dfaToGet': json['dfaToGet'],
         'amountToGet': json['amountToGet'],
         'dfaToGive': json['dfaToGive'],
         'amountToGive': json['amountToGive'],
+        'endTime': json['endTime'],
     };
 }
 
@@ -71,11 +85,22 @@ export function ExchangeRequestDTOToJSON(value?: ExchangeRequestDTO | null): any
     }
     return {
         
+        'type': value.type,
         'dfaToGet': value.dfaToGet,
         'amountToGet': value.amountToGet,
         'dfaToGive': value.dfaToGive,
         'amountToGive': value.amountToGive,
+        'endTime': value.endTime,
     };
+}
+
+/**
+* @export
+* @enum {string}
+*/
+export enum ExchangeRequestDTOTypeEnum {
+    INDIVISIBLE = 'INDIVISIBLE',
+    DIVISIBLE = 'DIVISIBLE'
 }
 
 
