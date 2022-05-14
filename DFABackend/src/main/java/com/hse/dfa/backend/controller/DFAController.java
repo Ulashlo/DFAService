@@ -15,13 +15,11 @@ import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-import static com.hse.dfa.backend.model.user_info.RoleName.ISSUER;
-import static com.hse.dfa.backend.model.user_info.RoleName.TRADER;
+import static com.hse.dfa.backend.model.user_info.RoleName.*;
 
 @RestController
 @RequestMapping("/safe/dfa")
 @RequiredArgsConstructor
-@RolesAllowed(TRADER)
 public class DFAController {
     private final DFAService dfaService;
 
