@@ -2,116 +2,142 @@ const Factory = artifacts.require("Factory");
 const DFA = artifacts.require("DFA");
 const Exchanger = artifacts.require("Exchanger");
 
+function timestamp() {
+    return Math.floor(Date.now() / 1000);
+}
+
+async function assertBalance(dfa, user, amount, text) {
+    let balance =
+        (await dfa.balanceOf.call(user))
+            .toNumber();
+    assert.equal(balance, amount, text);
+}
+
 contract('Exchange', accounts => {
     let factory;
+
     let firstUser;
     let secondUser;
+
     let firstDfaAddress;
     let secondDfaAddress;
+    let firstDfa;
+    let secondDfa;
+
+    let firstExchangerAddress;
+    let secondExchangerAddress;
+    let firstExchanger;
+    let secondExchanger;
+
+    let INDIVISIBLE = 0;
+    let DIVISIBLE = 1;
+
+    async function checkBalances(
+        firstBalanceFirstDfa,
+        secondBalanceFirstDfa,
+        firstBalanceSecondDfa,
+        secondBalanceSecondDfa,
+        firstExchangerBalanceFirstDfa,
+        secondExchangerBalanceSecondDfa
+    ) {
+        await assertBalance(firstDfa, firstUser, firstBalanceFirstDfa, 'Wrong balance at firstBalanceFirstDfa');
+        await assertBalance(firstDfa, secondUser, secondBalanceFirstDfa, 'Wrong balance at secondBalanceFirstDfa');
+        await assertBalance(secondDfa, firstUser, firstBalanceSecondDfa, 'Wrong balance at firstBalanceSecondDfa');
+        await assertBalance(secondDfa, secondUser, secondBalanceSecondDfa, 'Wrong balance at secondBalanceSecondDfa');
+        await assertBalance(firstDfa, firstExchangerAddress, firstExchangerBalanceFirstDfa, 'Wrong balance at firstExchangerBalanceFirstDfa');
+        await assertBalance(secondDfa, secondExchangerAddress, secondExchangerBalanceSecondDfa, 'Wrong balance at secondExchangerBalanceSecondDfa');
+    }
+
+    async function addFirstUserRequest(amountToGet, amountToGive, type, isOvertime) {
+        await firstDfa.approve(firstExchangerAddress, amountToGive, {from: firstUser});
+        await firstExchanger.addRequest(
+            {
+                exchangeType: type,
+                dfaToGet: secondDfaAddress,
+                amountToGet: amountToGet,
+                amountToGive: amountToGive,
+                endTime: isOvertime ? timestamp() - 1000 : timestamp() + 1000
+            },
+            {from: firstUser});
+    }
+
+    async function addSecondUserRequest(amountToGet, amountToGive, type, isOvertime) {
+        await secondDfa.approve(secondExchangerAddress, amountToGive, {from: secondUser});
+        await secondExchanger.addRequest(
+            {
+                exchangeType: type,
+                dfaToGet: firstDfaAddress,
+                amountToGet: amountToGet,
+                amountToGive: amountToGive,
+                endTime: isOvertime ? timestamp() - 1000 : timestamp() + 1000
+            },
+            {from: secondUser});
+    }
 
     beforeEach('Setup Factory', async () => {
         firstUser = accounts[0];
         secondUser = accounts[1];
         factory = await Factory.new();
-        factory.verifyUser(firstUser);
-        factory.verifyUser(secondUser);
+        await factory.verifyUser(firstUser);
+        await factory.verifyUser(secondUser);
         await factory.createDfa(1000, 'first', 'f', {from: firstUser});
         await factory.createDfa(2000, 'second', 's', {from: secondUser});
         let dfaList = await factory.getAllDfa();
         firstDfaAddress = dfaList[0][0];
         secondDfaAddress = dfaList[0][1];
+        firstDfa = await DFA.at(firstDfaAddress);
+        secondDfa = await DFA.at(secondDfaAddress);
+        firstExchangerAddress = await factory.getExchanger(firstDfaAddress);
+        secondExchangerAddress = await factory.getExchanger(secondDfaAddress);
+        firstExchanger = await Exchanger.at(firstExchangerAddress);
+        secondExchanger = await Exchanger.at(secondExchangerAddress);
     });
 
-    describe('#addRequest', () => {
-        it('Should create correct exchange', async () => {
-            let firstDfa = await DFA.at(firstDfaAddress);
-            let secondDfa = await DFA.at(secondDfaAddress);
+    describe('#addIndivisibleRequest', () => {
+        it('Should create correct indivisible exchange', async () => {
+            await addFirstUserRequest(200, 100, INDIVISIBLE, false);
+            await addFirstUserRequest(200, 100, INDIVISIBLE, false);
+            await addSecondUserRequest(100, 100, INDIVISIBLE, false);
+            await addSecondUserRequest(100, 200, INDIVISIBLE, false);
 
-            let firstBalanceFirstDfa =
-                (await firstDfa.balanceOf.call(firstUser))
-                    .toNumber();
-            let secondBalanceFirstDfa =
-                (await firstDfa.balanceOf.call(secondUser))
-                    .toNumber();
-            let firstBalanceSecondDfa =
-                (await secondDfa.balanceOf.call(firstUser))
-                    .toNumber();
-            let secondBalanceSecondDfa =
-                (await secondDfa.balanceOf.call(secondUser))
-                    .toNumber();
-            assert.equal(firstBalanceFirstDfa, 1000, 'Wrong balance at firstBalanceFirstDfa');
-            assert.equal(firstBalanceSecondDfa, 0, 'Wrong balance at firstBalanceSecondDfa');
-            assert.equal(secondBalanceSecondDfa, 2000, 'Wrong balance at secondBalanceSecondDfa');
-            assert.equal(secondBalanceFirstDfa, 0, 'Wrong balance at secondBalanceFirstDfa');
+            await checkBalances(800,100, 200,
+                1700, 100, 100);
+        });
+    });
 
-            let firstExchangerAddress = await factory.getExchanger(firstDfaAddress);
-            let secondExchangerAddress = await factory.getExchanger(secondDfaAddress);
-            let firstExchanger = await Exchanger.at(firstExchangerAddress);
-            let secondExchanger = await Exchanger.at(secondExchangerAddress);
+    describe('#addDivisibleRequest', () => {
+        it('Should create correct divisible exchange', async () => {
+            await addFirstUserRequest(200, 100, DIVISIBLE, false);
+            await addSecondUserRequest(100, 100, DIVISIBLE, false);
+            await addSecondUserRequest(50, 100, DIVISIBLE, false);
 
-            await firstDfa.approve(firstExchangerAddress, 100, {from: firstUser});
-            await firstExchanger.addRequest(secondDfaAddress, 200, 100, {from: firstUser});
-            await firstDfa.approve(firstExchangerAddress, 100, {from: firstUser});
-            await firstExchanger.addRequest(secondDfaAddress, 200, 100, {from: firstUser});
-            await secondDfa.approve(secondExchangerAddress, 100, {from: secondUser});
-            await secondExchanger.addRequest(firstDfaAddress, 100, 100, {from: secondUser});
-            await secondDfa.approve(secondExchangerAddress, 200, {from: secondUser});
-            await secondExchanger.addRequest(firstDfaAddress, 100, 200, {from: secondUser});
+            await checkBalances(900,50, 100,
+                1800, 50, 100);
+        });
+    });
 
-            firstBalanceFirstDfa =
-                (await firstDfa.balanceOf.call(firstUser))
-                    .toNumber();
-            secondBalanceFirstDfa =
-                (await firstDfa.balanceOf.call(secondUser))
-                    .toNumber();
-            let firstExchangerBalanceFirstDfa =
-                (await firstDfa.balanceOf.call(firstExchangerAddress))
-                    .toNumber();
-            firstBalanceSecondDfa =
-                (await secondDfa.balanceOf.call(firstUser))
-                    .toNumber();
-            secondBalanceSecondDfa =
-                (await secondDfa.balanceOf.call(secondUser))
-                    .toNumber();
-            let secondExchangerBalanceSecondDfa =
-                (await secondDfa.balanceOf.call(secondExchangerAddress))
-                    .toNumber();
-            assert.equal(firstBalanceFirstDfa, 800, 'Wrong balance at firstBalanceFirstDfa');
-            assert.equal(firstBalanceSecondDfa, 200, 'Wrong balance at firstBalanceSecondDfa');
-            assert.equal(secondBalanceSecondDfa, 1700, 'Wrong balance at secondBalanceSecondDfa');
-            assert.equal(secondBalanceFirstDfa, 100, 'Wrong balance at secondBalanceFirstDfa');
-            assert.equal(firstExchangerBalanceFirstDfa, 100, 'Wrong balance at firstExchangerBalanceFirstDfa');
-            assert.equal(secondExchangerBalanceSecondDfa, 100, 'Wrong balance at secondExchangerBalanceSecondDfa');
+    describe('#addDivisibleAndIndivisibleRequest', () => {
+        it('Should create correct divisible and indivisible exchange', async () => {
+            await addFirstUserRequest(200, 100, DIVISIBLE, false);
+            await addSecondUserRequest(101, 202, INDIVISIBLE, false);
+            await addSecondUserRequest(50, 100, INDIVISIBLE, false);
+            await addFirstUserRequest(200, 200, INDIVISIBLE, false);
+            await addSecondUserRequest(300, 300, DIVISIBLE, false);
 
-            let firstRequests = await firstExchanger.getRequestsByDfa(secondDfaAddress);
-            let secondRequests = await secondExchanger.getRequestsByDfa(firstDfaAddress);
-            console.log(JSON.stringify(firstRequests))
-            console.log(JSON.stringify(secondRequests))
+            await checkBalances(700,250, 300,
+                1398, 50, 302);
         });
     });
 
     describe('#getRequestsByDfa', () => {
         it('Should return correct requests', async () => {
-            let firstDfa = await DFA.at(firstDfaAddress);
-            let secondDfa = await DFA.at(secondDfaAddress);
+            await addFirstUserRequest(200, 100, INDIVISIBLE, false);
+            await addFirstUserRequest(200, 100, INDIVISIBLE, false);
+            await addFirstUserRequest(100, 100, INDIVISIBLE, false);
+            await addFirstUserRequest(150, 100, INDIVISIBLE, false);
+            await addSecondUserRequest(100, 100, INDIVISIBLE, false);
+            await addSecondUserRequest(100, 200, INDIVISIBLE, false);
 
-            let firstExchangerAddress = await factory.getExchanger(firstDfaAddress);
-            let secondExchangerAddress = await factory.getExchanger(secondDfaAddress);
-            let firstExchanger = await Exchanger.at(firstExchangerAddress);
-            let secondExchanger = await Exchanger.at(secondExchangerAddress);
-
-            await firstDfa.approve(firstExchangerAddress, 100, {from: firstUser});
-            await firstExchanger.addRequest(secondDfaAddress, 200, 100, {from: firstUser});
-            await firstDfa.approve(firstExchangerAddress, 100, {from: firstUser});
-            await firstExchanger.addRequest(secondDfaAddress, 200, 100, {from: firstUser});
-            await firstDfa.approve(firstExchangerAddress, 100, {from: firstUser});
-            await firstExchanger.addRequest(secondDfaAddress, 100, 100, {from: firstUser});
-            await firstDfa.approve(firstExchangerAddress, 100, {from: firstUser});
-            await firstExchanger.addRequest(secondDfaAddress, 150, 100, {from: firstUser});
-            await secondDfa.approve(secondExchangerAddress, 100, {from: secondUser});
-            await secondExchanger.addRequest(firstDfaAddress, 100, 100, {from: secondUser});
-            await secondDfa.approve(secondExchangerAddress, 200, {from: secondUser});
-            await secondExchanger.addRequest(firstDfaAddress, 100, 200, {from: secondUser});
 
             let firstRequests = await firstExchanger.getRequestsByDfa(secondDfaAddress);
             assert.equal(firstRequests["0"][0], firstUser);

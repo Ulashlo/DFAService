@@ -137,11 +137,11 @@ contract Exchanger {
     ExchangeRequestView memory info,
     uint index
   )
-  external
-  view
-  isAmountsNotZero(info.amountToGive, info.amountToGet)
-  isAddressValid(info.dfaToGive)
-  returns (ReciprocalRequestInfo memory)
+    external
+    view
+    isAmountsNotZero(info.amountToGive, info.amountToGet)
+    isAddressValid(info.dfaToGive)
+    returns (ReciprocalRequestInfo memory)
   {
     ExchangerRequestInfo[] memory requestList = requests[info.dfaToGive];
     for (uint i = index; i < requestList.length; i++) {
@@ -184,20 +184,15 @@ contract Exchanger {
   function addRequest(
     ExchangeRequestData memory data
   )
-  external
-  isAmountsNotZero(data.amountToGive, data.amountToGet)
-  isAddressValid(data.dfaToGet)
-  isExchangerValid(data.dfaToGet)
-  isAmountCanTransfer(data.amountToGive)
+    external
+    isAmountsNotZero(data.amountToGive, data.amountToGet)
+    isAddressValid(data.dfaToGet)
+    isExchangerValid(data.dfaToGet)
+    isAmountCanTransfer(data.amountToGive)
   {
     address exchangerAddress = Factory(factoryAddress).getExchanger(data.dfaToGet);
     Exchanger exchanger = Exchanger(exchangerAddress);
     DFA(dfaAddress).transferFrom(msg.sender, address(this), data.amountToGive);
-    // bool isFound;
-    // address user;
-    // uint index;
-    // uint reciprocalAmountToGet;
-    // uint reciprocalAmountToGive;
     ReciprocalRequestInfo memory requestInfo = exchanger.getReciprocalRequestInfo(
       ExchangeRequestView(data.exchangeType, dfaAddress, data.amountToGive, data.amountToGet), 0
     );
@@ -228,7 +223,7 @@ contract Exchanger {
         );
       }
     } else {
-      while (requestInfo.isFound) {
+      while (requestInfo.isFound && data.amountToGive > 0 && data.amountToGet > 0) {
         if (requestInfo.reciprocalAmountToGet <= data.amountToGive &&
           requestInfo.reciprocalAmountToGive <= data.amountToGet) {
           DFA(dfaAddress).transfer(requestInfo.user, requestInfo.reciprocalAmountToGet);
@@ -257,6 +252,9 @@ contract Exchanger {
           data.amountToGive = 0;
           data.amountToGet = 0;
         }
+        if (data.amountToGive <= 0 || data.amountToGet <= 0) {
+          break;
+        }
         requestInfo = exchanger.getReciprocalRequestInfo(
           ExchangeRequestView(data.exchangeType, dfaAddress, data.amountToGive, data.amountToGet), requestInfo.index + 1
         );
@@ -279,11 +277,11 @@ contract Exchanger {
   function tryToExchange(
     TryToExchangeParams memory params
   )
-  external
-  isAmountsNotZero(params.amountToGive, params.amountToGet)
-  isAddressValid(params.dfaToGive)
-  isSenderIsExchanger(params.dfaToGive)
-  isAddressValid(params.buyer)
+    external
+    isAmountsNotZero(params.amountToGive, params.amountToGet)
+    isAddressValid(params.dfaToGive)
+    isSenderIsExchanger(params.dfaToGive)
+    isAddressValid(params.buyer)
   {
     ExchangerRequestInfo storage request = requests[params.dfaToGive][params.requestIndex];
     request.amountToGet -= params.amountToGive;
@@ -305,14 +303,14 @@ contract Exchanger {
   }
 
   function getRequestsByDfa(address dfa)
-  public
-  view
-  isAddressValid(dfa)
-  returns (
-    address[] memory,
-    uint[] memory,
-    uint[] memory
-  )
+    public
+    view
+    isAddressValid(dfa)
+    returns (
+      address[] memory,
+      uint[] memory,
+      uint[] memory
+    )
   {
     ExchangerRequestInfo[] memory reqs = requests[dfa];
     uint len = 0;
