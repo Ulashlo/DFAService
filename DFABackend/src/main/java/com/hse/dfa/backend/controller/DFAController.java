@@ -1,21 +1,21 @@
 package com.hse.dfa.backend.controller;
 
 import com.hse.dfa.backend.controller.dto.dfa.DFABalanceDTO;
+import com.hse.dfa.backend.controller.dto.dfa.DFACostDTO;
 import com.hse.dfa.backend.controller.dto.dfa.DFAInfoForCreateDTO;
 import com.hse.dfa.backend.controller.dto.dfa.DFAViewDTO;
-import com.hse.dfa.backend.model.user_info.RoleName;
 import com.hse.dfa.backend.service.dfa.DFAService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-import static com.hse.dfa.backend.model.user_info.RoleName.*;
+import static com.hse.dfa.backend.model.user_info.RoleName.ISSUER;
+import static com.hse.dfa.backend.model.user_info.RoleName.TRADER;
 
 @RestController
 @RequestMapping("/safe/dfa")
@@ -52,5 +52,13 @@ public class DFAController {
     @GetMapping
     public List<DFAViewDTO> getAllDfa() throws Exception {
         return dfaService.getAllDfa();
+    }
+
+    @Operation(summary = "Return dfa cost.")
+    @GetMapping("/cost")
+    public List<DFACostDTO> getDfaCost(@Parameter(description = "Address of dfa.")
+                                       @RequestParam
+                                       @NotNull String dfaAddress) throws Exception {
+        return dfaService.getDfaCosts(dfaAddress);
     }
 }

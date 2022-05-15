@@ -1,6 +1,7 @@
 package com.hse.dfa.backend.service.dfa;
 
 import com.hse.dfa.backend.controller.dto.dfa.DFABalanceDTO;
+import com.hse.dfa.backend.controller.dto.dfa.DFACostDTO;
 import com.hse.dfa.backend.controller.dto.dfa.DFAInfoForCreateDTO;
 import com.hse.dfa.backend.controller.dto.dfa.DFAViewDTO;
 
@@ -14,7 +15,6 @@ public interface DFAService {
      * Create new Dfa.
      *
      * @param dto info for creation new dfa
-     * @return new dfa address
      */
     void createDFA(DFAInfoForCreateDTO dto) throws Exception;
 
@@ -39,4 +39,11 @@ public interface DFAService {
      * @return dfa addresses for all dfa
      */
     List<DFAViewDTO> getAllDfa() throws Exception;
+
+    /**
+     * Return dfa cost in another dfa.
+     *
+     * @return dfa costs
+     */
+    List<DFACostDTO> getDfaCosts(String dfaAddress) throws Exception;
 }
