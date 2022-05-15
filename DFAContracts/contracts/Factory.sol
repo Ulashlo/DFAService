@@ -129,4 +129,11 @@ contract Factory {
     }
     return (addresses, balances);
   }
+
+  function closeOldRequests() public isOwner {
+    for (uint i = 0; i < dfaList.length; i++) {
+      address exchangerAddress = dfaToExchanger[dfaList[i]];
+      Exchanger(exchangerAddress).closeOldRequests(dfaList);
+    }
+  }
 }

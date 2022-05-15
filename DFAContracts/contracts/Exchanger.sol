@@ -57,6 +57,11 @@ contract Exchanger {
   address public factoryAddress;
   mapping (address => ExchangerRequestInfo[]) public requests;
 
+  modifier isFactory() {
+    require(msg.sender == factoryAddress, "Caller is not factory");
+    _;
+  }
+
   modifier isAddressValid(address addressToCheck) {
     require(addressToCheck != address(0), "Invalid address");
     _;
@@ -333,5 +338,18 @@ contract Exchanger {
       }
     }
     return (users, amountsToGet, amountsToGive);
+  }
+
+  function closeOldRequests(address[] memory dfaList) public isFactory {
+    for (uint i = 0; i < dfaList.length; i++) {
+      ExchangerRequestInfo[] storage reqs = requests[dfaList[i]];
+      for (uint j = 0; j < reqs.length; j++) {
+      ExchangerRequestInfo storage req = reqs[j];
+        if (req.status == ExchangeStatus.OPEN && req.endTime < block.timestamp) {
+          req.status = ExchangeStatus.CLOSE;
+          DFA(dfaAddress).transfer(req.user, req.amountToGive);
+        }
+      }
+    }
   }
 }
