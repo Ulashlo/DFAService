@@ -11,7 +11,10 @@ import com.hse.dfa.backend.util.contracts.ContractFabric;
 import com.hse.dfa.backend.util.converters.contract.DFAInfoConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -27,6 +30,7 @@ import static com.hse.dfa.backend.util.converters.contract.DFAInfoConverter.tupl
 public class DFAServiceImpl implements DFAService {
     private final UserService userService;
     private final ContractFabric contractFabric;
+    private final Web3j web3j;
 
     @Override
     public void createDFA(DFAInfoForCreateDTO dto) throws Exception {
@@ -71,11 +75,12 @@ public class DFAServiceImpl implements DFAService {
         final var exchangerAddress = factory.getExchanger(dfaAddress).send();
         final var exchanger = contractFabric.loadExchanger(exchangerAddress);
         return exchanger.exchangeCompletedEventFlowable(
-                DefaultBlockParameterName.EARLIEST,
-                DefaultBlockParameterName.LATEST
+                DefaultBlockParameter.valueOf(BigInteger.ZERO),
+                DefaultBlockParameter.valueOf(
+                    web3j.ethBlockNumber().send().getBlockNumber()
+                )
             ).toList()
-            .toFuture()
-            .get()
+            .blockingGet()
             .stream()
             .collect(Collectors.groupingBy((ExchangeCompletedEventResponse event) -> event.secondDfa))
             .entrySet().stream()

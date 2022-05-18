@@ -3,7 +3,7 @@ import { useAuthInfo } from '@src/redux/hooks/auth';
 import { useHttpClient } from '@src/hooks/useHttpClient.hook';
 import { useCallback } from 'react';
 import { useInterval } from '@src/hooks/useInterval.hook';
-import { INTERVAL } from '@src/utils/constraints';
+import { INTERVAL, TRADER } from '@src/utils/constraints';
 import { setBalances } from '@src/redux/reducers/balances';
 
 export const useAutoUpdateBalances = (delay?: number) => {
@@ -16,5 +16,5 @@ export const useAutoUpdateBalances = (delay?: number) => {
     dispatch(setBalances(balances));
   }, [dispatch, dfaControllerApi]);
 
-  useInterval(authInfo ? updateBalances : () => {}, INTERVAL, delay);
+  useInterval(authInfo && authInfo.roles.includes(TRADER) ? updateBalances : () => {}, INTERVAL, delay);
 };

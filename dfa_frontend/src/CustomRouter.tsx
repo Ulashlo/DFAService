@@ -62,7 +62,7 @@ export const pages: Record<PageName, Readonly<PageInfo>> = {
     params: [{ name: 'adminRequestFormType', optional: true }],
     requiresAuth: true,
     component: AdminRequestForm,
-    description: 'Запросы',
+    description: 'Запросы пользователей',
     roleAllowed: ADMIN,
   },
   aboutMe: {
