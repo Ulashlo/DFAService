@@ -3,6 +3,8 @@ import { Button, Col, Form, Input, Row } from 'antd';
 import React from 'react';
 import { UserInfoForCreateDTO } from '@src/generated/backend';
 import { PASSWORD_MAX_SIZE, PASSWORD_MIN_SIZE, USERNAME_MAX_SIZE, USERNAME_MIN_SIZE } from '@src/utils/constraints';
+import { useHistory } from 'react-router-dom';
+import { pages } from '@src/CustomRouter';
 
 export interface RegisterFormProps {
   goToLogin: () => void;
@@ -44,13 +46,17 @@ const tailFormItemLayout = {
 
 export function RegistrationForm({ goToLogin }: RegisterFormProps) {
   const { registration } = useRegistrationForm();
+  const history = useHistory();
 
   return (
     <Form
       {...formItemLayout}
       style={{ padding: '10px' }}
       size="large"
-      onFinish={(userInfoForCreate: UserInfoForCreateDTO) => registration(userInfoForCreate)}
+      onFinish={(userInfoForCreate: UserInfoForCreateDTO) => {
+        registration(userInfoForCreate);
+        history.push(pages.dfa.uri);
+      }}
     >
       <Form.Item
         name="username"

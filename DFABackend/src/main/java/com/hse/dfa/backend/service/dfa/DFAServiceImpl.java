@@ -1,24 +1,21 @@
 package com.hse.dfa.backend.service.dfa;
 
-import com.hse.dfa.backend.contracts.Exchanger.ExchangeCompletedEventResponse;
-import com.hse.dfa.backend.controller.dto.dfa.DFABalanceDTO;
-import com.hse.dfa.backend.controller.dto.dfa.DFACostDTO;
-import com.hse.dfa.backend.controller.dto.dfa.DFAInfoForCreateDTO;
-import com.hse.dfa.backend.controller.dto.dfa.DFAViewDTO;
+import com.hse.dfa.backend.controller.dto.dfa.*;
+import com.hse.dfa.backend.repository.ethereum.ExchangeCompletedEventRepository;
 import com.hse.dfa.backend.service.user_info.UserService;
 import com.hse.dfa.backend.util.checkers.UserChecker;
 import com.hse.dfa.backend.util.contracts.ContractFabric;
+import com.hse.dfa.backend.util.converters.contract.DFAConverter;
 import com.hse.dfa.backend.util.converters.contract.DFAInfoConverter;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.DefaultBlockParameter;
-import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.hse.dfa.backend.util.checkers.UserChecker.checkAddress;
@@ -30,7 +27,7 @@ import static com.hse.dfa.backend.util.converters.contract.DFAInfoConverter.tupl
 public class DFAServiceImpl implements DFAService {
     private final UserService userService;
     private final ContractFabric contractFabric;
-    private final Web3j web3j;
+    private final ExchangeCompletedEventRepository exchangeCompletedEventRepository;
 
     @Override
     public void createDFA(DFAInfoForCreateDTO dto) throws Exception {
@@ -70,27 +67,62 @@ public class DFAServiceImpl implements DFAService {
     }
 
     @Override
-    public List<DFACostDTO> getDfaCosts(String dfaAddress) throws Exception {
-        final var factory = contractFabric.loadFactory();
-        final var exchangerAddress = factory.getExchanger(dfaAddress).send();
-        final var exchanger = contractFabric.loadExchanger(exchangerAddress);
-        return exchanger.exchangeCompletedEventFlowable(
-                DefaultBlockParameter.valueOf(BigInteger.ZERO),
-                DefaultBlockParameter.valueOf(
-                    web3j.ethBlockNumber().send().getBlockNumber()
-                )
-            ).toList()
-            .blockingGet()
-            .stream()
-            .collect(Collectors.groupingBy((ExchangeCompletedEventResponse event) -> event.secondDfa))
-            .entrySet().stream()
-            .map((Map.Entry<String, List<ExchangeCompletedEventResponse>> entry) -> new DFACostDTO(
+    @Transactional(readOnly = true)
+    public List<DFACostDTO> getDfaCosts(String dfaAddress) {
+        final var address = dfaAddress.toLowerCase(Locale.ROOT);
+        final var dfaVolumes = new HashMap<String, DfaVolume>();
+        exchangeCompletedEventRepository.findAllByFirstDfaAddressOrSecondDfaAddress(
+                address, address
+            ).forEach(event -> {
+            if (event.getFirstDfaAddress().equals(address)) {
+                dfaVolumes.computeIfAbsent(event.getSecondDfaAddress(), addr -> new DfaVolume());
+                final var volume = dfaVolumes.get(event.getSecondDfaAddress());
+                volume.addAmountToGive(event.getFirstAmount());
+                volume.addAmountToGet(event.getSecondAmount());
+            } else if (event.getSecondDfaAddress().equals(address)) {
+                dfaVolumes.computeIfAbsent(event.getFirstDfaAddress(), addr -> new DfaVolume());
+                final var volume = dfaVolumes.get(event.getFirstDfaAddress());
+                volume.addAmountToGive(event.getSecondAmount());
+                volume.addAmountToGet(event.getFirstAmount());
+            }
+        });
+        return dfaVolumes.entrySet().stream()
+            .map(entry -> new DFACostDTO(
                 entry.getKey(),
-                entry.getValue().stream()
-                    .mapToDouble((ExchangeCompletedEventResponse ex) -> ex.secondAmount.doubleValue())
-                    .average().orElse(-1)
-            ))
-            .filter((DFACostDTO cost) -> cost.getCost() > 0)
+                entry.getValue().getAmountToGet().doubleValue() /
+                    entry.getValue().getAmountToGive().doubleValue()
+            )).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CompletedExchangeDTO> getCompletedExchanges() {
+        final var user = userService.getCurrentUser();
+        final var userAddress = UserChecker.checkAddress(user);
+        final var address = userAddress.toLowerCase(Locale.ROOT);
+        return exchangeCompletedEventRepository.findAllByFirstUserAddressOrSecondUserAddress(
+                address, address
+            ).stream()
+            .map(DFAConverter::toCompletedExchangeDTO)
             .collect(Collectors.toList());
+    }
+
+    @Getter
+    private static class DfaVolume {
+        private Long amountToGive;
+        private Long amountToGet;
+
+        public DfaVolume() {
+            this.amountToGet = 0L;
+            this.amountToGive = 0L;
+        }
+
+        public void addAmountToGive(long amount) {
+            this.amountToGive += amount;
+        }
+
+        public void addAmountToGet(long amount) {
+            this.amountToGet += amount;
+        }
     }
 }

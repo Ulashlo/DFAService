@@ -1,8 +1,10 @@
 package com.hse.dfa.backend.controller;
 
 import com.hse.dfa.backend.controller.dto.dfa.AllRequestsDTO;
+import com.hse.dfa.backend.controller.dto.dfa.CompletedExchangeDTO;
 import com.hse.dfa.backend.controller.dto.exchanger.ExchangeRequestDTO;
 import com.hse.dfa.backend.model.user_info.RoleName;
+import com.hse.dfa.backend.service.dfa.DFAService;
 import com.hse.dfa.backend.service.exchanger.ExchangerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,6 +22,7 @@ import static com.hse.dfa.backend.model.user_info.RoleName.TRADER;
 @RequiredArgsConstructor
 public class ExchangerController {
     private final ExchangerService exchangerService;
+    private final DFAService dfaService;
 
     @Operation(summary = "Put exchange request to the exchanger.")
     @PutMapping
@@ -34,5 +37,11 @@ public class ExchangerController {
     @GetMapping
     public List<AllRequestsDTO> getAllExchanges() throws Exception {
         return exchangerService.getAllRequests();
+    }
+
+    @Operation(summary = "Return all completed exchanges for current user.")
+    @GetMapping("/completed")
+    public List<CompletedExchangeDTO> getAllCompletedExchanges() {
+        return dfaService.getCompletedExchanges();
     }
 }

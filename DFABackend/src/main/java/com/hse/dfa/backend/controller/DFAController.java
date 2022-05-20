@@ -58,7 +58,7 @@ public class DFAController {
     @GetMapping("/cost")
     public List<DFACostDTO> getDfaCost(@Parameter(description = "Address of dfa.")
                                        @RequestParam
-                                       @NotNull String dfaAddress) throws Exception {
+                                       @NotNull String dfaAddress) {
         return dfaService.getDfaCosts(dfaAddress);
     }
 }

@@ -1,9 +1,6 @@
 package com.hse.dfa.backend.service.dfa;
 
-import com.hse.dfa.backend.controller.dto.dfa.DFABalanceDTO;
-import com.hse.dfa.backend.controller.dto.dfa.DFACostDTO;
-import com.hse.dfa.backend.controller.dto.dfa.DFAInfoForCreateDTO;
-import com.hse.dfa.backend.controller.dto.dfa.DFAViewDTO;
+import com.hse.dfa.backend.controller.dto.dfa.*;
 
 import java.util.List;
 
@@ -45,5 +42,12 @@ public interface DFAService {
      *
      * @return dfa costs
      */
-    List<DFACostDTO> getDfaCosts(String dfaAddress) throws Exception;
+    List<DFACostDTO> getDfaCosts(String dfaAddress);
+
+    /**
+     * Return dfa cost in another dfa.
+     *
+     * @return dfa costs
+     */
+    List<CompletedExchangeDTO> getCompletedExchanges();
 }

@@ -9,6 +9,7 @@ import org.web3j.tx.gas.ContractGasProvider;
 
 @Configuration
 @RequiredArgsConstructor
+//TODO Добавить бины на сесссию или удалить
 public class FactoryConfig {
     private final Web3j web3j;
     private final ContractGasProvider gasProvider;

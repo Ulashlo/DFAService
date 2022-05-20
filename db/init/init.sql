@@ -39,6 +39,20 @@ create table if not exists admin_requests.issuer_request
     foreign key (admin_who_answered_id) references user_info.user (id)
 );
 
+create schema if not exists ethereum;
+
+create table if not exists ethereum.exchange_completed_event
+(
+    id                  bigserial primary key,
+    first_user_address  text not null,
+    first_dfa_address   text not null,
+    first_amount        bigint not null,
+    second_user_address text not null,
+    second_dfa_address  text not null,
+    second_amount       bigint not null,
+    block_num           bigint not null
+);
+
 insert into user_info.role (name, description)
 values ('ROLE_ADMIN',
         'Администратор. Позволяет управлять аккаунтами пользователей и ЦФА, ' ||

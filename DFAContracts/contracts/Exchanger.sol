@@ -289,6 +289,15 @@ contract Exchanger {
     isAddressValid(params.buyer)
   {
     ExchangerRequestInfo storage request = requests[params.dfaToGive][params.requestIndex];
+    DFA(dfaAddress).transfer(params.buyer, params.amountToGet);
+    emit ExchangeCompleted(
+      request.user,
+      dfaAddress,
+      params.amountToGet,
+      params.buyer,
+      params.dfaToGive,
+      params.amountToGive
+    );
     request.amountToGet -= params.amountToGive;
     request.amountToGive -= params.amountToGet;
     if (request.exchangeType == ExchangeType.INDIVISIBLE ||
@@ -296,15 +305,6 @@ contract Exchanger {
       request.amountToGive == 0) {
       request.status = ExchangeStatus.CLOSE;
     }
-    DFA(dfaAddress).transfer(params.buyer, params.amountToGet);
-    emit ExchangeCompleted(
-      request.user,
-      dfaAddress,
-      request.amountToGive,
-      params.buyer,
-      params.dfaToGive,
-      params.amountToGive
-    );
   }
 
   function getRequestsByDfa(address dfa)
