@@ -14,28 +14,24 @@ import javax.validation.constraints.NotNull;
 @Schema(title = "Completed exchange", description = "All completed exchange.")
 public class CompletedExchangeDTO {
     @NotNull
-    @Schema(title = "Id", description = "Id.")
+    @Schema(title = "Id", description = "Id of exchange.")
     private long id;
     @NotNull
     @NotEmpty
-    @Schema(title = "First user address", description = "First user address.")
-    private String firstUserAddress;
+    @Schema(title = "Dfa to get address", description = "Dfa to get address.")
+    private String dfaToGetAddress;
+    @NotNull
+    @Schema(title = "Amount to get", description = "Amount to get.")
+    private Long amountToGet;
     @NotNull
     @NotEmpty
-    @Schema(title = "First dfa address", description = "First dfa address.")
-    private String firstDfaAddress;
-    @NotNull
-    @Schema(title = "First amount", description = "First amount.")
-    private Long firstAmount;
+    @Schema(title = "Buyer", description = "User who buy DFA.")
+    private String buyer;
     @NotNull
     @NotEmpty
-    @Schema(title = "Second user address", description = "Second user address.")
-    private String secondUserAddress;
+    @Schema(title = "Dfa to give address", description = "Dfa to give address.")
+    private String dfaToGiveAddress;
     @NotNull
-    @NotEmpty
-    @Schema(title = "Second dfa address", description = "Second dfa address.")
-    private String secondDfaAddress;
-    @NotNull
-    @Schema(title = "Second amount", description = "Second amount.")
-    private Long secondAmount;
+    @Schema(title = "Amount to give", description = "Amount to give.")
+    private Long amountToGive;
 }

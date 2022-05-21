@@ -5,21 +5,21 @@ import com.hse.dfa.backend.repository.ethereum.ExchangeCompletedEventRepository;
 import com.hse.dfa.backend.service.user_info.UserService;
 import com.hse.dfa.backend.util.checkers.UserChecker;
 import com.hse.dfa.backend.util.contracts.ContractFabric;
-import com.hse.dfa.backend.util.converters.contract.DFAConverter;
 import com.hse.dfa.backend.util.converters.contract.DFAInfoConverter;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static com.hse.dfa.backend.util.checkers.UserChecker.checkAddress;
 import static com.hse.dfa.backend.util.checkers.UserChecker.checkPrivateKey;
+import static com.hse.dfa.backend.util.converters.contract.DFAConverter.toCompletedExchangeDTO;
 import static com.hse.dfa.backend.util.converters.contract.DFAInfoConverter.tupleToDFAViewDTO;
 
 @Service
@@ -103,7 +103,7 @@ public class DFAServiceImpl implements DFAService {
         return exchangeCompletedEventRepository.findAllByFirstUserAddressOrSecondUserAddress(
                 address, address
             ).stream()
-            .map(DFAConverter::toCompletedExchangeDTO)
+            .map(event -> toCompletedExchangeDTO(event, address))
             .collect(Collectors.toList());
     }
 

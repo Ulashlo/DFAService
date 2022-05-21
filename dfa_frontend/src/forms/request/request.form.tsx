@@ -6,6 +6,7 @@ import { CreateRequestsForm } from '@src/forms/request/createRequests';
 import { RequestFormType, useRequestForm } from '@src/forms/request/hook';
 import { useAuthInfo } from '@src/redux/hooks/auth';
 import { TRADER } from '@src/utils/constraints';
+import { ExchangeHistoryForm } from '@src/forms/request/exchangeHistory';
 
 const { TabPane } = Tabs;
 
@@ -24,6 +25,9 @@ export function RequestForm() {
             <>
               <TabPane tab="Мои запросы на обмен" key={RequestFormType.MINE_REQUEST}>
                 <MyRequestsForm />
+              </TabPane>
+              <TabPane tab="История обменов" key={RequestFormType.EXCHANGE_HISTORY}>
+                <ExchangeHistoryForm />
               </TabPane>
               <TabPane tab="Создать запросы на обмен" key={RequestFormType.CREATE_REQUEST}>
                 <CreateRequestsForm />

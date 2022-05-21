@@ -8,7 +8,9 @@ apis/index.ts
 index.ts
 models/AllRequestsDTO.ts
 models/ApiError.ts
+models/CompletedExchangeDTO.ts
 models/DFABalanceDTO.ts
+models/DFACostDTO.ts
 models/DFAInfoForCreateDTO.ts
 models/DFAViewDTO.ts
 models/ExchangeInfo.ts

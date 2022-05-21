@@ -7,6 +7,7 @@ import { useAutoUpdateDfas } from '@src/hooks/useAutoUpdateDfas.hook';
 import { DELAY } from '@src/utils/constraints';
 import { MyRequestsTable, MyRequestsToGetInfo } from '@src/components/requests/requestsTable';
 import { useAuthInfo } from '@src/redux/hooks/auth';
+import { RequestsForDFADTO } from '@src/generated/backend';
 
 export function MyRequestsForm() {
   const requests = useRequestsInfo();
@@ -21,7 +22,7 @@ export function MyRequestsForm() {
       requests.requests.flatMap((subRequests) => {
         const dfaToGive = subRequests.dfaToGiveAddress;
         return subRequests.requestsInfo
-          .flatMap((subRequest) => {
+          .flatMap((subRequest: RequestsForDFADTO) => {
             const dfaToGet = subRequest.dfaToGetAddress;
             return subRequest.exchangeInfos
               .filter((request) => request.userAddress.toLowerCase() === authInfo?.address?.toLowerCase())
@@ -32,7 +33,7 @@ export function MyRequestsForm() {
                 dfaSymbolToGet: dfaViews ? dfaViews[dfaToGet].symbol : '',
               }));
           })
-          .map((request) => ({
+          .map((request: any) => ({
             ...request,
             dfaNameToGive: dfaViews ? dfaViews[dfaToGive].name : 'ошибка загрузки',
             dfaSymbolToGive: dfaViews ? dfaViews[dfaToGive].symbol : '',

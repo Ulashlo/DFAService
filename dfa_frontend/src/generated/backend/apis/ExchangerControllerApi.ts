@@ -21,6 +21,9 @@ import {
     ApiError,
     ApiErrorFromJSON,
     ApiErrorToJSON,
+    CompletedExchangeDTO,
+    CompletedExchangeDTOFromJSON,
+    CompletedExchangeDTOToJSON,
     ExchangeRequestDTO,
     ExchangeRequestDTOFromJSON,
     ExchangeRequestDTOToJSON,
@@ -51,6 +54,20 @@ export interface ExchangerControllerApiInterface {
      * Put exchange request to the exchanger.
      */
     addExchange(requestParameters: AddExchangeRequest): Promise<void>;
+
+    /**
+     * 
+     * @summary Return all completed exchanges for current user.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ExchangerControllerApiInterface
+     */
+    getAllCompletedExchangesRaw(): Promise<runtime.ApiResponse<Array<CompletedExchangeDTO>>>;
+
+    /**
+     * Return all completed exchanges for current user.
+     */
+    getAllCompletedExchanges(): Promise<Array<CompletedExchangeDTO>>;
 
     /**
      * 
@@ -111,6 +128,40 @@ export class ExchangerControllerApi extends runtime.BaseAPI implements Exchanger
      */
     async addExchange(requestParameters: AddExchangeRequest): Promise<void> {
         await this.addExchangeRaw(requestParameters);
+    }
+
+    /**
+     * Return all completed exchanges for current user.
+     */
+    async getAllCompletedExchangesRaw(): Promise<runtime.ApiResponse<Array<CompletedExchangeDTO>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = typeof token === 'function' ? token("bearer-jwt", []) : token;
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/safe/exchange/completed`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(CompletedExchangeDTOFromJSON));
+    }
+
+    /**
+     * Return all completed exchanges for current user.
+     */
+    async getAllCompletedExchanges(): Promise<Array<CompletedExchangeDTO>> {
+        const response = await this.getAllCompletedExchangesRaw();
+        return await response.value();
     }
 
     /**

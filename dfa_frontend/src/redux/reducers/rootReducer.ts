@@ -7,6 +7,7 @@ import { balancesReducer } from '@src/redux/reducers/balances';
 import { dfaViewsReducer } from '@src/redux/reducers/dfas/dfaViews.reducer';
 import { requestsReducer } from '@src/redux/reducers/requests';
 import { issuerRequestsReducer } from '@src/redux/reducers/issuerRequests';
+import { completedExchangesReducer } from '@src/redux/reducers/completedExchanges';
 
 export default combineReducers({
   auth: authReducer,
@@ -17,4 +18,5 @@ export default combineReducers({
   dfaViews: dfaViewsReducer,
   requests: requestsReducer,
   issuerRequests: issuerRequestsReducer,
+  completedExchanges: completedExchangesReducer,
 });

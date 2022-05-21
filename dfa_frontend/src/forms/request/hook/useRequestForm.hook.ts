@@ -12,6 +12,7 @@ export enum RequestFormType {
   MINE_REQUEST = 'mineRequest',
   ALL_REQUEST = 'allRequest',
   CREATE_REQUEST = 'createRequest',
+  EXCHANGE_HISTORY = 'exchangeHistory',
 }
 
 interface RouteParams {

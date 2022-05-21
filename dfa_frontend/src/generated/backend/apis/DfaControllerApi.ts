@@ -21,6 +21,9 @@ import {
     DFABalanceDTO,
     DFABalanceDTOFromJSON,
     DFABalanceDTOToJSON,
+    DFACostDTO,
+    DFACostDTOFromJSON,
+    DFACostDTOToJSON,
     DFAInfoForCreateDTO,
     DFAInfoForCreateDTOFromJSON,
     DFAInfoForCreateDTOToJSON,
@@ -34,6 +37,10 @@ export interface CreateDFARequest {
 }
 
 export interface GetBalanceRequest {
+    dfaAddress: string;
+}
+
+export interface GetDfaCostRequest {
     dfaAddress: string;
 }
 
@@ -101,6 +108,21 @@ export interface DfaControllerApiInterface {
      * Return amount of dfa for all existing dfa.
      */
     getBalances(): Promise<Array<DFABalanceDTO>>;
+
+    /**
+     * 
+     * @summary Return dfa cost.
+     * @param {string} dfaAddress Address of dfa.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DfaControllerApiInterface
+     */
+    getDfaCostRaw(requestParameters: GetDfaCostRequest): Promise<runtime.ApiResponse<Array<DFACostDTO>>>;
+
+    /**
+     * Return dfa cost.
+     */
+    getDfaCost(requestParameters: GetDfaCostRequest): Promise<Array<DFACostDTO>>;
 
 }
 
@@ -256,6 +278,48 @@ export class DfaControllerApi extends runtime.BaseAPI implements DfaControllerAp
      */
     async getBalances(): Promise<Array<DFABalanceDTO>> {
         const response = await this.getBalancesRaw();
+        return await response.value();
+    }
+
+    /**
+     * Return dfa cost.
+     */
+    async getDfaCostRaw(requestParameters: GetDfaCostRequest): Promise<runtime.ApiResponse<Array<DFACostDTO>>> {
+        if (requestParameters.dfaAddress === null || requestParameters.dfaAddress === undefined) {
+            throw new runtime.RequiredError('dfaAddress','Required parameter requestParameters.dfaAddress was null or undefined when calling getDfaCost.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.dfaAddress !== undefined) {
+            queryParameters['dfaAddress'] = requestParameters.dfaAddress;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = typeof token === 'function' ? token("bearer-jwt", []) : token;
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/safe/dfa/cost`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(DFACostDTOFromJSON));
+    }
+
+    /**
+     * Return dfa cost.
+     */
+    async getDfaCost(requestParameters: GetDfaCostRequest): Promise<Array<DFACostDTO>> {
+        const response = await this.getDfaCostRaw(requestParameters);
         return await response.value();
     }
 
