@@ -8,6 +8,7 @@ import { CreateDfaForm } from '@src/forms/dfa/createDfa';
 import { useAutoUpdateDfas } from '@src/hooks/useAutoUpdateDfas.hook';
 import { ISSUER } from '@src/utils/constraints';
 import { useAuthInfo } from '@src/redux/hooks/auth';
+import { DfaCostForm } from '@src/forms/dfa/dfaCosts';
 
 const { TabPane } = Tabs;
 
@@ -16,6 +17,7 @@ export enum DfaFormType {
   MINE_DFA = 'mineDfa',
   ALL_DFA = 'allDfa',
   CREATE_DFA = 'createDfa',
+  DFA_COSTS = 'dfaCosts',
 }
 
 interface RouteParams {
@@ -43,6 +45,9 @@ export function DfaForm() {
         <Tabs activeKey={dfaFormType} onChange={onSelectActiveTabKey}>
           <TabPane tab="Все ЦФА" key={DfaFormType.ALL_DFA}>
             <AllDfaForm />
+          </TabPane>
+          <TabPane tab="Цена ЦФА" key={DfaFormType.DFA_COSTS}>
+            <DfaCostForm />
           </TabPane>
           {authInfo?.roles.includes(ISSUER) && (
             <>

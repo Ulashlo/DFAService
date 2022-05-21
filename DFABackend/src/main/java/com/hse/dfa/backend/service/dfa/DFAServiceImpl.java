@@ -89,8 +89,8 @@ public class DFAServiceImpl implements DFAService {
         return dfaVolumes.entrySet().stream()
             .map(entry -> new DFACostDTO(
                 entry.getKey(),
-                entry.getValue().getAmountToGet().doubleValue() /
-                    entry.getValue().getAmountToGive().doubleValue()
+                entry.getValue().getAmountToGive().doubleValue() /
+                entry.getValue().getAmountToGet().doubleValue()
             )).collect(Collectors.toList());
     }
 
