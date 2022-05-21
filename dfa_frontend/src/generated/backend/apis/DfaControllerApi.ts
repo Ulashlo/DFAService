@@ -44,6 +44,10 @@ export interface GetDfaCostRequest {
     dfaAddress: string;
 }
 
+export interface ReplenishBalanceRequest {
+    amount: number;
+}
+
 /**
  * DfaControllerApi - interface
  * 
@@ -123,6 +127,21 @@ export interface DfaControllerApiInterface {
      * Return dfa cost.
      */
     getDfaCost(requestParameters: GetDfaCostRequest): Promise<Array<DFACostDTO>>;
+
+    /**
+     * 
+     * @summary Return dfa cost.
+     * @param {number} amount Amount of default dfa to replenish.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DfaControllerApiInterface
+     */
+    replenishBalanceRaw(requestParameters: ReplenishBalanceRequest): Promise<runtime.ApiResponse<void>>;
+
+    /**
+     * Return dfa cost.
+     */
+    replenishBalance(requestParameters: ReplenishBalanceRequest): Promise<void>;
 
 }
 
@@ -321,6 +340,47 @@ export class DfaControllerApi extends runtime.BaseAPI implements DfaControllerAp
     async getDfaCost(requestParameters: GetDfaCostRequest): Promise<Array<DFACostDTO>> {
         const response = await this.getDfaCostRaw(requestParameters);
         return await response.value();
+    }
+
+    /**
+     * Return dfa cost.
+     */
+    async replenishBalanceRaw(requestParameters: ReplenishBalanceRequest): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.amount === null || requestParameters.amount === undefined) {
+            throw new runtime.RequiredError('amount','Required parameter requestParameters.amount was null or undefined when calling replenishBalance.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.amount !== undefined) {
+            queryParameters['amount'] = requestParameters.amount;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = typeof token === 'function' ? token("bearer-jwt", []) : token;
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/safe/dfa/replenish`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Return dfa cost.
+     */
+    async replenishBalance(requestParameters: ReplenishBalanceRequest): Promise<void> {
+        await this.replenishBalanceRaw(requestParameters);
     }
 
 }

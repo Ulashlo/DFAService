@@ -1,6 +1,7 @@
 package com.hse.dfa.backend.service.dfa;
 
 import com.hse.dfa.backend.controller.dto.dfa.*;
+import com.hse.dfa.backend.properties.contracts.DefaultDFAProperties;
 import com.hse.dfa.backend.repository.ethereum.ExchangeCompletedEventRepository;
 import com.hse.dfa.backend.service.user_info.UserService;
 import com.hse.dfa.backend.util.checkers.UserChecker;
@@ -28,6 +29,7 @@ public class DFAServiceImpl implements DFAService {
     private final UserService userService;
     private final ContractFabric contractFabric;
     private final ExchangeCompletedEventRepository exchangeCompletedEventRepository;
+    private final DefaultDFAProperties defaultDFAProperties;
 
     @Override
     public void createDFA(DFAInfoForCreateDTO dto) throws Exception {
@@ -105,6 +107,18 @@ public class DFAServiceImpl implements DFAService {
             ).stream()
             .map(event -> toCompletedExchangeDTO(event, address))
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public void addDefaultDFAToBalance(Long amount) throws Exception {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Amount of dfa less or equal to 0");
+        }
+        final var user = userService.getCurrentUser();
+        final var address = UserChecker.checkAddress(user);
+        final var dfa = contractFabric.loadDfa(defaultDFAProperties.getAddress());
+        dfa.mint(BigInteger.valueOf(amount)).send();
+        dfa.transfer(address, BigInteger.valueOf(amount)).send();
     }
 
     @Getter

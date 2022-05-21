@@ -61,4 +61,13 @@ public class DFAController {
                                        @NotNull String dfaAddress) {
         return dfaService.getDfaCosts(dfaAddress);
     }
+
+    @Operation(summary = "Return dfa cost.")
+    @GetMapping("/replenish")
+    @RolesAllowed(TRADER)
+    public void replenishBalance(@Parameter(description = "Amount of default dfa to replenish.")
+                                             @RequestParam
+                                             @NotNull Long amount) throws Exception {
+        dfaService.addDefaultDFAToBalance(amount);
+    }
 }

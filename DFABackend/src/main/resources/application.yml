@@ -18,6 +18,8 @@ web3j:
     price: '20000000000'
     limit: '6721975'
 contracts:
+  default-dfa:
+    address: "0x1cc38d9cf4a7710E310A253F754262312e7Fed09"
   factory:
     address: '0xc0FC2e45e3165a9758bcee23Ec54315f023Cd054'
   owner:

@@ -19427,14 +19427,65 @@
   },
   "networks": {
     "5777": {
-      "events": {},
+      "events": {
+        "0xdfae1556cb7f36a9d52c930e2986c55fcdef66c402f38194f645b04a15a196da": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "whoCreate",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "dfaAddress",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "initialSupply",
+              "type": "uint256"
+            }
+          ],
+          "name": "DFACreated",
+          "type": "event"
+        },
+        "0xa6625d2d26e786e2f473111bea4b2fcdbbf1863d883a2359989ce3a103d2972a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            }
+          ],
+          "name": "UserVerified",
+          "type": "event"
+        }
+      },
       "links": {},
       "address": "0xc0FC2e45e3165a9758bcee23Ec54315f023Cd054",
       "transactionHash": "0x55267c4cc830440da5d503aea2361065b9dddc361db3182fe3d5bc15bd525bb5"
     }
   },
   "schemaVersion": "3.4.4",
-  "updatedAt": "2022-05-20T21:35:11.828Z",
+  "updatedAt": "2022-05-21T19:48:58.808Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

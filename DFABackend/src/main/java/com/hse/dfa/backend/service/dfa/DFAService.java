@@ -50,4 +50,9 @@ public interface DFAService {
      * @return dfa costs
      */
     List<CompletedExchangeDTO> getCompletedExchanges();
+
+    /**
+     * Add default Dfa to balance.
+     */
+    void addDefaultDFAToBalance(Long amount) throws Exception;
 }
