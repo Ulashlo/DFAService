@@ -53,6 +53,16 @@ create table if not exists ethereum.exchange_completed_event
     block_num           bigint not null
 );
 
+create table if not exists ethereum.dfa_created_event
+(
+    id                       bigserial primary key,
+    user_who_created_address text not null,
+    dfa_address              text not null,
+    dfa_name                 text not null,
+    symbol                   text not null,
+    supply                   bigint not null
+);
+
 insert into user_info.role (name, description)
 values ('ROLE_ADMIN',
         'Администратор. Позволяет управлять аккаунтами пользователей и ЦФА, ' ||

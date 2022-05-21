@@ -1,7 +1,7 @@
 package com.hse.dfa.backend.service.ethereum;
 
+import com.hse.dfa.backend.repository.ethereum.DFACreatedEventRepository;
 import com.hse.dfa.backend.repository.ethereum.ExchangeCompletedEventRepository;
-import com.hse.dfa.backend.service.dfa.DFAService;
 import com.hse.dfa.backend.util.contracts.ContractFabric;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,21 +13,33 @@ import javax.annotation.PostConstruct;
 import java.math.BigInteger;
 import java.util.Locale;
 
+import static com.hse.dfa.backend.util.converters.ethereum.DFACreatedEventResponseConverter.toDFACreatedEvent;
 import static com.hse.dfa.backend.util.converters.ethereum.ExchangeCompletedEventResponseConverter.toExchangeCompletedEvent;
 
 @Service
 @RequiredArgsConstructor
 public class EventProcessService {
     private final ContractFabric contractFabric;
-    private final DFAService dfaService;
     private final ExchangeCompletedEventRepository exchangeCompletedEventRepository;
+    private final DFACreatedEventRepository dfaCreatedEventRepository;
 
     @PostConstruct
-    private void processExchangeCompletedEvents() throws Exception {
-        final var dfaList = dfaService.getAllDfa();
-        for (var dfa : dfaList) {
-            processExchangeCompletedEvents(dfa.getAddress());
-        }
+    private void processDFACreatedEvents() {
+        final var factory = contractFabric.loadFactory();
+        factory.dFACreatedEventFlowable(
+            DefaultBlockParameter.valueOf(
+                BigInteger.valueOf(
+                    dfaCreatedEventRepository
+                        .getMaxBlockNum().orElse(-1L) + 1
+                )
+            ),
+            DefaultBlockParameterName.LATEST
+        ).forEach(event -> {
+            dfaCreatedEventRepository.saveAndFlush(
+                toDFACreatedEvent(event)
+            );
+            processExchangeCompletedEvents(event.dfaAddress);
+        });
     }
 
     @Transactional

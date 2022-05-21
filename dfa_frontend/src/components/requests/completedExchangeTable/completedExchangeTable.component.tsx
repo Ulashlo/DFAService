@@ -32,7 +32,7 @@ export const CompletedExchangesTable = React.memo(({ exchanges, isLoading }: Com
   const dataSource = useMemo(() => {
     const source = exchanges.map((exchange) => ({
       dfaToGetName: exchange.dfaToGetName,
-      amountToGetStr: `${exchange.amountToGive} ${exchange.dfaToGiveSymbol}`,
+      amountToGetStr: `${exchange.amountToGet} ${exchange.dfaToGetSymbol}`,
       buyer: exchange.buyer,
       dfaToGiveName: exchange.dfaToGiveName,
       amountToGiveStr: `${exchange.amountToGive} ${exchange.dfaToGiveSymbol}`,

@@ -1,6 +1,5 @@
 package com.hse.dfa.backend.util.converters.ethereum;
 
-import com.hse.dfa.backend.contracts.Exchanger;
 import com.hse.dfa.backend.contracts.Exchanger.ExchangeCompletedEventResponse;
 import com.hse.dfa.backend.model.ethereum.ExchangeCompletedEvent;
 import lombok.NoArgsConstructor;
