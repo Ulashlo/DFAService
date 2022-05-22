@@ -60,7 +60,8 @@ create table if not exists ethereum.dfa_created_event
     dfa_address              text not null,
     dfa_name                 text not null,
     symbol                   text not null,
-    supply                   bigint not null
+    supply                   bigint not null,
+    block_num                bigint not null
 );
 
 insert into user_info.role (name, description)
