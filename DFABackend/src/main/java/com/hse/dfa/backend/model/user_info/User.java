@@ -1,5 +1,6 @@
 package com.hse.dfa.backend.model.user_info;
 
+import com.hse.dfa.backend.util.cryptography.CryptographyService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.hse.dfa.backend.util.cryptography.CryptographyService.encrypt;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static javax.persistence.CascadeType.ALL;
@@ -48,7 +50,6 @@ public class User implements UserDetails {
     @Column(name = "address")
     private String address;
 
-    @Setter
     @Column(name = "private_key")
     private String privateKey;
 
@@ -69,7 +70,7 @@ public class User implements UserDetails {
         this.password = password;
         this.email = email;
         this.address = address;
-        this.privateKey = privateKey;
+        this.privateKey = encrypt(privateKey);
         this.addRoles(userRoles);
     }
 
@@ -82,7 +83,8 @@ public class User implements UserDetails {
     }
 
     public Optional<String> getPrivateKey() {
-        return ofNullable(privateKey);
+        return ofNullable(privateKey)
+            .map(CryptographyService::decrypt);
     }
 
     public void addRoles(Set<Role> roles) {
@@ -125,5 +127,9 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void setPrivateKey(String privateKey) {
+        this.privateKey = encrypt(privateKey);
     }
 }
