@@ -14,4 +14,14 @@ public enum ExchangeType {
     public BigInteger getCode() {
         return BigInteger.valueOf(code);
     }
+
+    public static ExchangeType getByCode(int code) {
+        if (code == 0) {
+            return INDIVISIBLE;
+        } else if (code == 1) {
+            return DIVISIBLE;
+        } else {
+            throw new IllegalArgumentException("Illegal exchange type value");
+        }
+    }
 }

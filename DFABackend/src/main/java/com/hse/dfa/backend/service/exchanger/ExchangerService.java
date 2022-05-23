@@ -1,6 +1,7 @@
 package com.hse.dfa.backend.service.exchanger;
 
 import com.hse.dfa.backend.controller.dto.dfa.AllRequestsDTO;
+import com.hse.dfa.backend.controller.dto.exchanger.ExchangeInfoForDeleteDTO;
 import com.hse.dfa.backend.controller.dto.exchanger.ExchangeRequestDTO;
 
 import java.util.List;
@@ -20,4 +21,9 @@ public interface ExchangerService {
      * Return all requests for exchanges.
      */
     List<AllRequestsDTO> getAllRequests() throws Exception;
+
+    /**
+     * Close exchange request.
+     */
+    void closeRequest(ExchangeInfoForDeleteDTO info) throws Exception;
 }

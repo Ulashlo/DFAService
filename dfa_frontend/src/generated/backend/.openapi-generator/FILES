@@ -14,6 +14,7 @@ models/DFACostDTO.ts
 models/DFAInfoForCreateDTO.ts
 models/DFAViewDTO.ts
 models/ExchangeInfo.ts
+models/ExchangeInfoForDeleteDTO.ts
 models/ExchangeRequestDTO.ts
 models/IssuerRequestDTO.ts
 models/RequestsForDFADTO.ts

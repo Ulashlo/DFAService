@@ -2,8 +2,8 @@ package com.hse.dfa.backend.controller;
 
 import com.hse.dfa.backend.controller.dto.dfa.AllRequestsDTO;
 import com.hse.dfa.backend.controller.dto.dfa.CompletedExchangeDTO;
+import com.hse.dfa.backend.controller.dto.exchanger.ExchangeInfoForDeleteDTO;
 import com.hse.dfa.backend.controller.dto.exchanger.ExchangeRequestDTO;
-import com.hse.dfa.backend.model.user_info.RoleName;
 import com.hse.dfa.backend.service.dfa.DFAService;
 import com.hse.dfa.backend.service.exchanger.ExchangerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,6 +31,15 @@ public class ExchangerController {
                             @RequestBody
                             @NotNull ExchangeRequestDTO dto) throws Exception {
         exchangerService.addExchangeRequest(dto);
+    }
+
+    @Operation(summary = "Delete exchange request.")
+    @DeleteMapping
+    @RolesAllowed(TRADER)
+    public void deleteExchange(@Parameter(description = "Info deleting exchange.")
+                               @RequestBody
+                               @NotNull ExchangeInfoForDeleteDTO dto) throws Exception {
+        exchangerService.closeRequest(dto);
     }
 
     @Operation(summary = "Return all exchange requests.")

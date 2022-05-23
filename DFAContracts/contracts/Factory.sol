@@ -136,4 +136,9 @@ contract Factory {
       Exchanger(exchangerAddress).closeOldRequests(dfaList);
     }
   }
+
+  function closeRequest(address dfaToGet, address dfaToGive, uint index) public {
+    address exchangerAddress = dfaToExchanger[dfaToGive];
+    Exchanger(exchangerAddress).closeRequest(dfaToGet, index, msg.sender);
+  }
 }

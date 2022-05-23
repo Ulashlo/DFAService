@@ -37,6 +37,18 @@ export interface ExchangeInfo {
      * @memberof ExchangeInfo
      */
     amountToGet: number;
+    /**
+     * Type of exchange.
+     * @type {string}
+     * @memberof ExchangeInfo
+     */
+    exchangeType: ExchangeInfoExchangeTypeEnum;
+    /**
+     * Index of exchange.
+     * @type {number}
+     * @memberof ExchangeInfo
+     */
+    index: number;
 }
 
 export function ExchangeInfoFromJSON(json: any): ExchangeInfo {
@@ -52,6 +64,8 @@ export function ExchangeInfoFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'userAddress': json['userAddress'],
         'amountToGive': json['amountToGive'],
         'amountToGet': json['amountToGet'],
+        'exchangeType': json['exchangeType'],
+        'index': json['index'],
     };
 }
 
@@ -67,7 +81,18 @@ export function ExchangeInfoToJSON(value?: ExchangeInfo | null): any {
         'userAddress': value.userAddress,
         'amountToGive': value.amountToGive,
         'amountToGet': value.amountToGet,
+        'exchangeType': value.exchangeType,
+        'index': value.index,
     };
+}
+
+/**
+* @export
+* @enum {string}
+*/
+export enum ExchangeInfoExchangeTypeEnum {
+    INDIVISIBLE = 'INDIVISIBLE',
+    DIVISIBLE = 'DIVISIBLE'
 }
 
 

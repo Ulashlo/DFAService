@@ -1,5 +1,6 @@
 package com.hse.dfa.backend.util.converters.contract;
 
+import com.hse.dfa.backend.contracts.ExchangeType;
 import com.hse.dfa.backend.controller.dto.dfa.DFABalanceDTO;
 import com.hse.dfa.backend.controller.dto.dfa.DFAViewDTO;
 import com.hse.dfa.backend.controller.dto.dfa.ExchangeInfo;
@@ -75,13 +76,15 @@ public class DFAInfoConverter {
     }
 
     public static List<ExchangeInfo> tupleToRequestInfoDTO(
-        Tuple3<List<String>, List<BigInteger>, List<BigInteger>> tuple
+        Tuple5<List<String>, List<BigInteger>, List<BigInteger>, List<BigInteger>, List<BigInteger>> tuple
     ) {
         final var users = tuple.component1();
         final var amountsToGet = tuple.component2();
         final var amountsToGive = tuple.component3();
+        final var types = tuple.component4();
+        final var indexes = tuple.component5();
         int length = users.size();
-        if (amountsToGive.size() != length || amountsToGet.size() != length) {
+        if (amountsToGive.size() != length || amountsToGet.size() != length || types.size() != length || indexes.size() != length) {
             throw new IncorrectEthereumResponseFormatException(
                 "Arrays for request info list has different size!"
             );
@@ -90,15 +93,17 @@ public class DFAInfoConverter {
         for (int i = 0; i < length; i++) {
             long amountToGive = amountsToGive.get(i).longValue();
             long amountToGet = amountsToGet.get(i).longValue();
-            if (amountToGive > 0 && amountToGet > 0) {
-                result.add(
-                    new ExchangeInfo(
-                        users.get(i),
-                        amountToGive,
-                        amountToGet
-                    )
-                );
-            }
+            ExchangeType type = ExchangeType.getByCode(types.get(i).intValue());
+            long index = indexes.get(i).longValue();
+            result.add(
+                new ExchangeInfo(
+                    users.get(i),
+                    amountToGive,
+                    amountToGet,
+                    type,
+                    index
+                )
+            );
         }
         return result;
     }

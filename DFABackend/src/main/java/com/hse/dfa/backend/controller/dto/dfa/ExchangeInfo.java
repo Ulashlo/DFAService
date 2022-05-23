@@ -1,5 +1,6 @@
 package com.hse.dfa.backend.controller.dto.dfa;
 
+import com.hse.dfa.backend.contracts.ExchangeType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,4 +24,10 @@ public class ExchangeInfo {
     @NotNull
     @Schema(title = "Amount to get", description = "Amount dfa to get.")
     private Long amountToGet;
+    @NotNull
+    @Schema(title = "Exchange type", description = "Type of exchange.")
+    private ExchangeType exchangeType;
+    @NotNull
+    @Schema(title = "Index", description = "Index of exchange.")
+    private Long index;
 }

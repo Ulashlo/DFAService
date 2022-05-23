@@ -26,6 +26,7 @@ export function AllRequestsForm() {
               amountToGet: request.amountToGet,
               dfaNameToGet: dfaViews ? dfaViews[dfaToGet].name : 'ошибка загрузки',
               dfaSymbolToGet: dfaViews ? dfaViews[dfaToGet].symbol : '',
+              type: request.exchangeType,
               user: request.userAddress,
             }));
           })

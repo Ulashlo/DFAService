@@ -6,6 +6,7 @@ export * from './DFACostDTO';
 export * from './DFAInfoForCreateDTO';
 export * from './DFAViewDTO';
 export * from './ExchangeInfo';
+export * from './ExchangeInfoForDeleteDTO';
 export * from './ExchangeRequestDTO';
 export * from './IssuerRequestDTO';
 export * from './RequestsForDFADTO';

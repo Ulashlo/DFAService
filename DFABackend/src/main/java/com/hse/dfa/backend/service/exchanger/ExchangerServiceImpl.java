@@ -3,6 +3,7 @@ package com.hse.dfa.backend.service.exchanger;
 import com.hse.dfa.backend.contracts.Exchanger;
 import com.hse.dfa.backend.controller.dto.dfa.AllRequestsDTO;
 import com.hse.dfa.backend.controller.dto.dfa.RequestsForDFADTO;
+import com.hse.dfa.backend.controller.dto.exchanger.ExchangeInfoForDeleteDTO;
 import com.hse.dfa.backend.controller.dto.exchanger.ExchangeRequestDTO;
 import com.hse.dfa.backend.service.user_info.UserService;
 import com.hse.dfa.backend.util.contracts.ContractFabric;
@@ -87,5 +88,17 @@ public class ExchangerServiceImpl implements ExchangerService {
             }
         }
         return result;
+    }
+
+    @Override
+    public void closeRequest(ExchangeInfoForDeleteDTO info) throws Exception {
+        final var user = userService.getCurrentUser();
+        final var privateKey = checkPrivateKey(user);
+        final var factory = contractFabric.loadFactory(privateKey);
+        factory.closeRequest(
+            info.getDfaToGetAddress(),
+            info.getDfaToGiveAddress(),
+            BigInteger.valueOf(info.getIndex())
+        ).send();
     }
 }

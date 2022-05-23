@@ -314,6 +314,8 @@ contract Exchanger {
     returns (
       address[] memory,
       uint[] memory,
+      uint[] memory,
+      ExchangeType[] memory,
       uint[] memory
     )
   {
@@ -327,6 +329,8 @@ contract Exchanger {
     address[] memory users = new address[](len);
     uint[] memory amountsToGet = new uint[](len);
     uint[] memory amountsToGive = new uint[](len);
+    ExchangeType[] memory types = new ExchangeType[](len);
+    uint[] memory indexes = new uint[](len);
     uint j = 0;
     for (uint i = 0; i < reqs.length; i++) {
       if (reqs[i].status == ExchangeStatus.OPEN && reqs[i].endTime >= block.timestamp) {
@@ -334,10 +338,12 @@ contract Exchanger {
         users[j] = info.user;
         amountsToGet[j] = info.amountToGet;
         amountsToGive[j] = info.amountToGive;
+        types[j] = info.exchangeType;
+        indexes[j] = i;
         j += 1;
       }
     }
-    return (users, amountsToGet, amountsToGive);
+    return (users, amountsToGet, amountsToGive, types, indexes);
   }
 
   function closeOldRequests(address[] memory dfaList) public isFactory {
@@ -350,6 +356,16 @@ contract Exchanger {
           DFA(dfaAddress).transfer(req.user, req.amountToGive);
         }
       }
+    }
+  }
+
+  function closeRequest(address dfa, uint index, address sender) public isFactory {
+    ExchangerRequestInfo[] storage reqs = requests[dfa];
+    ExchangerRequestInfo storage req = reqs[index];
+    require(sender == req.user, "Sender didnt create a request!");
+    if (req.status == ExchangeStatus.OPEN) {
+      req.status = ExchangeStatus.CLOSE;
+      DFA(dfaAddress).transfer(req.user, req.amountToGive);
     }
   }
 }

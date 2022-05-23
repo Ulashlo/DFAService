@@ -29,12 +29,16 @@ export function MyRequestsForm() {
               .map((request) => ({
                 amountToGive: request.amountToGive,
                 amountToGet: request.amountToGet,
+                dfaAddressToGet: dfaToGet,
                 dfaNameToGet: dfaViews ? dfaViews[dfaToGet].name : 'ошибка загрузки',
                 dfaSymbolToGet: dfaViews ? dfaViews[dfaToGet].symbol : '',
+                type: request.exchangeType,
+                index: request.index,
               }));
           })
           .map((request: any) => ({
             ...request,
+            dfaAddressToGive: dfaToGive,
             dfaNameToGive: dfaViews ? dfaViews[dfaToGive].name : 'ошибка загрузки',
             dfaSymbolToGive: dfaViews ? dfaViews[dfaToGive].symbol : '',
           }));

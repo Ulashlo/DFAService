@@ -24,6 +24,9 @@ import {
     CompletedExchangeDTO,
     CompletedExchangeDTOFromJSON,
     CompletedExchangeDTOToJSON,
+    ExchangeInfoForDeleteDTO,
+    ExchangeInfoForDeleteDTOFromJSON,
+    ExchangeInfoForDeleteDTOToJSON,
     ExchangeRequestDTO,
     ExchangeRequestDTOFromJSON,
     ExchangeRequestDTOToJSON,
@@ -31,6 +34,10 @@ import {
 
 export interface AddExchangeRequest {
     exchangeRequestDTO: ExchangeRequestDTO;
+}
+
+export interface DeleteExchangeRequest {
+    exchangeInfoForDeleteDTO: ExchangeInfoForDeleteDTO;
 }
 
 /**
@@ -54,6 +61,21 @@ export interface ExchangerControllerApiInterface {
      * Put exchange request to the exchanger.
      */
     addExchange(requestParameters: AddExchangeRequest): Promise<void>;
+
+    /**
+     * 
+     * @summary Delete exchange request.
+     * @param {ExchangeInfoForDeleteDTO} exchangeInfoForDeleteDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ExchangerControllerApiInterface
+     */
+    deleteExchangeRaw(requestParameters: DeleteExchangeRequest): Promise<runtime.ApiResponse<void>>;
+
+    /**
+     * Delete exchange request.
+     */
+    deleteExchange(requestParameters: DeleteExchangeRequest): Promise<void>;
 
     /**
      * 
@@ -128,6 +150,46 @@ export class ExchangerControllerApi extends runtime.BaseAPI implements Exchanger
      */
     async addExchange(requestParameters: AddExchangeRequest): Promise<void> {
         await this.addExchangeRaw(requestParameters);
+    }
+
+    /**
+     * Delete exchange request.
+     */
+    async deleteExchangeRaw(requestParameters: DeleteExchangeRequest): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.exchangeInfoForDeleteDTO === null || requestParameters.exchangeInfoForDeleteDTO === undefined) {
+            throw new runtime.RequiredError('exchangeInfoForDeleteDTO','Required parameter requestParameters.exchangeInfoForDeleteDTO was null or undefined when calling deleteExchange.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = typeof token === 'function' ? token("bearer-jwt", []) : token;
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/safe/exchange`,
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ExchangeInfoForDeleteDTOToJSON(requestParameters.exchangeInfoForDeleteDTO),
+        });
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Delete exchange request.
+     */
+    async deleteExchange(requestParameters: DeleteExchangeRequest): Promise<void> {
+        await this.deleteExchangeRaw(requestParameters);
     }
 
     /**

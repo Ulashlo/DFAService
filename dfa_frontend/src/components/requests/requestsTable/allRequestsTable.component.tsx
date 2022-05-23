@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Col, Row, Table } from 'antd';
+import { ExchangeInfoExchangeTypeEnum } from '@src/generated/backend';
 
 const { Column } = Table;
 
@@ -10,6 +11,7 @@ export interface RequestsToGetInfo {
   dfaNameToGet: string;
   dfaSymbolToGet: string;
   amountToGet: number;
+  type: ExchangeInfoExchangeTypeEnum;
   user: string;
 }
 
@@ -19,6 +21,7 @@ export interface RequestsToGetTableInfo {
   dfaNameToGet: string;
   amountToGetStr: string;
   user: string;
+  type: string;
   key: number;
 }
 
@@ -36,6 +39,7 @@ export const AllRequestsTable = React.memo(({ requests, isLoading }: RequestsTab
       dfaNameToGet: request.dfaNameToGet,
       amountToGetStr: `${request.amountToGet} ${request.dfaSymbolToGet}`,
       user: request.user,
+      type: request.type === ExchangeInfoExchangeTypeEnum.DIVISIBLE ? 'Делимая' : 'Неделимая',
       // eslint-disable-next-line no-plusplus
       key: key++,
     }));
@@ -47,11 +51,12 @@ export const AllRequestsTable = React.memo(({ requests, isLoading }: RequestsTab
     <Row style={{ paddingTop: '20px' }}>
       <Col span={24}>
         <Table pagination={false} size="large" dataSource={dataSource} tableLayout="fixed" loading={isLoading}>
-          <Column width="18%" title="ЦФА на продажу" dataIndex="dfaNameToGive" key="dfaNameToGive" />
-          <Column width="18%" title="Колличество ЦФА на продажу" dataIndex="amountToGiveStr" key="amountToGiveStr" />
-          <Column width="18%" title="ЦФА на покупку" dataIndex="dfaNameToGet" key="dfaNameToGet" />
-          <Column width="18%" title="Колличество ЦФА на покупку" dataIndex="amountToGetStr" key="amountToGetStr" />
-          <Column width="28%" title="Адрес создателя заявки" dataIndex="user" key="user" />
+          <Column width="15%" title="ЦФА на продажу" dataIndex="dfaNameToGive" key="dfaNameToGive" />
+          <Column width="15%" title="Колличество ЦФА на продажу" dataIndex="amountToGiveStr" key="amountToGiveStr" />
+          <Column width="15%" title="ЦФА на покупку" dataIndex="dfaNameToGet" key="dfaNameToGet" />
+          <Column width="15%" title="Колличество ЦФА на покупку" dataIndex="amountToGetStr" key="amountToGetStr" />
+          <Column width="15%" title="Тип заявки" dataIndex="type" key="type" />
+          <Column width="25%" title="Адрес создателя заявки" dataIndex="user" key="user" />
         </Table>
       </Col>
     </Row>
