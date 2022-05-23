@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 public class CloseOldRequestService {
     private final ContractFabric contractFabric;
 
-    @Async
     @Scheduled(fixedRate = 60000)
     public void closeOldRequest() throws Exception {
         final var factory = contractFabric.loadFactory();
