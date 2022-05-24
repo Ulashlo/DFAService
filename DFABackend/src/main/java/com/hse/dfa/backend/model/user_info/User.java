@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.hse.dfa.backend.util.cryptography.CryptographyService.encrypt;
+import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static javax.persistence.CascadeType.ALL;
@@ -70,7 +71,11 @@ public class User implements UserDetails {
         this.password = password;
         this.email = email;
         this.address = address;
-        this.privateKey = encrypt(privateKey);
+        if (privateKey == null || privateKey.isBlank()) {
+            this.privateKey = "";
+        } else {
+            this.privateKey = encrypt(privateKey);
+        }
         this.addRoles(userRoles);
     }
 
@@ -83,8 +88,12 @@ public class User implements UserDetails {
     }
 
     public Optional<String> getPrivateKey() {
-        return ofNullable(privateKey)
-            .map(CryptographyService::decrypt);
+        if (privateKey == null || privateKey.isBlank()) {
+            return of("");
+        } else {
+            return of(privateKey)
+                .map(CryptographyService::decrypt);
+        }
     }
 
     public void addRoles(Set<Role> roles) {
@@ -130,6 +139,10 @@ public class User implements UserDetails {
     }
 
     public void setPrivateKey(String privateKey) {
-        this.privateKey = encrypt(privateKey);
+        if (privateKey == null || privateKey.isBlank()) {
+            this.privateKey = "";
+        } else {
+            this.privateKey = encrypt(privateKey);
+        }
     }
 }
