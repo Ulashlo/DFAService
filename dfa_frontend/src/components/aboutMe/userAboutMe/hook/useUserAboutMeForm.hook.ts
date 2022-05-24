@@ -4,6 +4,8 @@ import { useHttpClient } from '@src/hooks/useHttpClient.hook';
 import { doWithLocalSpinner } from '@src/redux/reducers/spinner';
 import NotificationService from '@src/services/NotificationService';
 import { isAddress } from 'web3-utils';
+import { useAppDispatch } from '@src/redux/hooks/useAppDispatch.hook';
+import { setAddressAuthInfo } from '@src/redux/reducers/auth';
 
 export interface UseUserAboutMeForm {
   currentUserInfo: UserInfoForUpdateDTO;
@@ -30,6 +32,7 @@ export const useUserAboutMeForm = (): UseUserAboutMeForm => {
     privateKey: '',
   });
   const { userControllerApi, requestControllerApi } = useHttpClient();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     doWithLocalSpinner(() => userControllerApi.getUserInfo(), {
@@ -99,13 +102,14 @@ export const useUserAboutMeForm = (): UseUserAboutMeForm => {
     await userControllerApi.updateUserInfo({
       userInfoForUpdateDTO: currentUserInfo,
     });
+    dispatch(setAddressAuthInfo(currentUserInfo.address || ''));
     setUserInfo((prevState) => ({
       email: currentUserInfo.email ?? '',
       username: prevState.username,
       address: currentUserInfo.address ?? '',
       privateKey: currentUserInfo.privateKey ?? '',
     }));
-  }, [userControllerApi, setUserInfo, currentUserInfo]);
+  }, [userControllerApi, setUserInfo, currentUserInfo, dispatch]);
 
   const verify = useCallback(async () => {
     await requestControllerApi.addIssuerRequest();

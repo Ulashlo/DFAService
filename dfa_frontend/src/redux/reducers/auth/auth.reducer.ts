@@ -25,6 +25,12 @@ const authSlice = createSlice({
       state.authInfo = action.payload;
       LocalStorageService.authInfo().set(action.payload);
     },
+    setAddressAuthInfo: (state, action: PayloadAction<string>) => {
+      if (state.authInfo) {
+        state.authInfo.address = action.payload;
+      }
+      LocalStorageService.authInfo().set(state.authInfo);
+    },
     clearAuthInfo: (state) => {
       state.authInfo = undefined;
       LocalStorageService.authInfo().set(undefined);
@@ -33,4 +39,4 @@ const authSlice = createSlice({
 });
 
 export const authReducer = authSlice.reducer;
-export const { setAuthInfo, clearAuthInfo } = authSlice.actions;
+export const { setAuthInfo, clearAuthInfo, setAddressAuthInfo } = authSlice.actions;

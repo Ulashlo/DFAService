@@ -12,9 +12,12 @@ export const useAutoUpdateBalances = (delay?: number) => {
 
   const { dfaControllerApi } = useHttpClient();
   const updateBalances = useCallback(async () => {
-    const balances = await dfaControllerApi.getBalances();
-    dispatch(setBalances(balances));
-  }, [dispatch, dfaControllerApi]);
+    if (authInfo && authInfo.address && authInfo.address.length > 0) {
+      const balances = await dfaControllerApi.getBalances();
+      dispatch(setBalances(balances));
+    }
+    dispatch(setBalances([]));
+  }, [dispatch, dfaControllerApi, authInfo]);
 
   useInterval(authInfo && authInfo.roles.includes(TRADER) ? updateBalances : () => {}, INTERVAL, delay);
 };
