@@ -34,6 +34,11 @@ class NotificationService {
   public reportSuccess(msg: string) {
     message.success(msg);
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  public reportError(msg: string) {
+    message.error(msg);
+  }
 }
 
 export default new NotificationService();

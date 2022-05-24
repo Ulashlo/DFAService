@@ -15,8 +15,9 @@ export const useAutoUpdateBalances = (delay?: number) => {
     if (authInfo && authInfo.address && authInfo.address.length > 0) {
       const balances = await dfaControllerApi.getBalances();
       dispatch(setBalances(balances));
+    } else {
+      dispatch(setBalances([]));
     }
-    dispatch(setBalances([]));
   }, [dispatch, dfaControllerApi, authInfo]);
 
   useInterval(authInfo && authInfo.roles.includes(TRADER) ? updateBalances : () => {}, INTERVAL, delay);

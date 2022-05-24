@@ -7,6 +7,7 @@ import { useBalancesInfo, useBalancesIsLoad } from '@src/redux/hooks/balances';
 import { Balance } from '@src/components/dfa/dfaTable';
 import NotificationService from '@src/services/NotificationService';
 import { useHttpClient } from '@src/hooks/useHttpClient.hook';
+import { useAuthInfo } from '@src/redux/hooks/auth';
 
 export interface UseBalanceForm {
   isLoading: boolean;
@@ -28,6 +29,7 @@ export const useBalanceForm = (): UseBalanceForm => {
   const isBalancesLoading = !useBalancesIsLoad();
   const isLoading = useMemo(() => isDfasLoading || isBalancesLoading, [isDfasLoading, isBalancesLoading]);
   const isAddBalanceEnabled = Boolean(amount ? amount > 0 : false);
+  const authInfo = useAuthInfo();
 
   const dataSource = useMemo(() => {
     return balances
@@ -53,9 +55,13 @@ export const useBalanceForm = (): UseBalanceForm => {
   }, [balances, dfas]);
 
   const addBalance = useCallback(async () => {
-    await dfaControllerApi.replenishBalance({ amount: amount ?? 0 });
-    NotificationService.reportSuccess('Заявка на пополнение баланса отправлена!');
-  }, [dfaControllerApi, amount]);
+    if (authInfo && authInfo.address && authInfo.address.length > 0) {
+      await dfaControllerApi.replenishBalance({ amount: amount ?? 0 });
+      NotificationService.reportSuccess('Заявка на пополнение баланса отправлена!');
+    } else {
+      NotificationService.reportError('Данные аккаунта Ethereum не указаны!');
+    }
+  }, [dfaControllerApi, amount, authInfo]);
 
   return {
     isLoading,
