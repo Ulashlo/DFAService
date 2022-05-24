@@ -1,12 +1,21 @@
 import React from 'react';
-import { Button, Col, Input, Row, Typography } from 'antd';
+import { Alert, Button, Col, Input, Row, Typography } from 'antd';
 import { useUserAboutMeForm } from '@src/components/aboutMe/userAboutMe/hook';
 import { useAuthInfo } from '@src/redux/hooks/auth';
 import { ISSUER } from '@src/utils/constraints';
 
 export function UserAboutMeForm() {
-  const { currentUserInfo, setEmail, setAddress, setPrivateKey, updateUserInfo, verify, isUpdated } =
-    useUserAboutMeForm();
+  const {
+    currentUserInfo,
+    setEmail,
+    setAddress,
+    setPrivateKey,
+    updateUserInfo,
+    verify,
+    isNotUpdated,
+    isCredentialsExist,
+    isAddressValid,
+  } = useUserAboutMeForm();
   const authInfo = useAuthInfo();
 
   return (
@@ -90,8 +99,24 @@ export function UserAboutMeForm() {
                 </Row>
               </>
             )}
+            {!isAddressValid ? (
+              <Row justify="start" style={{ paddingTop: '20px' }}>
+                <Alert type="error" message="Некорректный адрес!" />
+              </Row>
+            ) : (
+              !isCredentialsExist && (
+                <Row justify="start" style={{ paddingTop: '20px' }}>
+                  <Alert type="error" message="Укажите и аддресс, и приватный ключ!" />
+                </Row>
+              )
+            )}
             <Row justify="start" style={{ paddingTop: '20px' }}>
-              <Button type="primary" htmlType="submit" disabled={isUpdated} onClick={updateUserInfo}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                disabled={isNotUpdated || !isCredentialsExist || !isAddressValid}
+                onClick={updateUserInfo}
+              >
                 Сохранить
               </Button>
             </Row>

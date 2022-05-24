@@ -5,6 +5,7 @@ import { UserInfoForCreateDTO } from '@src/generated/backend';
 import { PASSWORD_MAX_SIZE, PASSWORD_MIN_SIZE, USERNAME_MAX_SIZE, USERNAME_MIN_SIZE } from '@src/utils/constraints';
 import { useHistory } from 'react-router-dom';
 import { pages } from '@src/CustomRouter';
+import { isAddress } from 'web3-utils';
 
 export interface RegisterFormProps {
   goToLogin: () => void;
@@ -101,10 +102,39 @@ export function RegistrationForm({ goToLogin }: RegisterFormProps) {
       <Form.Item name="email" label="Email">
         <Input />
       </Form.Item>
-      <Form.Item name="address" label="Адресс ethereum">
+      <Form.Item
+        name="address"
+        label="Адресс ethereum"
+        rules={[
+          () => ({
+            validator(_, value) {
+              if (!value || value.length === 0 || isAddress(value)) {
+                return Promise.resolve();
+              }
+              return Promise.reject(new Error('Некорректный адрес!'));
+            },
+          }),
+        ]}
+      >
         <Input />
       </Form.Item>
-      <Form.Item name="privateKey" label="Приватный ключ ethereum">
+      <Form.Item
+        name="privateKey"
+        label="Приватный ключ ethereum"
+        dependencies={['address']}
+        rules={[
+          ({ getFieldValue }) => ({
+            validator(_, value) {
+              const keyExist = value && value.length > 0;
+              const addressExist = getFieldValue('address') && getFieldValue('address').length > 0;
+              if ((keyExist && addressExist) || (!keyExist && !addressExist)) {
+                return Promise.resolve();
+              }
+              return Promise.reject(new Error('Укажите и адрес и приватный ключ!'));
+            },
+          }),
+        ]}
+      >
         <Input />
       </Form.Item>
       <Form.Item {...tailFormItemLayout} name="submit">

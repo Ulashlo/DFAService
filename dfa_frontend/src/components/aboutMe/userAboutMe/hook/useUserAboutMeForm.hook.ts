@@ -3,6 +3,7 @@ import { UserInfoForUpdateDTO, UserViewDTO } from '@src/generated/backend';
 import { useHttpClient } from '@src/hooks/useHttpClient.hook';
 import { doWithLocalSpinner } from '@src/redux/reducers/spinner';
 import NotificationService from '@src/services/NotificationService';
+import { isAddress } from 'web3-utils';
 
 export interface UseUserAboutMeForm {
   currentUserInfo: UserInfoForUpdateDTO;
@@ -11,7 +12,9 @@ export interface UseUserAboutMeForm {
   setPrivateKey: (event: ChangeEvent<HTMLInputElement>) => void;
   updateUserInfo: () => Promise<void>;
   verify: () => Promise<void>;
-  isUpdated: boolean;
+  isNotUpdated: boolean;
+  isCredentialsExist: boolean;
+  isAddressValid: boolean;
 }
 
 export const useUserAboutMeForm = (): UseUserAboutMeForm => {
@@ -42,13 +45,37 @@ export const useUserAboutMeForm = (): UseUserAboutMeForm => {
     });
   }, [userControllerApi]);
 
-  const isUpdated = useMemo(() => {
+  const isNotUpdated = useMemo(() => {
     return (
       userInfo.address === currentUserInfo.address &&
       userInfo.privateKey === currentUserInfo.privateKey &&
       userInfo.email === currentUserInfo.email
     );
   }, [userInfo, currentUserInfo]);
+
+  const isAddressEmpty = useMemo(
+    () => currentUserInfo.address === undefined || currentUserInfo.address.length === 0,
+    [currentUserInfo.address],
+  );
+
+  const isPrivateKeyEmpty = useMemo(
+    () => currentUserInfo.privateKey === undefined || currentUserInfo.privateKey.length === 0,
+    [currentUserInfo.privateKey],
+  );
+
+  const isCredentialsExist = useMemo(() => {
+    if (isAddressEmpty && isPrivateKeyEmpty) {
+      return true;
+    }
+    return !isAddressEmpty && !isPrivateKeyEmpty;
+  }, [isAddressEmpty, isPrivateKeyEmpty]);
+
+  const isAddressValid = useMemo(() => {
+    if (isAddressEmpty) {
+      return true;
+    }
+    return isAddress(currentUserInfo.address ?? '');
+  }, [currentUserInfo.address, isAddressEmpty]);
 
   const setEmail = useCallback(
     (event: ChangeEvent<HTMLInputElement>) =>
@@ -92,6 +119,8 @@ export const useUserAboutMeForm = (): UseUserAboutMeForm => {
     setPrivateKey,
     updateUserInfo,
     verify,
-    isUpdated,
+    isNotUpdated,
+    isCredentialsExist,
+    isAddressValid,
   };
 };

@@ -7,6 +7,7 @@ import com.hse.dfa.backend.exceptions.contract.UserEthereumCredentialException;
 import com.hse.dfa.backend.exceptions.request.UserIsAlreadyIssuerException;
 import com.hse.dfa.backend.exceptions.request.UserIsAlreadySendIssuerRequestException;
 import com.hse.dfa.backend.exceptions.userInfo.IssuerCanNotChangeEthereumInfoException;
+import com.hse.dfa.backend.exceptions.userInfo.WrongCredentialsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -99,6 +100,12 @@ public class RestExceptionResolver extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     protected ResponseEntity<ApiError> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
         return innerHandleException(HttpStatus.FORBIDDEN, "Доступ запрещен!");
+    }
+
+    @ExceptionHandler(WrongCredentialsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ApiError> handleWrongCredentialsException(WrongCredentialsException ex, HttpServletRequest request) {
+        return innerHandleException(HttpStatus.FORBIDDEN, ex.getUserMessage());
     }
 
     @ExceptionHandler(Exception.class)

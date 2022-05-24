@@ -4,6 +4,7 @@ import com.hse.dfa.backend.controller.dto.user_info.UserInfoForUpdateDTO;
 import com.hse.dfa.backend.controller.dto.user_info.UserViewDTO;
 import com.hse.dfa.backend.exceptions.authentication.NotAuthenticatedRequestException;
 import com.hse.dfa.backend.exceptions.userInfo.IssuerCanNotChangeEthereumInfoException;
+import com.hse.dfa.backend.exceptions.userInfo.WrongCredentialsException;
 import com.hse.dfa.backend.model.user_info.RoleType;
 import com.hse.dfa.backend.model.user_info.User;
 import com.hse.dfa.backend.repository.user_info.UserRepository;
@@ -12,9 +13,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.web3j.crypto.Credentials;
 
+import java.util.Locale;
 import java.util.NoSuchElementException;
 
+import static com.hse.dfa.backend.util.checkers.UserChecker.checkCredentials;
 import static com.hse.dfa.backend.util.converters.user.UserConverter.toUserViewDTO;
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
@@ -47,6 +51,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUserInfo(UserInfoForUpdateDTO dto) {
+        checkCredentials(dto.getAddress(), dto.getPrivateKey());
         final var user = getCurrentUser();
         if (!dto.getPrivateKey().equals(user.getPrivateKey().orElse("")) ||
             !dto.getAddress().equals(user.getAddress().orElse(""))) {

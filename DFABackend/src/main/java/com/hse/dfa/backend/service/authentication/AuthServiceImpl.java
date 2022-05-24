@@ -21,6 +21,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import static com.hse.dfa.backend.model.user_info.RoleType.defaultRoleType;
+import static com.hse.dfa.backend.util.checkers.UserChecker.checkCredentials;
 import static java.lang.String.format;
 
 @Service
@@ -52,8 +53,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    //TODO Шифрование приватного ключа
     public void createNewAccount(UserInfoForCreateDTO dto) {
+        checkCredentials(dto.getAddress(), dto.getPrivateKey());
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw new UsernameIsAlreadyExistException(
                 format("User with username = %s is already exist", dto.getUsername())
