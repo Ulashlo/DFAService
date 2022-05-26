@@ -175,8 +175,8 @@ export class ExchangerControllerApi extends runtime.BaseAPI implements Exchanger
             }
         }
         const response = await this.request({
-            path: `/safe/exchange`,
-            method: 'DELETE',
+            path: `/safe/exchange/delete`,
+            method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
             body: ExchangeInfoForDeleteDTOToJSON(requestParameters.exchangeInfoForDeleteDTO),

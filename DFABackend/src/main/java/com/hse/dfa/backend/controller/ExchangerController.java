@@ -34,7 +34,7 @@ public class ExchangerController {
     }
 
     @Operation(summary = "Delete exchange request.")
-    @DeleteMapping
+    @PutMapping("/delete")
     @RolesAllowed(TRADER)
     public void deleteExchange(@Parameter(description = "Info deleting exchange.")
                                @RequestBody
